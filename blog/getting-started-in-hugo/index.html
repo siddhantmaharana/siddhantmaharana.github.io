@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.41" />
+		<title>Getting started in Hugo - Sid M</title>
+
+		<meta name="description" content="Hugo makes life much easier when it comes to scaffolding a website. Plus the amazing themes. Thanks to the devs out there. Here we will go ahead to create one for us and host it in our favorite Github pages. Follow along and you will have an amazing website to yourself.
+Create repos in Github  Let&rsquo;s call the first one &lsquo;blog&rsquo; - This repo is for building the hugo website and experimenting with various themes.">
+
+
+		
+		
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+
+		<style>
+	a { color: #3A539B; }
+	blockquote {
+		border-left-color: #3A539B;
+		border-right-color: #3A539B; }
+	.bar a:hover {
+		color: #3A539B;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #3A539B; }
+</style>
+
+		
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li><li><a href="example.com/about/">About</a></li><li><a href="example.com/blog/">Posts</a></li><li><a href="example.com/code/">Codebook</a></li></ul>
+</nav>
+
+	</div>
+
+
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Getting started in Hugo</h1>
+	<h5>
+		
+		<time datetime="2017-06-19 09:45:12 -0400 EDT">Jun 19, 2017</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<p>Hugo makes life much easier when it comes to scaffolding a website. Plus the amazing themes. Thanks to the devs out there. Here we will go ahead to create one for us and host it in our favorite Github pages. Follow along and you will have an amazing website to yourself.</p>
+
+<h4 id="create-repos-in-github">Create repos in Github</h4>
+
+<ol>
+<li>Let&rsquo;s call the first one &lsquo;blog&rsquo; - This repo is for building the hugo website and experimenting with various themes.</li>
+<li>This has to be of the form &lsquo;username.github.io&rsquo; - We would be deploying the final content for the website here.</li>
+</ol>
+
+<h4 id="setting-up-hugo-in-your-local-system">Setting up Hugo in your local system</h4>
+
+<p>First let&rsquo;s install Hugo from the official website.</p>
+
+<p>Create a folder in your local system. Let&rsquo;s name it &lsquo;blog&rsquo;. This is the folder we would use for our experimentation in our local computer. So create a directory and navigate inside the folder</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">mkdir blog
+<span class="nb">cd</span> blog</code></pre></div>
+<p>Inside the folder, let&rsquo;s create a hugo site and intiatilze with git init</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">hugo new site .
+git init</code></pre></div>
+<p>Next step is to add our git repo &lsquo;blog&rsquo; and fetch its contents</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">git remote add origin https://github.com/siddhantmaharana/blog.git
+git pull origin master</code></pre></div>
+<p>We won&rsquo;t be needing the &lsquo;public&rsquo; folder. So we will add it in the gitignore for now.</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">vim .gitignore
+public<span class="err">\</span></code></pre></div>
+<p>Let&rsquo;s push the changes in the exisitng repo and see if it works so far.</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">git add .
+git status
+git commit -m <span class="s2">&#34;initial commit&#34;</span>
+git push -u origin master</code></pre></div>
+<h4 id="adding-themes-and-some-more-hugo-love">Adding themes and some more hugo love</h4>
+
+<p>Now let&rsquo;s add a theme for our website. The <a href="https://themes.gohugo.io/">site</a> contains a great deal of curated themes. Let&rsquo;s pick one. Change the directory to the themes and clone the files into this. For my site, I went ahead with <a href="https://github.com/alexurquhart/hugo-geo/">Hugo Geo</a></p>
+
+<p>To do that, we will move to the themes directory and clone the theme.</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">cd</span> themes
+git clone https://github.com/alexurquhart/hugo-geo.git</code></pre></div>
+<p>Now let&rsquo;s modify certain lines in the config.toml file. We will update our config file. We will just copy from <a href="https://github.com/alexurquhart/hugo-geo/blob/master/exampleSite/config.toml">here</a> to our config.toml</p>
+
+<h4 id="creating-post-and-pushing-changes">Creating post and pushing changes</h4>
+
+<p>Let&rsquo;s create a new post with the following command</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">hugo new post/hello.md</code></pre></div>
+<p>Lets also change the base url in the config.toml file to point it at our git website (username.github.io)
+We can view the existing changes and website using the following command.</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">hugo server -w</code></pre></div>
+<p>Next we would clone the other repository into another folder and update it.</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">cd</span> ..
+git clone https://github.com/siddhantmaharana/siddhantmaharana.github.io.git
+git pull origin master</code></pre></div>
+<p>Let&rsquo;s copy all contents from &lsquo;blog&rsquo; to the new repository</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">hugo -d ../siddhantmaharana.github.io/</code></pre></div>
+<p>Now let&rsquo;s update the changes in the other repo</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">cd</span> siddhantmaharana.github.io
+git add --all
+git commit -m <span class="s2">&#34;initial commit&#34;</span>
+git push origin master</code></pre></div>
+<p>And voila.. you have a site hosted in github for free!</p>
+
+</article>
+<nav class="no-print post-nav">
+
+
+	<a class="next-post" href="example.com/blog/using-the-query-explorer-for-google-analytics/">Using the Query Explorer for Google Analytics<img class="icon-text" src="/img/next.svg"/>
+	</a>
+
+</nav>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+<a href="mailto:siddhantmaharana14@gmail.com"><img class="icon-social" src="/img/email.svg" alt="Email Me!"/></a>
+
+
+<a href="https://github.com/siddhantmaharana/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/nowplayingsid"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="example.com/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					
+					&copy; 2018 Siddhant Maharana
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		
+	</body>
+</html>
+

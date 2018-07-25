@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.41" />
+		<title>Plotting and Introductory Stats in R: Timeseries I - Sid M</title>
+
+		<meta name="description" content="Introduction This notebook contains basics descriptive and inferential statistics using R and follows the pedagogy of the Practical time series analysis from Coursera and few other sources. This is the first part of the series.
+Contents:  Basic Plotting in R Linear regression T- Test  1. Basic Plotting in R
+Computing Five Number Summary and Standard Deviation To start with, we can check the basic summary statistics and the distribution of the dataset.">
+
+
+		
+		
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+
+		<style>
+	a { color: #3A539B; }
+	blockquote {
+		border-left-color: #3A539B;
+		border-right-color: #3A539B; }
+	.bar a:hover {
+		color: #3A539B;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #3A539B; }
+</style>
+
+		
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li><li><a href="example.com/about/">About</a></li><li><a href="example.com/blog/">Posts</a></li><li><a href="example.com/code/">Codebook</a></li></ul>
+</nav>
+
+	</div>
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js"></script>
+
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Plotting and Introductory Stats in R: Timeseries I</h1>
+	<h5>
+		
+		<time datetime="2018-05-18 18:05:00 -0400 EDT">May 18, 2018</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<h2 id="introduction">Introduction</h2>
+
+<p>This notebook contains basics descriptive and inferential statistics using R and follows the pedagogy of the <strong>Practical time series analysis from Coursera</strong> and few other sources. This is the <em>first part</em> of the series.</p>
+
+<h3 id="contents">Contents:</h3>
+
+<ol>
+<li>Basic Plotting in R</li>
+<li>Linear regression</li>
+<li>T- Test</li>
+</ol>
+
+<p><h2><center>1. Basic Plotting in R</center></h2></p>
+
+<hr />
+
+<h2 id="computing-five-number-summary-and-standard-deviation">Computing Five Number Summary and Standard Deviation</h2>
+
+<p>To start with, we can check the basic summary statistics and the distribution of the dataset. We would use <em>summary</em> function for that.</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">## storing data in an array</span>
+data.1<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">35</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">23</span><span class="p">,</span> <span class="m">42</span><span class="p">)</span>
+
+<span class="c1">## Five number summary</span>
+print <span class="p">(</span><span class="kp">summary</span><span class="p">(</span>data.1<span class="p">))</span>
+
+<span class="c1">## Mean can also be computed like this</span>
+print <span class="p">(</span><span class="kp">sum</span><span class="p">(</span>data.1<span class="p">)</span><span class="o">/</span><span class="m">5</span><span class="p">)</span>
+
+<span class="c1">## Standard Deviation</span>
+print <span class="p">(</span>sd<span class="p">(</span>data.1<span class="p">))</span></code></pre></div>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    8.0    10.0    23.0    23.6    35.0    42.0 
+[1] 23.6
+[1] 14.97665
+</code></pre>
+
+<h2 id="plotting-histogram">Plotting Histogram</h2>
+
+<p>The dataset is composed of integer values and we are trying to plot a univariate distribution of the data points via a histogram.<br></p>
+
+<p><strong>hist</strong> command is used to plot a histogram where:
+- xlab, ylab: can be used to define the labels
+- main: Title of the plot
+- breaks: bins of the histogram</p>
+
+<p><strong>lines</strong> produces a density plot of the data set whose linewidth and col are defined using parameters <em>lwd</em> and <em>col</em> respectively.</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">## loading a dataset</span>
+small.size.dataset<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">91</span><span class="p">,</span><span class="m">49</span><span class="p">,</span><span class="m">76</span><span class="p">,</span><span class="m">112</span><span class="p">,</span><span class="m">97</span><span class="p">,</span><span class="m">42</span><span class="p">,</span><span class="m">70</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="m">112</span><span class="p">,</span> <span class="m">95</span><span class="p">,</span> <span class="m">90</span><span class="p">,</span> <span class="m">78</span><span class="p">,</span> <span class="m">62</span><span class="p">,</span> <span class="m">56</span><span class="p">,</span> <span class="m">94</span><span class="p">,</span> <span class="m">65</span><span class="p">,</span> <span class="m">58</span><span class="p">,</span> <span class="m">109</span><span class="p">,</span> <span class="m">70</span><span class="p">,</span> <span class="m">109</span><span class="p">,</span> <span class="m">91</span><span class="p">,</span> <span class="m">71</span><span class="p">,</span> <span class="m">76</span><span class="p">,</span> <span class="m">68</span><span class="p">,</span> <span class="m">62</span><span class="p">,</span> <span class="m">134</span><span class="p">,</span> <span class="m">57</span><span class="p">,</span> <span class="m">83</span><span class="p">,</span> <span class="m">66</span><span class="p">)</span>
+
+<span class="c1">## Plotting a histogram</span>
+hist<span class="p">(</span>small.size.dataset<span class="p">,</span> xlab<span class="o">=</span><span class="s">&#39;My data points&#39;</span><span class="p">,</span> main<span class="o">=</span><span class="s">&#39;Histogram of my data&#39;</span><span class="p">,</span> freq<span class="o">=</span><span class="bp">F</span><span class="p">,</span> col<span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> breaks<span class="o">=</span><span class="m">10</span><span class="p">)</span>
+<span class="c1">## adding deslines</span>
+lines<span class="p">(</span>density<span class="p">(</span>small.size.dataset<span class="p">),</span> col<span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span> lwd<span class="o">=</span><span class="m">5</span><span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_4_0.png" alt="png" /></p>
+
+<h2 id="plotting-scatterplot">Plotting Scatterplot</h2>
+
+<p>To check the bi-variate distribution of the data, scatterplot is used. Here, two random normal distributions are produced using <strong>rnorm</strong> and then both are used for the scatterplot</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">## loading data for Scatterplot</span>
+Test_1_scores<span class="o">=</span><span class="kp">round</span><span class="p">(</span>rnorm<span class="p">(</span><span class="m">50</span><span class="p">,</span> <span class="m">78</span><span class="p">,</span> <span class="m">10</span><span class="p">))</span>
+Test_2_scores<span class="o">=</span><span class="kp">round</span><span class="p">(</span>rnorm<span class="p">(</span><span class="m">50</span><span class="p">,</span> <span class="m">78</span><span class="p">,</span> <span class="m">14</span><span class="p">))</span>
+
+plot<span class="p">(</span>Test_2_scores<span class="o">~</span>Test_1_scores<span class="p">,</span> main<span class="o">=</span><span class="s">&#39;Test scores for two exams (50 students)&#39;</span><span class="p">,</span> xlab<span class="o">=</span><span class="s">&#39;Test_1_scores&#39;</span><span class="p">,</span> ylab<span class="o">=</span><span class="s">&#39;Test 2 scores&#39;</span><span class="p">,</span> col<span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_6_0.png" alt="png" /></p>
+
+<p><h2><center>2. Linear Regression in R</center></h2></p>
+
+<hr />
+
+<h4 id="objectives">Objectives:</h4>
+
+<ul>
+<li>Perform a simple linear regression with R</li>
+<li>plot time series data</li>
+<li>fit a linear model to a set of ordered pairs</li>
+<li>assess normality of residuals</li>
+<li>test whether the slope of the fitted line is zero</li>
+</ul>
+
+<h3 id="load-dataset">Load Dataset</h3>
+
+<p>A time series of 468 observations; monthly from 1959 to 1997 containing atmospheric concentrations of CO22 are expressed in parts per million</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R">help<span class="p">(</span>co2<span class="p">)</span> <span class="c1">## Shows info about the dataset</span>
+<span class="kp">class</span><span class="p">(</span>co2<span class="p">)</span> <span class="c1">## Shows that it is a timeseries data</span></code></pre></div>
+<h3 id="plotting-the-timeseries">Plotting the timeseries</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R">plot<span class="p">(</span>co2<span class="p">,</span> main<span class="o">=</span><span class="s">&#39;Atmospheric CO2 Concentration&#39;</span><span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_10_0.png" alt="png" /></p>
+
+<p>CO2 concentration is apparently increasing with time over this period. Also, even though a
+straight line obviously misses some crucial behavior it isn’t entirely useless in that it can be used
+to model the trend in the data.</p>
+
+<span class="jsonly">
+     
+        $$Y_i = Linear Model plus noise = \beta_0 &#43; \beta_1x_i &#43; \epsilon_i$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?Y_i%20%3d%20Linear%20Model%20plus%20noise%20%3d%20%5cbeta_0%20%2b%20%5cbeta_1x_i%20%2b%20%5cepsilon_i" title="Y_i = Linear Model plus noise = \beta_0 &#43; \beta_1x_i &#43; \epsilon_i" />
+        </div>
+    
+</noscript>
+
+<p>Where :
+<span class="jsonly">
+                  
+        \(Y_i\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Y_i" title="Y_i" />
+    
+</noscript> : is the response variable(co2 conc) <br>
+and <span class="jsonly">
+                  
+        \(x_i\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;x_i" title="x_i" />
+    
+</noscript> is any explanatory variable with error <span class="jsonly">
+                  
+        \(\epsilon_i\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5cepsilon_i" title="\epsilon_i" />
+    
+</noscript></p>
+
+<h3 id="assumptions">Assumptions</h3>
+
+<p>In case of the <strong>simple linear regression</strong>, we make the following assumptions:</p>
+
+<ul>
+<li>Errors are normally distributed and on avearge, Zero
+
+<ul>
+<li><span class="jsonly">
+                  
+        \(E[\epsilon_i] = 0\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;E%5b%5cepsilon_i%5d%20%3d%200" title="E[\epsilon_i] = 0" />
+    
+</noscript></li>
+</ul></li>
+<li>Errors have the same variance (homoscedastic)
+
+<ul>
+<li><span class="jsonly">
+                  
+        \(Var[\epsilon_i] = constant = \sigma^2\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Var%5b%5cepsilon_i%5d%20%3d%20constant%20%3d%20%5csigma%5e2" title="Var[\epsilon_i] = constant = \sigma^2" />
+    
+</noscript></li>
+</ul></li>
+<li>Errors are unrelated to each other (independent across observations)
+
+<ul>
+<li><span class="jsonly">
+                  
+        \(Cov[\epsilon_i, \epsilon_j] = 0\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Cov%5b%5cepsilon_i%2c%20%5cepsilon_j%5d%20%3d%200" title="Cov[\epsilon_i, \epsilon_j] = 0" />
+    
+</noscript>
+<br /></li>
+</ul></li>
+</ul>
+
+<p>But in reality, the errors can arise in variety of ways:
+- measurement error
+- lack of knowledge of other important imfluences</p>
+
+<h3 id="ols">OLS</h3>
+
+<p>Using OLS, we are trying to find a straight line that minimizes a quality term</p>
+
+<span class="jsonly">
+                  
+        \(Q = \sum(Observed - Predicted)^2\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Q%20%3d%20%5csum%28Observed%20-%20Predicted%29%5e2" title="Q = \sum(Observed - Predicted)^2" />
+    
+</noscript>
+
+<p>If we wish to perform some inferences (confidence intervals, hypothesis tests), then we need to
+make distributional assumptions.</p>
+
+<h3 id="calculating-slope-and-intercepts">Calculating Slope and Intercepts</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R">co2.values <span class="o">=</span> <span class="kp">as.numeric</span><span class="p">(</span>co2<span class="p">)</span>
+co2.times <span class="o">=</span> <span class="kp">as.numeric</span><span class="p">(</span> time<span class="p">(</span>co2<span class="p">)</span> <span class="p">)</span>
+SSxx <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>co2.times <span class="o">-</span> <span class="kp">mean</span><span class="p">(</span>co2.times<span class="p">)</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span>co2.times <span class="o">-</span> <span class="kp">mean</span><span class="p">(</span>co2.times<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+SSxy <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>co2.values <span class="o">-</span> <span class="kp">mean</span><span class="p">(</span>co2.values<span class="p">)</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span>co2.times <span class="o">-</span> <span class="kp">mean</span><span class="p">(</span>co2.times<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<span class="p">(</span> slope <span class="o">=</span> SSxy <span class="o">/</span> SSxx <span class="p">)</span>
+<span class="p">(</span> intercept <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>co2.values<span class="p">)</span> <span class="o">-</span> slope<span class="o">*</span><span class="kp">mean</span><span class="p">(</span>co2.times<span class="p">)</span> <span class="p">)</span></code></pre></div>
+<p>The slope of the trend line came out to be 1.31 indicating a positive slope and an intercept value of -2249.75</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">## Using R command to calculate the same</span>
+co2.linear.model <span class="o">=</span> lm<span class="p">(</span>co2 <span class="o">~</span> time<span class="p">(</span>co2<span class="p">)</span> <span class="p">)</span>
+
+<span class="c1">## Plotting the line against the graph</span>
+plot<span class="p">(</span>co2<span class="p">,</span> main<span class="o">=</span><span class="s">&#39;Atmospheric CO2 Concentration with Fitted Line&#39;</span><span class="p">)</span>
+abline<span class="p">(</span>co2.linear.model <span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_13_0.png" alt="png" /></p>
+
+<h3 id="calculating-plotting-residuals">Calculating &amp; Plotting Residuals</h3>
+
+<p>Residuals are obtained by subtracting the observed responses from the fitted values.</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R">co2.fitted.values <span class="o">=</span> slope<span class="o">*</span>co2.times <span class="o">+</span> intercept
+co2.residuals <span class="o">=</span> co2.values <span class="o">-</span> co2.fitted.values</code></pre></div>
+<p>To check the distribution of the residuals we can :
+1. Use a histogram
+2. Use a normal probability plot</p>
+
+<p><strong>resid</strong> function automatically calculates the residuals of the model</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R">par<span class="p">(</span>mfrow<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">))</span>
+c02.residuals <span class="o">=</span> resid<span class="p">(</span> co2.linear.model <span class="p">)</span>
+hist<span class="p">(</span>co2.residuals<span class="p">,</span> main<span class="o">=</span> <span class="s">&#34;Histogram of CO2 Residuals&#34;</span><span class="p">)</span>
+qqnorm<span class="p">(</span>c02.residuals<span class="p">,</span> main<span class="o">=</span> <span class="s">&#34;Normal Probability Plot&#34;</span><span class="p">)</span>
+qqline<span class="p">(</span>c02.residuals<span class="p">)</span>
+plot<span class="p">(</span>c02.residuals <span class="o">~</span> time<span class="p">(</span>co2<span class="p">),</span> main<span class="o">=</span><span class="s">&#34;Residuals on Time&#34;</span><span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_17_0.png" alt="png" /></p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">## Zooming in the plot to see the oscillations</span>
+plot<span class="p">(</span>c02.residuals <span class="o">~</span> time<span class="p">(</span>co2<span class="p">),</span> xlim<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">1960</span><span class="p">,</span> <span class="m">1963</span><span class="p">),</span> main<span class="o">=</span><span class="s">&#34;Zoomed in Residuals on Time&#34;</span><span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_18_0.png" alt="png" /></p>
+
+<p><h2><center>3. T-Test in R</center></h2></p>
+
+<hr />
+
+<p>One of the most common tests in statistics is the t-test, used to determine whether the means of two groups are equal to each other. The assumption for the test is that both groups are sampled from normal distributions with equal variances. The null hypothesis is that the two means are equal, and the alternative is that they are not.</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">## load the dataset</span>
+help<span class="p">(</span>sleep<span class="p">)</span></code></pre></div>
+<p>The data consists of <strong>increase in the hours</strong> of sleep of 10 persons under the effect of 2 drugs represented by <strong>groups</strong></p>
+
+<h4 id="objective">Objective</h4>
+
+<p>The aim of this is to find out if there is any difference in the average response to each of the two drugs.</p>
+
+<h3 id="box-plot-of-two-groups">Box Plot of two groups</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1">##plotting the data</span>
+plot<span class="p">(</span>extra<span class="o">~</span>group<span class="p">,</span> data<span class="o">=</span>sleep<span class="p">,</span> main <span class="o">=</span> <span class="s">&#34;Extra Sleep in Gossett Data by Group&#34;</span><span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_22_0.png" alt="png" /></p>
+
+<p>The box plot shows that there is a perceptible difference in averages of the extra sleeping hours for the two groups.
+But we will use the <strong>t-test</strong> to statistically prove the difference with confidence</p>
+
+<h3 id="t-test-paired">T-Test(paired)</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="c1"># attach(sleep)</span>
+extra.1<span class="o">=</span>sleep<span class="o">$</span>extra<span class="p">[</span>group<span class="o">==</span><span class="m">1</span><span class="p">]</span>
+extra.2<span class="o">=</span>sleep<span class="o">$</span>extra<span class="p">[</span>group<span class="o">==</span><span class="m">2</span><span class="p">]</span>
+
+<span class="c1">## for the test to be meaningful, we assume that the population of differences is normally distributed. </span>
+diffs <span class="o">=</span> extra.1<span class="o">-</span>extra.2
+qqnorm<span class="p">(</span>diffs<span class="p">,</span> main<span class="o">=</span> <span class="s">&#34;Normal Probability Plot&#34;</span><span class="p">)</span>
+qqline<span class="p">(</span>diffs<span class="p">)</span></code></pre></div>
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_1/output_24_0.png" alt="png" /></p>
+
+<h3 id="running-a-paired-t-test">Running a paired T-test</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R">t.test<span class="p">(</span>extra.1<span class="p">,</span> extra.2<span class="p">,</span> paired<span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span> alternative<span class="o">=</span><span class="s">&#34;two.sided&#34;</span><span class="p">)</span></code></pre></div>
+<pre><code>    Paired t-test
+
+data:  extra.1 and extra.2
+t = -4.0621, df = 9, p-value = 0.002833
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -2.4598858 -0.7001142
+sample estimates:
+mean of the differences 
+                  -1.58 
+</code></pre>
+
+<h4 id="inference">Inference</h4>
+
+<p>As the p-value is quite small(&lt;0.01), the difference is significant at the customary $\alpha$ = 0.01 level</p>
+
+<p>So, we can reject the <em>null Hypothesis</em> that the difference in the mean is 0</p>
+
+<p>Also the mean difference(0) does not lie in between the 95% CIs, which further suggests that the difference is significant.</p>
+
+<hr />
+
+<h4 id="references">References:</h4>
+
+<ol>
+<li>Coursera- Practical Time Series</li>
+<li>Thistleton and Sadigov - Reviewing Basic Statistics</li>
+<li>Latex rendering in Hugo. Kudos to the author and his <a href="http://www.latkin.org/blog/2016/08/07/better-tex-math-typesetting-in-hugo/">post</a></li>
+</ol>
+
+</article>
+<nav class="no-print post-nav">
+
+	<a class="prev-post" href="example.com/blog/google-analytics-on-google-spreadsheets/">
+		<img class="icon-text" src="/img/prev.svg"/>Google analytics on Google Spreadsheets</a>
+
+
+	<a class="next-post" href="example.com/blog/stationarity-acfs-randomwalk-timeseries/">Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II<img class="icon-text" src="/img/next.svg"/>
+	</a>
+
+</nav>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+<a href="mailto:siddhantmaharana14@gmail.com"><img class="icon-social" src="/img/email.svg" alt="Email Me!"/></a>
+
+
+<a href="https://github.com/siddhantmaharana/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/nowplayingsid"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="example.com/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					
+					&copy; 2018 Siddhant Maharana
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		
+  		<script>renderMathInElement(document.body);</script>
+		
+	</body>
+</html>
+

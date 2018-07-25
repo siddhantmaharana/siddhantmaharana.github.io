@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.41" />
+		<title>Using the Query Explorer for Google Analytics - Sid M</title>
+
+		<meta name="description" content="Well, you must have heard people talk about this free tool called Google Analytics(GA) and how you can leverage it to gain some useful insights into your business. But how do you wrap your head around around the overwhelming Google Analytics interface and the sea of numbers?
+In this blog, we would close that intimidating and confusing UI and get some basics figured about the lingua franca of analytics and data used in GA and try out the simple Query Explorer.">
+
+
+		
+		
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+
+		<style>
+	a { color: #3A539B; }
+	blockquote {
+		border-left-color: #3A539B;
+		border-right-color: #3A539B; }
+	.bar a:hover {
+		color: #3A539B;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #3A539B; }
+</style>
+
+		
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li><li><a href="example.com/about/">About</a></li><li><a href="example.com/blog/">Posts</a></li><li><a href="example.com/code/">Codebook</a></li></ul>
+</nav>
+
+	</div>
+
+
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Using the Query Explorer for Google Analytics</h1>
+	<h5>
+		
+		<time datetime="2017-08-03 15:40:00 -0400 EDT">Aug 03, 2017</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<p>Well, you must have heard people talk about this free tool called Google Analytics(GA) and how you can leverage it to gain some useful insights into your business. But how do you wrap your head around around the overwhelming Google Analytics interface and the sea of numbers?</p>
+
+<p>In this blog, we would close that intimidating and confusing UI and get some basics figured about the lingua franca of analytics and data used in GA and try out the simple Query Explorer. Let’s start with <strong>dimensions</strong> and <strong>facts</strong>.</p>
+
+<blockquote>
+<p><strong>Dimension</strong> is a collection of reference information about a measurable event.
+And <strong>Facts</strong> are the measurements and metrics.</p>
+</blockquote>
+
+<p>So every problem around Google analytics can be broken into its constituent dimensions and facts(metrics).</p>
+
+<hr />
+
+<p>Let’s take an example. <em>“How many people have visited my website over the last few days”</em></p>
+
+<p>That sounds simple. Right?
+&gt; <strong>Users</strong> can be a relevant metric/fact and <strong>date</strong> can be a dimension</p>
+
+<p>Allright, now lets take another one <em>“What do the people from Citysville really read in  my blog”</em></p>
+
+<blockquote>
+<p>If you think hard enough, you can figure out that <strong>City</strong> and <strong>Page Name</strong> are the dimensions and <strong>Screenviews</strong> can be a metric.</p>
+</blockquote>
+
+<p>Now that’s simple if I had the list of the entire available dimensions and metrics and I could really search what I need. Great news is that google have already a list with a search bar for you to explore.  Check it out <a href="https://developers.google.com/analytics/devguides/reporting/core/dimsmets">here</a>.</p>
+
+<hr />
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/dimensions_metrics.PNG" alt="Dimensions and Facts" title="Dimensions and Facts" /></p>
+
+<hr />
+
+<p>You can even drill down to check all the extensive list of dimensions and facts.</p>
+
+<h4 id="query-explorer">Query Explorer</h4>
+
+<p>The Query Explorer is a developer tool that you can leverage to link with your Google Analytics account and get the report right away!
+Check it out <a href="https://ga-dev-tools.appspot.com/query-explorer/">here</a></p>
+
+<hr />
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/query_explorer_GA.PNG" alt="Query Explorer" title="Query Explorer" /></p>
+
+<hr />
+
+<p>Looks like a simple report generator right? Yes, exactly that’s what it is. First things first. You need to grant access to the tool to access your google analytics account.</p>
+
+<p>Select the account and the view for which you want to track the metrics. That’s fairly simple. Right?</p>
+
+<p>So lets try to accomplish the above task through this tool</p>
+
+<p>To view our metrics on a daily level we will first enter the start and end date.
+Now if you can decode the task and jot down the metrics and dimensions involved, then you are already halfway! So we need users on a daily level.</p>
+
+<blockquote>
+<p>Dimensions: Date<br>
+Metrics: Users</p>
+</blockquote>
+
+<p>Simple, right?
+Let’s leave the other optional fields blank and hit the ‘Run Query’ button. And Voila, the report is ready.</p>
+
+<p>If you are still unsure about the metrics and dimensions and what do they mean exactly, check out the documentation by google and then you can play around!</p>
+
+</article>
+<nav class="no-print post-nav">
+
+	<a class="prev-post" href="example.com/blog/getting-started-in-hugo/">
+		<img class="icon-text" src="/img/prev.svg"/>Getting started in Hugo</a>
+
+
+	<a class="next-post" href="example.com/blog/google-analytics-on-google-spreadsheets/">Google analytics on Google Spreadsheets<img class="icon-text" src="/img/next.svg"/>
+	</a>
+
+</nav>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+<a href="mailto:siddhantmaharana14@gmail.com"><img class="icon-social" src="/img/email.svg" alt="Email Me!"/></a>
+
+
+<a href="https://github.com/siddhantmaharana/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/nowplayingsid"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="example.com/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					
+					&copy; 2018 Siddhant Maharana
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		
+	</body>
+</html>
+

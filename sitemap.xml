@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>example.com/snippets/first/</loc>
+    <lastmod>2018-07-24T12:21:16-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/blog/stationarity-acfs-randomwalk-timeseries/</loc>
+    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/blog/plotting-introductory-stats-r-timeseries/</loc>
+    <lastmod>2018-05-18T18:05:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/blog/google-analytics-on-google-spreadsheets/</loc>
+    <lastmod>2017-09-04T08:30:14-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/blog/using-the-query-explorer-for-google-analytics/</loc>
+    <lastmod>2017-08-03T15:40:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/blog/getting-started-in-hugo/</loc>
+    <lastmod>2017-06-19T09:45:12-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/about/</loc>
+  </url>
+  
+  <url>
+    <loc>example.com/blog/</loc>
+    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>example.com/</loc>
+    <lastmod>2018-07-24T12:21:16-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>example.com/snippets/</loc>
+    <lastmod>2018-07-24T12:21:16-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>example.com/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>example.com/code/</loc>
+  </url>
+  
+</urlset>
