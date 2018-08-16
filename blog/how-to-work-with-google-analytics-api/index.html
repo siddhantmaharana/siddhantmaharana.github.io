@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.46" />
+		<title>How to work with Google Analytics API - Siddhant Maharana</title>
+
+		<meta name="description" content="In this notebook, we would use the Google Analytics API to fetch the data from our Google Analytics account. The resultant csv can subsequnetly be written to a preferred database.
+For getting data from google analytics, we need to set up a project in our google developers account and obtain a keyfile (in json format).
+The module below builds a service object and takes various parameters such as api_name, api_version, scope, key_file_location, and service_account_email">
+
+
+		
+		
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+
+		<style>
+	a { color: #3A539B; }
+	blockquote {
+		border-left-color: #3A539B;
+		border-right-color: #3A539B; }
+	.bar a:hover {
+		color: #3A539B;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #3A539B; }
+</style>
+
+		
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/home.svg"/>
+			</a>
+		</li><li><a href="/blog/">Blog</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">Resume</a></li></ul>
+</nav>
+
+	</div>
+
+
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>How to work with Google Analytics API</h1>
+	<h5>
+		
+		<time datetime="2017-10-19 09:45:12 -0400 -0400">Oct 19, 2017</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<p>In this notebook, we would use the Google Analytics API to fetch the data from our Google Analytics account. The resultant csv can subsequnetly be written to a preferred database.</p>
+
+<p>For getting data from google analytics, we need to set up a project in our google developers account
+and obtain a keyfile (in json format).</p>
+
+<p>The module below builds a service object and takes various parameters such as api_name, api_version, scope, key_file_location,
+and service_account_email</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_service</span><span class="p">(</span><span class="n">api_name</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">key_file_location</span><span class="p">,</span><span class="n">service_account_email</span><span class="p">):</span>
+    <span class="n">credentials</span> <span class="o">=</span> <span class="n">ServiceAccountCredentials</span><span class="o">.</span><span class="n">from_json_keyfile_name</span><span class="p">(</span><span class="n">key_file_location</span><span class="p">,</span><span class="n">scope</span><span class="p">)</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">())</span>
+    <span class="c1">#Build service object</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">api_name</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">http</span><span class="o">=</span><span class="n">http</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">service</span></code></pre></div>
+<p>The module below receives several parameters which are the conditions for fetching our data</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">ga_api_reporting</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="n">ga_id</span><span class="p">,</span><span class="n">begin_date</span><span class="p">,</span><span class="n">finish_date</span><span class="p">,</span>\
+<span class="n">metrics_list</span><span class="p">,</span><span class="n">dim_list</span><span class="p">,</span><span class="n">seg_con</span><span class="p">,</span><span class="n">sort_con</span><span class="p">,</span><span class="n">filer_con</span><span class="p">,</span><span class="n">index</span><span class="p">,</span><span class="n">max_results</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">ga</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">ids</span><span class="o">=</span><span class="n">ga_id</span><span class="p">,</span>
+        <span class="n">start_date</span><span class="o">=</span><span class="n">begin_date</span><span class="p">,</span>
+        <span class="n">end_date</span><span class="o">=</span><span class="n">finish_date</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="n">metrics_list</span><span class="p">,</span>
+        <span class="n">dimensions</span><span class="o">=</span><span class="n">dim_list</span><span class="p">,</span>
+        <span class="n">segment</span><span class="o">=</span><span class="n">seg_con</span><span class="p">,</span>
+        <span class="n">sort</span><span class="o">=</span><span class="n">sort_con</span><span class="p">,</span>
+        <span class="n">filters</span><span class="o">=</span><span class="n">filer_con</span><span class="p">,</span>
+        <span class="n">start_index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">max_results</span><span class="o">=</span><span class="n">max_results</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></code></pre></div>
+<p>In this example, we would extract data related to screenviews. As parameter we would be passing the following-</p>
+
+<ol>
+<li>service: The service object created above</li>
+<li>ga_id: Your Google analytics account id</li>
+<li>begin_date: The start date from which the data we want to extract</li>
+<li>finish_data: The end date till which we want to obtain our data</li>
+<li>metrics_list: The list of metrics for which we want to get our data. In this case (ga:screenviews)</li>
+<li>dim_list: The list of dimensions. We are fetching the screenviews with dates and screenname as the dimensions</li>
+<li>seg_con: Any specific segment defined for which we want to get data. For eg: Mobile only users</li>
+<li>sort_con: The metrics on which we want to sort our data. &lsquo;-ga:screenviews&rsquo; gives us the data in decreasing order of the screenviews.</li>
+<li>filer_con: Various filter conditions can be defined here. We dont want the screens without any views. So &lsquo;ga:screenViews!=0&rsquo;</li>
+<li>index: Starting index of the results. We are looping the results by providing the starting index in multiples of 1000, i.e 1000 results everytime.</li>
+<li>max_results: Total row limit can be specified here</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">app_screen_views</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="n">start_dt</span><span class="p">,</span><span class="n">end_dt</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">screen_views_data</span> <span class="o">=</span> <span class="n">ga_api_reporting</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="s1">&#39;ga:999999&#39;</span><span class="p">,</span>\
+        <span class="n">start_dt</span><span class="p">,</span><span class="n">end_dt</span><span class="p">,</span><span class="s1">&#39;ga:screenviews&#39;</span><span class="p">,</span><span class="s1">&#39;ga:date,ga:screenName&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span>\
+        <span class="s1">&#39;-ga:screenviews&#39;</span><span class="p">,</span><span class="s1">&#39;ga:screenViews!=0&#39;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>
+        <span class="n">extract_rows</span><span class="p">(</span><span class="n">screen_views_data</span><span class="p">)</span></code></pre></div>
+<p>We have to write the results obtained into a csv file. We check the results for rows and write the output to the &lsquo;screenviews.csv&rsquo;.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">extract_rows</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+
+    <span class="n">output_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;screenviews.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span>
+    <span class="n">output_file_obj</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rows&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rows&#39;</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">output_file_obj</span><span class="o">.</span><span class="n">writerows</span><span class="p">([</span><span class="n">output</span><span class="p">])</span></code></pre></div>
+<p>Now the next module contains the main function in which we pass the following-</p>
+
+<ol>
+<li>scope: Analytics v3 of Google Analytics</li>
+<li>service_account_email: The email we obtain after creating a project in Google Developer console</li>
+<li>key_file_location: The key file in JSON format obtained from the Google Developer console.</li>
+<li>date: In this example we extract for last 10 days.</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">scope</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://www.googleapis.com/auth/analytics.readonly&#39;</span><span class="p">]</span>
+    <span class="n">service_account_email</span> <span class="o">=</span> <span class="s1">&#39;id-mg-app-reporting@my-project-1470392440259.iam.gserviceaccount.com&#39;</span>
+    <span class="n">key_file_location</span> <span class="o">=</span> <span class="s1">&#39;key_file.json&#39;</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">get_service</span><span class="p">(</span><span class="s1">&#39;analytics&#39;</span><span class="p">,</span> <span class="s1">&#39;v3&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">key_file_location</span><span class="p">,</span><span class="n">service_account_email</span><span class="p">)</span>
+    <span class="n">date_format</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="s2">&#34;daysAgo&#34;</span>
+    <span class="n">app_screen_views</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">date_format</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">date_format</span><span class="p">))</span></code></pre></div>
+<h4 id="complete-code">Complete Code</h4>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="c1">## Importing Libraries</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">apiclient.discovery</span> <span class="kn">import</span> <span class="n">build</span>
+<span class="kn">from</span> <span class="nn">oauth2client.service_account</span> <span class="kn">import</span> <span class="n">ServiceAccountCredentials</span>
+<span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="kn">from</span> <span class="nn">oauth2client</span> <span class="kn">import</span> <span class="n">client</span>
+<span class="kn">from</span> <span class="nn">oauth2client</span> <span class="kn">import</span> <span class="nb">file</span>
+<span class="kn">from</span> <span class="nn">oauth2client</span> <span class="kn">import</span> <span class="n">tools</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">def</span> <span class="nf">get_service</span><span class="p">(</span><span class="n">api_name</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">key_file_location</span><span class="p">,</span><span class="n">service_account_email</span><span class="p">):</span>
+    <span class="n">credentials</span> <span class="o">=</span> <span class="n">ServiceAccountCredentials</span><span class="o">.</span><span class="n">from_json_keyfile_name</span><span class="p">(</span><span class="n">key_file_location</span><span class="p">,</span><span class="n">scope</span><span class="p">)</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">())</span>
+    <span class="c1">#Build service object</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">api_name</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">http</span><span class="o">=</span><span class="n">http</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">service</span>
+
+<span class="k">def</span> <span class="nf">ga_api_reporting</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="n">ga_id</span><span class="p">,</span><span class="n">begin_date</span><span class="p">,</span><span class="n">finish_date</span><span class="p">,</span><span class="n">metrics_list</span><span class="p">,</span>\
+<span class="n">dim_list</span><span class="p">,</span><span class="n">seg_con</span><span class="p">,</span><span class="n">sort_con</span><span class="p">,</span><span class="n">filer_con</span><span class="p">,</span><span class="n">index</span><span class="p">,</span><span class="n">max_results</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">ga</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">ids</span><span class="o">=</span><span class="n">ga_id</span><span class="p">,</span>
+        <span class="n">start_date</span><span class="o">=</span><span class="n">begin_date</span><span class="p">,</span>
+        <span class="n">end_date</span><span class="o">=</span><span class="n">finish_date</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="n">metrics_list</span><span class="p">,</span>
+        <span class="n">dimensions</span><span class="o">=</span><span class="n">dim_list</span><span class="p">,</span>
+        <span class="n">segment</span><span class="o">=</span><span class="n">seg_con</span><span class="p">,</span>
+        <span class="n">sort</span><span class="o">=</span><span class="n">sort_con</span><span class="p">,</span>
+        <span class="n">filters</span><span class="o">=</span><span class="n">filer_con</span><span class="p">,</span>
+        <span class="n">start_index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">max_results</span><span class="o">=</span><span class="n">max_results</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="c1">## Need to change the GA account </span>
+<span class="k">def</span> <span class="nf">app_screen_views</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="n">start_dt</span><span class="p">,</span><span class="n">end_dt</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">screen_views_data</span> <span class="o">=</span> <span class="n">ga_api_reporting</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="s1">&#39;ga:999999&#39;</span><span class="p">,</span><span class="n">start_dt</span><span class="p">,</span>\
+        <span class="n">end_dt</span><span class="p">,</span><span class="s1">&#39;ga:screenviews&#39;</span><span class="p">,</span><span class="s1">&#39;ga:date,ga:screenName&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="s1">&#39;-ga:screenviews&#39;</span>\
+        <span class="p">,</span><span class="s1">&#39;ga:screenViews!=0&#39;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>
+        <span class="n">extract_rows</span><span class="p">(</span><span class="n">screen_views_data</span><span class="p">)</span>
+        
+<span class="k">def</span> <span class="nf">extract_rows</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+
+    <span class="n">output_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;screenviews.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span>
+    <span class="n">output_file_obj</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rows&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rows&#39;</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">output_file_obj</span><span class="o">.</span><span class="n">writerows</span><span class="p">([</span><span class="n">output</span><span class="p">])</span>
+            
+<span class="c1">## Need to change the service_account_email and other params</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">scope</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://www.googleapis.com/auth/analytics.readonly&#39;</span><span class="p">]</span>
+    <span class="n">service_account_email</span> <span class="o">=</span> <span class="s1">&#39;id-mg-app-reporting@my-project-9999999.iam.gserviceaccount.com&#39;</span>
+    <span class="n">key_file_location</span> <span class="o">=</span> <span class="s1">&#39;key_file.json&#39;</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">get_service</span><span class="p">(</span><span class="s1">&#39;analytics&#39;</span><span class="p">,</span> <span class="s1">&#39;v3&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">key_file_location</span><span class="p">,</span><span class="n">service_account_email</span><span class="p">)</span>
+    <span class="n">date_format</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="s2">&#34;daysAgo&#34;</span>
+    <span class="n">app_screen_views</span><span class="p">(</span><span class="n">service</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">date_format</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">date_format</span><span class="p">))</span>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span></code></pre></div>
+</article>
+<nav class="no-print post-nav">
+
+	<a class="prev-post" href="https://siddhantmaharana.github.io/blog/google-analytics-on-google-spreadsheets/">
+		<img class="icon-text" src="/img/prev.svg"/>Google analytics on Google Spreadsheets</a>
+
+
+	<a class="next-post" href="https://siddhantmaharana.github.io/blog/plotting-introductory-stats-r-timeseries/">Plotting and Introductory Stats in R: Timeseries I<img class="icon-text" src="/img/next.svg"/>
+	</a>
+
+</nav>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+<a href="mailto:siddhantmaharana14@gmail.com"><img class="icon-social" src="/img/email.svg" alt="Email Me!"/></a>
+
+
+<a href="https://github.com/siddhantmaharana/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/nowplayingsid"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://siddhantmaharana.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					
+					&copy; 2018 Siddhant Maharana
+					
+					
+			
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		
+	</body>
+</html>
+

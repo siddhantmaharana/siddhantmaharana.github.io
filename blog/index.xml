@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Sid M</title>
+    <title>Blog on Siddhant Maharana</title>
     <link>https://siddhantmaharana.github.io/blog/</link>
-    <description>Recent content in Posts on Sid M</description>
+    <description>Recent content in Blog on Siddhant Maharana</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018 Siddhant Maharana</copyright>
     <lastBuildDate>Sat, 14 Jul 2018 18:05:00 -0400</lastBuildDate>
@@ -31,6 +31,17 @@ Objective:  Time-series via time plot Stationarity, ACFs Random Walk Moving Aver
       <description>Introduction This notebook contains basics descriptive and inferential statistics using R and follows the pedagogy of the Practical time series analysis from Coursera and few other sources. This is the first part of the series.
 Contents:  Basic Plotting in R Linear regression T- Test  1. Basic Plotting in R
 Computing Five Number Summary and Standard Deviation To start with, we can check the basic summary statistics and the distribution of the dataset.</description>
+    </item>
+    
+    <item>
+      <title>How to work with Google Analytics API</title>
+      <link>https://siddhantmaharana.github.io/blog/how-to-work-with-google-analytics-api/</link>
+      <pubDate>Thu, 19 Oct 2017 09:45:12 -0400</pubDate>
+      
+      <guid>https://siddhantmaharana.github.io/blog/how-to-work-with-google-analytics-api/</guid>
+      <description>In this notebook, we would use the Google Analytics API to fetch the data from our Google Analytics account. The resultant csv can subsequnetly be written to a preferred database.
+For getting data from google analytics, we need to set up a project in our google developers account and obtain a keyfile (in json format).
+The module below builds a service object and takes various parameters such as api_name, api_version, scope, key_file_location, and service_account_email</description>
     </item>
     
     <item>

@@ -3,11 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://siddhantmaharana.github.io/snippets/first/</loc>
-    <lastmod>2018-07-24T12:21:16-04:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://siddhantmaharana.github.io/blog/stationarity-acfs-randomwalk-timeseries/</loc>
     <lastmod>2018-07-14T18:05:00-04:00</lastmod>
   </url>
@@ -15,6 +10,11 @@
   <url>
     <loc>https://siddhantmaharana.github.io/blog/plotting-introductory-stats-r-timeseries/</loc>
     <lastmod>2018-05-18T18:05:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://siddhantmaharana.github.io/blog/how-to-work-with-google-analytics-api/</loc>
+    <lastmod>2017-10-19T09:45:12-04:00</lastmod>
   </url>
   
   <url>
@@ -33,23 +33,13 @@
   </url>
   
   <url>
-    <loc>https://siddhantmaharana.github.io/about/</loc>
-  </url>
-  
-  <url>
     <loc>https://siddhantmaharana.github.io/blog/</loc>
     <lastmod>2018-07-14T18:05:00-04:00</lastmod>
   </url>
   
   <url>
     <loc>https://siddhantmaharana.github.io/</loc>
-    <lastmod>2018-07-24T12:21:16-04:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/snippets/</loc>
-    <lastmod>2018-07-24T12:21:16-04:00</lastmod>
+    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -59,7 +49,11 @@
   </url>
   
   <url>
-    <loc>https://siddhantmaharana.github.io/code/</loc>
+    <loc>https://siddhantmaharana.github.io/projects/</loc>
+  </url>
+  
+  <url>
+    <loc>https://siddhantmaharana.github.io/about/</loc>
   </url>
   
 </urlset>
