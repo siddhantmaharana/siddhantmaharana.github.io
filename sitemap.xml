@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://siddhantmaharana.github.io/blog/introduction-to-nlp-using-python-and-spacy/</loc>
+    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://siddhantmaharana.github.io/blog/stationarity-acfs-randomwalk-timeseries/</loc>
     <lastmod>2018-07-14T18:05:00-04:00</lastmod>
   </url>
@@ -34,12 +39,12 @@
   
   <url>
     <loc>https://siddhantmaharana.github.io/blog/</loc>
-    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
+    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
   </url>
   
   <url>
     <loc>https://siddhantmaharana.github.io/</loc>
-    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
+    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
     <priority>0</priority>
   </url>
   

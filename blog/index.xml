@@ -6,10 +6,21 @@
     <description>Recent content in Blog on Siddhant Maharana</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018 Siddhant Maharana</copyright>
-    <lastBuildDate>Sat, 14 Jul 2018 18:05:00 -0400</lastBuildDate>
+    <lastBuildDate>Sun, 07 Oct 2018 13:37:45 -0500</lastBuildDate>
     
 	<atom:link href="https://siddhantmaharana.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Introduction to Nlp Using Python and Spacy</title>
+      <link>https://siddhantmaharana.github.io/blog/introduction-to-nlp-using-python-and-spacy/</link>
+      <pubDate>Sun, 07 Oct 2018 13:37:45 -0500</pubDate>
+      
+      <guid>https://siddhantmaharana.github.io/blog/introduction-to-nlp-using-python-and-spacy/</guid>
+      <description>This notebook contains code examples to get you started with Natural Language Processing in Python. Uses various modules of NLTK and Spacy
+The codebase and the data can be found in here
+Contents: Part A: Text Retrieval and Pre-processing  Extraction and Conversion Removing special characters and stopwords Stemming/Lemmatizing and Tokenizing Sentence Segmentation  Part B: Feature Generation/Document Representation  POS tagging and Dependency Parsing Named Entity recognition TF, TF-IDF  Part C: Modelling and Other NLP tasks  Text classification Text Similarity Topic Modelling ___  Part A: Text Retrieval and Pre-processing 1.</description>
+    </item>
     
     <item>
       <title>Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II</title>

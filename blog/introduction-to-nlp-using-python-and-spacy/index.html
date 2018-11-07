@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.46" />
+		<title>Introduction to Nlp Using Python and Spacy - Siddhant Maharana</title>
+
+		<meta name="description" content="This notebook contains code examples to get you started with Natural Language Processing in Python. Uses various modules of NLTK and Spacy
+The codebase and the data can be found in here
+Contents: Part A: Text Retrieval and Pre-processing  Extraction and Conversion Removing special characters and stopwords Stemming/Lemmatizing and Tokenizing Sentence Segmentation  Part B: Feature Generation/Document Representation  POS tagging and Dependency Parsing Named Entity recognition TF, TF-IDF  Part C: Modelling and Other NLP tasks  Text classification Text Similarity Topic Modelling ___  Part A: Text Retrieval and Pre-processing 1.">
+
+
+		
+		
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+
+		<style>
+	a { color: #3A539B; }
+	blockquote {
+		border-left-color: #3A539B;
+		border-right-color: #3A539B; }
+	.bar a:hover {
+		color: #3A539B;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #3A539B; }
+</style>
+
+		
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/home.svg"/>
+			</a>
+		</li><li><a href="/blog/">Blog</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">Resume</a></li></ul>
+</nav>
+
+	</div>
+
+
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Introduction to Nlp Using Python and Spacy</h1>
+	<h5>
+		
+		<time datetime="2018-10-07 13:37:45 -0500 -0500">Oct 07, 2018</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<p>This notebook contains code examples to get you started with Natural Language Processing in Python. Uses various modules of <strong>NLTK</strong> and <strong>Spacy</strong></p>
+
+<p>The codebase and the data can be found in <a href="https://github.com/siddhantmaharana/NLP101">here</a></p>
+
+<h2 id="contents">Contents:</h2>
+
+<h3 id="part-a-text-retrieval-and-pre-processing">Part A: Text Retrieval and Pre-processing</h3>
+
+<ol>
+<li>Extraction and Conversion</li>
+<li>Removing special characters and stopwords</li>
+<li>Stemming/Lemmatizing and Tokenizing</li>
+<li>Sentence Segmentation</li>
+</ol>
+
+<h3 id="part-b-feature-generation-document-representation">Part B: Feature Generation/Document Representation</h3>
+
+<ol>
+<li>POS tagging and Dependency Parsing</li>
+<li>Named Entity recognition</li>
+<li>TF, TF-IDF</li>
+</ol>
+
+<h3 id="part-c-modelling-and-other-nlp-tasks">Part C: Modelling and Other NLP tasks</h3>
+
+<ol>
+<li>Text classification</li>
+<li>Text Similarity</li>
+<li>Topic Modelling
+___</li>
+</ol>
+
+<h1><center>Part A: Text Retrieval and Pre-processing</center></h1>
+
+<h2 id="1-text-extraction-and-conversion">1. Text Extraction and Conversion</h2>
+
+<p>NLP stands for Natural Language Processing, which is defined as the application of computational techniques to the analysis and synthesis of natural language and speech.</p>
+
+<p>For this exercise we will take some sample documents i,e class action complaints for violations of the securities law. The data files are already in &lsquo;.txt&rsquo; format and thus they dont need conversion.</p>
+
+<p>Otherwise, the data from other varied sources sources have to extracted and subsequently converted to machine readable format or &lsquo;.txt&rsquo; files. Several libraries which can help in these tasks include:
+1. pdfminer.six
+2. textract</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="c1">## Importing Libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">spacy</span>
+<span class="kn">from</span> <span class="nn">spacy</span> <span class="kn">import</span> <span class="n">displacy</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span></code></pre></div>
+<h3 id="reading-the-contents-of-the-folder">Reading the contents of the folder</h3>
+
+<p>To read the contents of the folder, various libraries such as os, glob can be used.</p>
+
+<p>In our example, we have used the os library and then we navigate to the &lsquo;target&rsquo; folder to read the documents and process them further.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="c1">## getting the current path</span>
+<span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="c1"># navigating to the data folder</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cur_dir</span><span class="p">,</span> <span class="s2">&#34;data&#34;</span><span class="p">)</span>
+
+<span class="c1"># Iterating the contents of the folder</span>
+<span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">sub_dir</span><span class="p">,</span><span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+    <span class="c1">## only reading the first file</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">print</span> <span class="p">(</span><span class="s2">&#34;processing file no :&#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="c1">## Printing a sample text file</span>
+        <span class="k">print</span> <span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        
+        </code></pre></div>
+<h2 id="2-removing-special-characters-and-stopwords-using-nltk">2. Removing special characters and stopwords(using NLTK)</h2>
+
+<p>NLTK is one of the significant libraries used in natural language processing and is also widely popular among researchers and developers. We will use various tools by NLTK to process the text and mine the information needed.
+More about <a href="http://www.nltk.org/book/ch01.html">NLTK</a></p>
+
+<p>If we notice the above text, there are a lot of unwanted characters such as <strong>puncuations, newlines</strong> which we need to deal with before heading into further analysis.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">words</span> <span class="k">as</span> <span class="n">english_words</span><span class="p">,</span> <span class="n">stopwords</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="c1">## replacing the newlines and extra spaces</span>
+<span class="n">corpus</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+<span class="c1">## removing everything except alphabets</span>
+<span class="n">corpus_sans_symbols</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^a-zA-Z </span><span class="se">\n</span><span class="s1">]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">corpus</span><span class="p">)</span>
+
+<span class="c1">## removing stopwords</span>
+<span class="n">stop_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">())</span>
+
+<span class="n">corpus_sans_symbols_stopwords</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stop_words</span><span class="p">,</span> <span class="n">corpus_sans_symbols</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+<span class="k">print</span> <span class="p">(</span><span class="n">corpus_sans_symbols_stopwords</span><span class="p">)</span></code></pre></div>
+<h2 id="3-stemming-and-lemmatizing-using-nltk">3. Stemming and Lemmatizing(using NLTK)</h2>
+
+<p>Now that we got rid of the unnecessary characters in the text, we can focus on the words and try to represent them in a more general and standardized format</p>
+
+<p><strong>Stemming:</strong>  Stemming is a rudimentary rule-based process of stripping the suffixes (“ing”, “ly”, “es”, “s” etc) from a word.</p>
+
+<p><strong>Lemmatization:</strong> Lemmatization, on the other hand, is an organized &amp; step by step procedure of obtaining the root form of the word, it makes use of vocabulary (dictionary importance of words) and morphological analysis (word structure and grammar relations).</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">PorterStemmer</span>
+<span class="n">stemmer</span><span class="o">=</span><span class="n">nltk</span><span class="o">.</span><span class="n">PorterStemmer</span><span class="p">()</span>
+<span class="n">corpus_stemmed</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">.</span><span class="n">join</span> <span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="nb">str</span><span class="p">:</span> <span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span> <span class="n">corpus_sans_symbols_stopwords</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+<span class="k">print</span> <span class="p">(</span><span class="n">corpus_stemmed</span><span class="p">)</span></code></pre></div>
+<h3 id="checking-the-word-distribution-in-the-document">Checking the word distribution in the document</h3>
+
+<p>Now that we have a relatively cleaner corpus, lets try to vizualize the <strong>top occuring terms</strong> in the corpus.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="c1"># Plot top 20 frequent words</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="n">word_freq</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">corpus_stemmed</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34; &#34;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&#34;whitegrid&#34;</span><span class="p">)</span>
+<span class="n">common_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_freq</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="n">common_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_freq</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+
+<span class="n">sns_bar</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">common_words</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">common_counts</span><span class="p">)</span>
+<span class="n">sns_bar</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">common_words</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Most Common Words in the document&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre></div>
+<p><img src="/images/nlp1.png" alt="png" /></p>
+
+<h2 id="introducing-spacy">Introducing Spacy</h2>
+
+<p>spaCy by explosion.ai is a library for advanced Natural Language Processing in Python and Cython. spaCy comes with pre-trained statistical models and word vectors, and currently supports tokenization for 20+ languages. It features the fastest syntactic parser in the world, convolutional neural network models for tagging, parsing and named entity recognition and easy deep learning integration. It&rsquo;s commercial open-source software, released under the MIT licence.</p>
+
+<p>More can be found <a href="https://spacy.io/usage/">here</a></p>
+
+<h3 id="spacy-features">Spacy features</h3>
+
+<ol>
+<li><strong>Tokenization:</strong> Segmenting text into words, punctuations marks etc.</li>
+<li><strong>Dependency Parsing:</strong> Assigning syntactic dependency labels, describing the relations between individual tokens, like subject or object.</li>
+<li><strong>Lemmatization:</strong> Assigning the base forms of words. For example, the lemma of &ldquo;was&rdquo; is &ldquo;be&rdquo;, and the lemma of &ldquo;rats&rdquo; is &ldquo;rat&rdquo;.</li>
+<li><strong>Sentence Boundary Detection (SBD):</strong>Finding and segmenting individual sentences.</li>
+<li><strong>Named Entity Recognition (NER):</strong> Labelling named &ldquo;real-world&rdquo; objects, like persons, companies or locations.</li>
+<li><strong>Part-of-speech (POS) Tagging:</strong> Assigning word types to tokens, like verb or noun.</li>
+</ol>
+
+<p>We can download other language models by running a code like below in your shell or terminal</p>
+
+<p><code>
+python -m spacy download en_core_web_sm
+</code></p>
+
+<h4 id="a-simple-example-in-spacy">A simple example in SPACY</h4>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">spacy</span>
+<span class="c1">## Spacy example </span>
+<span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="s2">&#34;Lets see what Spacy is capable of doing.&#34;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&#34;{0}</span><span class="se">\t</span><span class="s2">{1}</span><span class="se">\t</span><span class="s2">{2}</span><span class="se">\t</span><span class="s2">{3}</span><span class="se">\t</span><span class="s2">{4}</span><span class="se">\t</span><span class="s2">{5}&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">idx</span><span class="p">,</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">lemma_</span><span class="p">,</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">is_punct</span><span class="p">,</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">pos_</span><span class="p">,</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">tag_</span>
+    <span class="p">))</span></code></pre></div>
+<pre><code>Lets    0   let False   NOUN    NNS
+see 5   see False   VERB    VB
+what    9   what    False   NOUN    WP
+Spacy   14  spacy   False   PROPN   NNP
+is  20  be  False   VERB    VBZ
+capable 23  capable False   ADJ JJ
+of  31  of  False   ADP IN
+doing   34  do  False   VERB    VBG
+.   39  .   True    PUNCT   .
+</code></pre>
+
+<h2 id="preprocessing-in-spacy">Preprocessing in Spacy</h2>
+
+<p>The object “nlp” is used to create documents, access linguistic annotations and different nlp properties.</p>
+
+<p>The document is now part of spacy.english model’s class and is associated with a number of features and properties.</p>
+
+<p>We would take the text for the first document and pass it to the spacy&rsquo;s nlp object. Now doc contains various linguistic features which can be accesses quite easily.</p>
+
+<h2 id="spacy-operation-in-just-a-single-line">Spacy operation in just a single line!</h2>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="c1">## passing our text into spacy</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="c1">## filtering stopwords, punctuations, checking for alphabets and capturing the lemmatized text</span>
+<span class="n">spacy_tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">is_stop</span> <span class="o">!=</span> <span class="bp">True</span> \
+                <span class="ow">and</span> <span class="n">token</span><span class="o">.</span><span class="n">is_punct</span> <span class="o">!=</span> <span class="bp">True</span> <span class="ow">and</span> <span class="n">token</span><span class="o">.</span><span class="n">is_alpha</span> <span class="o">==</span><span class="bp">True</span><span class="p">]</span></code></pre></div>
+<h2 id="plotting-top-20-words">Plotting top 20 words</h2>
+
+<p>In just one line, we were able to convert the entire text file to a list of <strong>Tokens</strong>. These tokens are individual words freed from the junk and the stopwords which occur in the English lexicon.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">word_freq_spacy</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">spacy_tokens</span><span class="p">)</span>
+
+<span class="c1"># Plot top 20 frequent words</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&#34;whitegrid&#34;</span><span class="p">)</span>
+<span class="n">common_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_freq_spacy</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="n">common_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_freq_spacy</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+
+<span class="n">sns_bar</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">common_words</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">common_counts</span><span class="p">)</span>
+<span class="n">sns_bar</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">common_words</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Most Common Words in the document&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre></div>
+<p><img src="/images/nlp2.png" alt="png" /></p>
+
+<h2 id="4-sentence-segmentation">4. Sentence Segmentation</h2>
+
+<p>Sentence segmentation means the task of splitting up the piece of text by sentence.</p>
+
+<p>We could do this by splitting on the . symbol, but dots are used in many other cases as well so it is not very robust because of the presence of period in other parts of the sentences.</p>
+
+<p>Still, let&rsquo;s give it a try to see the sample sentences produced</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">text_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">))</span>
+<span class="n">sentences_split</span> <span class="o">=</span> <span class="n">text_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;.&#34;</span><span class="p">)</span>
+<span class="n">sentences_split</span><span class="p">[</span><span class="mi">67</span><span class="p">]</span></code></pre></div>
+<pre><code>' This amount represents an extraordinarily large  27 4'
+</code></pre>
+
+<p>The above sentence doesn&rsquo;t seem to be complete and coherent.</p>
+
+<p>Spacy on the other hand simplifies this task and is quite robust when it comes to sentence segmentation</p>
+
+<h3 id="spacy-sentence-segmentation">Spacy sentence segmentation</h3>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="n">text_str</span><span class="p">)</span>
+<span class="n">sentence_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">sents</span><span class="p">]</span>
+<span class="n">sentence_list</span><span class="p">[</span><span class="mi">67</span><span class="p">]</span></code></pre></div>
+<pre><code>Hsi entered voting agreements with Battery Ventures under which they have agreed to vote their  18 shares in favor of the adoption of the Merger Agreement.
+</code></pre>
+
+<p>The above sentence produced by spacy in indeed perfect.</p>
+
+<h1><center>Part B: Feature Generation/Document Representation</center></h1>
+
+<h2 id="1-pos-tagging-and-dependency-parsing">1. POS tagging and Dependency Parsing</h2>
+
+<p>Part-of-speech tagging is the process of assigning grammatical properties (e.g. noun, verb, adverb, adjective etc.) to words. Words that share the same POS tag tend to follow a similar syntactic structure and are useful in rule-based processes.</p>
+
+<p>spaCy features a fast and accurate syntactic <strong>dependency parser</strong>, and has a rich API for navigating the tree. The parser also powers the sentence boundary detection, and lets you iterate over base noun phrases, or &ldquo;chunks&rdquo;</p>
+
+<p>As an example, we will take the above sentence and feed that into the <strong>pos</strong> and <strong>dependency parser</strong>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">spacy</span><span class="o">.</span><span class="n">displacy</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">sentence_list</span><span class="p">[</span><span class="mi">67</span><span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;dep&#39;</span><span class="p">,</span><span class="n">jupyter</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;compact&#39;</span><span class="p">:</span><span class="mi">60</span><span class="p">})</span>
+<span class="n">pos_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">token</span><span class="p">,</span> <span class="n">token</span><span class="o">.</span><span class="n">pos_</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">sentence_list</span><span class="p">[</span><span class="mi">67</span><span class="p">]]</span></code></pre></div>
+<p><img src="/images/nlp3.svg" alt="svg" /></p>
+
+<h2 id="2-named-entity-recognition">2. Named Entity Recognition</h2>
+
+<p>Entity recognition is the process of classifying named entities found in a text into pre-defined categories, such as persons, places, organizations, dates, etc.</p>
+
+<p>spaCy uses a statistical model to classify a broad range of entities, including <strong>persons, organisations, dates</strong>.</p>
+
+<p>Even newer entities can be trained and used on a corpus of documents.</p>
+
+<p>Below, we will run the <strong>NER</strong> detection on a subset of the corpus from our text and also check the captured <strong>Names</strong> and <strong>Organisations</strong></p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">text_ent_example</span> <span class="o">=</span><span class="s2">&#34;In November 2009, unbeknownst to the Board, defendants Chen and Guasman began </span><span class="se">\
+</span><span class="se"></span><span class="s2">discussing a potential sale of the Company with Battery Ventures. Also in November 2009, the  </span><span class="se">\
+</span><span class="se"></span><span class="s2">Company received inquiries from other private equity firms expressing an interest in a transaction to. </span><span class="se">\
+</span><span class="se"></span><span class="s2">acquire the Company. However, before the Board considered the overtures from the private equity  firms,</span><span class="se">\
+</span><span class="se"></span><span class="s2">on January 27, 2010, Battery Ventures and RAE entered anon-disclosure agreement.</span><span class="se">\
+</span><span class="se"></span><span class="s2">That same day, defendants Chen, Guasman, and Hsi gave a presentation to Battery Ventures about the  </span><span class="se">\
+</span><span class="se"></span><span class="s2">Company</span><span class="se">\&#39;</span><span class="s2">s business and outlook. From the beginning of their discussions with Battery Ventures, </span><span class="se">\
+</span><span class="se"></span><span class="s2"> defendants Chen, Gausman, and Hsi favored Battery Ventures over other suitors because of its desire </span><span class="se">\
+</span><span class="se"></span><span class="s2"> to retain their services and the potential for an . equity position in the go-forward company.&#34;</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="n">text_ent_example</span><span class="p">)</span>
+<span class="n">spacy</span><span class="o">.</span><span class="n">displacy</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;ent&#39;</span><span class="p">,</span><span class="n">jupyter</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></div>
+<h3 id="cleaning-the-text-column-using-spacy">Cleaning the text column using Spacy</h3>
+
+<p>We will go ahead and clean the text column so that we can form word-embeddings from the text and then make our data ready for modeling.</p>
+
+<p><strong>Optimizing in Spacy</strong></p>
+
+<p>Spacy ingests the text and performs all the operations such that the objects have all the linguistic features possible and this might a bit time consuming. Since, we wont be needing the POS, NER, DEP features from the text, we would skip these. For this, we need to redefine the Spacy class.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">SpacyMagic</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">_spacys</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lang</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_spacys</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">spacy</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_spacys</span><span class="p">[</span><span class="n">lang</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tagger&#39;</span><span class="p">,</span> <span class="s1">&#39;ner&#39;</span><span class="p">,</span><span class="s1">&#39;pos&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_spacys</span><span class="p">[</span><span class="n">lang</span><span class="p">]</span>
+    
+<span class="k">def</span> <span class="nf">run_spacy</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">nlp</span> <span class="o">=</span> <span class="n">SpacyMagic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">doc</span>
+
+<span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+    <span class="n">spacy_text</span> <span class="o">=</span> <span class="n">run_spacy</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+    <span class="n">out_str</span><span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span> <span class="p">([</span><span class="n">token</span><span class="o">.</span><span class="n">lemma_</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">spacy_text</span> <span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">is_stop</span> <span class="o">!=</span> <span class="bp">True</span> <span class="ow">and</span> <span class="n">token</span><span class="o">.</span><span class="n">is_punct</span> <span class="o">!=</span> <span class="bp">True</span>\
+                        <span class="ow">and</span> <span class="n">token</span><span class="o">.</span><span class="n">is_alpha</span> <span class="o">==</span><span class="bp">True</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">out_str</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;cleaned_text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_text</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">])</span></code></pre></div>
+<h2 id="term-frequency-array-from-the-data">Term Frequency Array from the data</h2>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+
+<span class="n">list_corpus</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&#34;cleaned_text&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">list_labels</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&#34;label&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">list_corpus</span><span class="p">)</span>
+
+<span class="n">featurenames</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">()</span></code></pre></div>
+<p>This produces an array of 6077 rows as features where each of the words are represented as columns.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">print</span><span class="p">(</span><span class="n">featurenames</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">doc_tf_vector</span> <span class="ow">in</span> <span class="n">tf</span><span class="o">.</span><span class="n">toarray</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">doc_tf_vector</span><span class="p">)</span>
+    </code></pre></div>
+<p><strong>tf.toarray()</strong> contains the array with the <strong>term-frequency</strong> for all the words in the corpus</p>
+
+<h3 id="tf-idf-representation-of-the-document">TF-IDF representation of the Document</h3>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">transformer</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">tfidf</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">list_corpus</span><span class="p">)</span>
+<span class="n">featurenames</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">featurenames</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">doc_tf_vector</span> <span class="ow">in</span> <span class="n">tfidf</span><span class="o">.</span><span class="n">toarray</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">doc_tf_vector</span><span class="p">)</span></code></pre></div>
+<p><strong>tfidf.toarray()</strong> contains the array with the <strong>tf-idf score</strong> for all the words in the corpus</p>
+
+<h1><center>Part C: Modelling and Other NLP tasks</center></h1>
+    
+
+<h2 id="1-text-classification">1. Text Classification</h2>
+
+<p>We have created embeddings for the &ldquo;cleaned text&rdquo; and now each of the words represent a feature and we can use the labels to train our data based on these embeddings.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+
+<span class="k">def</span> <span class="nf">cv</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">count_vectorizer</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">()</span>
+
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">count_vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">emb</span><span class="p">,</span> <span class="n">count_vectorizer</span>
+
+<span class="n">list_corpus</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&#34;cleaned_text&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">list_labels</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&#34;label&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">list_corpus</span><span class="p">,</span> <span class="n">list_labels</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> \
+                                                                                <span class="n">random_state</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+<span class="n">X_train_counts</span><span class="p">,</span> <span class="n">count_vectorizer</span> <span class="o">=</span> <span class="n">cv</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">X_test_counts</span> <span class="o">=</span> <span class="n">count_vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+
+<span class="c1">## Plotting the confusion matrix</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+
+<span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span>
+                          <span class="n">normalize</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                          <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">,</span>
+                          <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">winter</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">cm</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">tick_marks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">tick_marks</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">tick_marks</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;.2f&#39;</span> <span class="k">if</span> <span class="n">normalize</span> <span class="k">else</span> <span class="s1">&#39;d&#39;</span>
+    <span class="n">thresh</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="nb">max</span><span class="p">()</span> <span class="o">/</span> <span class="mf">2.</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">format</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">fmt</span><span class="p">),</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&#34;center&#34;</span><span class="p">,</span> 
+                 <span class="n">color</span><span class="o">=</span><span class="s2">&#34;white&#34;</span> <span class="k">if</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">thresh</span> <span class="k">else</span> <span class="s2">&#34;black&#34;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True label&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted label&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">plt</span></code></pre></div>
+<h3 id="logistic-regression">Logistic regression</h3>
+
+<p>Let&rsquo;s start with a logistic regression model to predict whether the SMS is a spam or ham.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s1">&#39;balanced&#39;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;newton-cg&#39;</span><span class="p">,</span> 
+                         <span class="n">multi_class</span><span class="o">=</span><span class="s1">&#39;multinomial&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">y_predicted_counts</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_counts</span><span class="p">)</span></code></pre></div>
+<h3 id="evaulating-the-results">Evaulating the results</h3>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted_counts</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Spam&#39;</span><span class="p">,</span><span class="s1">&#39;Ham&#39;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span></code></pre></div>
+<p><img src="/images/nlp4.png" alt="png" /></p>
+
+<pre><code>[[964   3]
+ [ 14 134]]
+</code></pre>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">classification_report</span>
+
+<span class="k">def</span> <span class="nf">get_metrics</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted</span><span class="p">):</span>  
+    <span class="c1"># true positives / (true positives+false positives)</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                    <span class="n">average</span><span class="o">=</span><span class="s1">&#39;weighted&#39;</span><span class="p">)</span>             
+    <span class="c1"># true positives / (true positives + false negatives)</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                              <span class="n">average</span><span class="o">=</span><span class="s1">&#39;weighted&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># harmonic mean of precision and recall</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;weighted&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># true positives + true negatives/ total</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span>
+
+<span class="n">accuracy</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">get_metrics</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predicted_counts</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&#34;accuracy = </span><span class="si">%.3f</span><span class="s2">, precision = </span><span class="si">%.3f</span><span class="s2">, recall = </span><span class="si">%.3f</span><span class="s2">, f1 = </span><span class="si">%.3f</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span><span class="p">))</span></code></pre></div>
+<pre><code>accuracy = 0.985, precision = 0.985, recall = 0.985, f1 = 0.985
+</code></pre>
+
+<p>The accuracy seems to be pretty good and other models can also be tried out to improve upon the model further</p>
+
+<h2 id="2-text-similarity">2 Text Similarity</h2>
+
+<p>Textual Similarity is a process where two texts are compared to find the Similarity between them.</p>
+
+<p>The two most popular packages used are:
+1. Levenshtein
+2. Fuzzy wuzzy</p>
+
+<p><code>pip install python-Levenshtein</code></p>
+
+<p><code>pip install fuzzywuzzy</code></p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"></code></pre></div>
+</article>
+<nav class="no-print post-nav">
+
+	<a class="prev-post" href="https://siddhantmaharana.github.io/blog/stationarity-acfs-randomwalk-timeseries/">
+		<img class="icon-text" src="/img/prev.svg"/>Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II</a>
+
+
+</nav>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+<a href="mailto:siddhantmaharana14@gmail.com"><img class="icon-social" src="/img/email.svg" alt="Email Me!"/></a>
+
+
+<a href="https://github.com/siddhantmaharana/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/nowplayingsid"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://siddhantmaharana.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					
+					&copy; 2018 Siddhant Maharana
+					
+					
+			
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		
+	</body>
+</html>
+
