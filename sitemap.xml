@@ -3,62 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://siddhantmaharana.github.io/blog/introduction-to-nlp-using-python-and-spacy/</loc>
-    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
+    <loc>https://example.org/blog/</loc>
   </url>
   
   <url>
-    <loc>https://siddhantmaharana.github.io/blog/stationarity-acfs-randomwalk-timeseries/</loc>
-    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/blog/plotting-introductory-stats-r-timeseries/</loc>
-    <lastmod>2018-05-18T18:05:00-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/blog/how-to-work-with-google-analytics-api/</loc>
-    <lastmod>2017-10-19T09:45:12-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/blog/google-analytics-on-google-spreadsheets/</loc>
-    <lastmod>2017-09-04T08:30:14-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/blog/using-the-query-explorer-for-google-analytics/</loc>
-    <lastmod>2017-08-03T15:40:00-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/blog/getting-started-in-hugo/</loc>
-    <lastmod>2017-06-19T09:45:12-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/blog/</loc>
-    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://siddhantmaharana.github.io/</loc>
-    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
+    <loc>https://example.org/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://siddhantmaharana.github.io/tags/</loc>
+    <loc>https://example.org/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://siddhantmaharana.github.io/projects/</loc>
+    <loc>https://example.org/tags/</loc>
+    <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://siddhantmaharana.github.io/about/</loc>
+    <loc>https://example.org/projects/</loc>
+  </url>
+  
+  <url>
+    <loc>https://example.org/about/</loc>
   </url>
   
 </urlset>
