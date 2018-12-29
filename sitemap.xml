@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/projects/proj2/</loc>
+  </url>
+  
+  <url>
+    <loc>/projects/proj1/</loc>
+  </url>
+  
+  <url>
+    <loc>/projects/proj3/</loc>
+  </url>
+  
+  <url>
+    <loc>/projects/proj4/</loc>
+  </url>
+  
+  <url>
+    <loc>/projects/proj6/</loc>
+  </url>
+  
+  <url>
+    <loc>/projects/proj5/</loc>
+  </url>
+  
+  <url>
+    <loc>/blog/introduction-to-nlp-using-python-and-spacy/</loc>
+    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/stationarity-acfs-randomwalk-timeseries/</loc>
+    <lastmod>2018-07-14T18:05:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/plotting-introductory-stats-r-timeseries/</loc>
+    <lastmod>2018-05-18T18:05:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/how-to-work-with-google-analytics-api/</loc>
+    <lastmod>2017-10-19T09:45:12-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/google-analytics-on-google-spreadsheets/</loc>
+    <lastmod>2017-09-04T08:30:14-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/using-the-query-explorer-for-google-analytics/</loc>
+    <lastmod>2017-08-03T15:40:00-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/getting-started-in-hugo/</loc>
+    <lastmod>2017-06-19T09:45:12-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/</loc>
+    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/projects/</loc>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2018-10-07T13:37:45-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

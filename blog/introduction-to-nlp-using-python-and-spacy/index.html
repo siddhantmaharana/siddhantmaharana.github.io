@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Personal Blog of Siddhant Maharana">
+<title>
+Introduction to NLP Using Python and Spacy - Siddhant Maharana
+</title>
+
+
+
+        <meta property="og:title" content="Introduction to NLP Using Python and Spacy - Siddhant Maharana" />
+<meta property="og:type" content="website" />
+<meta property="og:description" content="Personal Blog of Siddhant Maharana"/>
+<meta property="og:url" content="/blog/introduction-to-nlp-using-python-and-spacy/"/>
+<meta property="og:site_name" content="Siddhant Maharana"/>
+
+
+
+
+<meta property="og:image" content="/home/profile.jpg"/>
+
+
+
+
+        
+<link rel="shortcut icon" href="/img/fav.ico">
+
+
+        
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.min.66cab924513b4e21e82a3a8bdf4737b1450d809e919f8db8b672e9744d7f2f1f.css" integrity="sha256-Zsq5JFE7TiHoKjqL30c3sUUNgJ6Rn424tnLpdE1/Lx8=" media="screen">
+
+
+
+
+
+        
+        
+        
+        
+    </head>
+    <body>
+        <section id="top" class="section">
+            
+            <div class="container hero  fade-in one ">
+                
+
+    <h1 class="bold-title is-1">Blog</h1>
+
+
+            </div>
+            
+            <div class="section  fade-in two ">
+                
+<div class="container">
+    <hr>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        
+        <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false" >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+        <div class="navbar-menu " id="navMenu">
+            
+            
+            
+            
+            <a class="navbar-item" href="/">main</a>
+            
+
+            
+            
+            
+            <a class="navbar-item" href="/#about">About</a>
+            
+            
+            
+            
+            
+
+            
+            
+            
+            
+            
+            <a class="navbar-item" href="/projects/">
+                
+                Projects
+                
+            </a>
+            
+            
+            
+
+            
+            
+            
+            
+            <a class="navbar-item" href="/blog/">
+                
+                Back to Blog
+                
+            </a>
+            
+            
+            
+
+            
+            
+            <a class="navbar-item" href="/#contact">Contact</a>
+            <a class="navbar-item" href="https://drive.google.com/open?id=1g5i2lNantxW1mSWrQ1En0N8lXZhTTf96">Resume</a>
+            
+            
+
+            
+            
+            
+
+            
+            
+        </div>
+    </nav>
+    <hr>
+</div>
+
+
+
+                
+    <div class="container">
+        <h2 class="title is-1 top-pad strong-post-title">
+            <a href="/blog/introduction-to-nlp-using-python-and-spacy/">Introduction to NLP Using Python and Spacy</a>
+        </h2>
+        <div class="post-data">
+            Oct 7, 2018 |
+            11 minutes read
+        </div>
+        
+        <div class="blog-share">
+            Share this:
+            
+            <a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Introduction%20to%20NLP%20Using%20Python%20and%20Spacy%20%2fblog%2fintroduction-to-nlp-using-python-and-spacy%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fab fa-twitter"></i>
+                <span class="hidden">Twitter</span>
+            </a>
+            
+            
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=%2fblog%2fintroduction-to-nlp-using-python-and-spacy%2f"  onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <i class="fab fa-facebook-f"></i>
+                <span class="hidden">Facebook</span>
+            </a>
+            
+            
+            <a class="icon-pinterest" href="http://pinterest.com/pin/create/button/?url=%2fblog%2fintroduction-to-nlp-using-python-and-spacy%2f&amp;description=Introduction%20to%20NLP%20Using%20Python%20and%20Spacy" onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+                <i class="fab fa-pinterest-p"></i>
+                <span class="hidden">Pinterest</span>
+            </a>
+            
+            
+            <a class="icon-google-plus" href="https://plus.google.com/share?url=%2fblog%2fintroduction-to-nlp-using-python-and-spacy%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <i class="fab fa-google-plus-g"></i>
+                <span class="hidden">Google+</span>
+            </a>
+            
+        </div>
+        
+        
+    </div>
+    
+    <div class="container markdown top-pad">
+        
+
+<p>This notebook contains code examples to get you started with Natural Language Processing in Python. Uses various modules of <strong>NLTK</strong> and <strong>Spacy</strong></p>
+
+<p>The codebase and the data can be found in <a href="https://github.com/siddhantmaharana/NLP101">here</a></p>
+
+<h2 id="contents">Contents:</h2>
+
+<h3 id="part-a-text-retrieval-and-pre-processing">Part A: Text Retrieval and Pre-processing</h3>
+
+<ol>
+<li>Extraction and Conversion</li>
+<li>Removing special characters and stopwords</li>
+<li>Stemming/Lemmatizing and Tokenizing</li>
+<li>Sentence Segmentation</li>
+</ol>
+
+<h3 id="part-b-feature-generation-document-representation">Part B: Feature Generation/Document Representation</h3>
+
+<ol>
+<li>POS tagging and Dependency Parsing</li>
+<li>Named Entity recognition</li>
+<li>TF, TF-IDF</li>
+</ol>
+
+<h3 id="part-c-modelling-and-other-nlp-tasks">Part C: Modelling and Other NLP tasks</h3>
+
+<ol>
+<li>Text classification</li>
+<li>Text Similarity</li>
+<li>Topic Modelling
+___</li>
+</ol>
+
+<h1><center>Part A: Text Retrieval and Pre-processing</center></h1>
+
+<h2 id="1-text-extraction-and-conversion">1. Text Extraction and Conversion</h2>
+
+<p>NLP stands for Natural Language Processing, which is defined as the application of computational techniques to the analysis and synthesis of natural language and speech.</p>
+
+<p>For this exercise we will take some sample documents i,e class action complaints for violations of the securities law. The data files are already in &lsquo;.txt&rsquo; format and thus they dont need conversion.</p>
+
+<p>Otherwise, the data from other varied sources sources have to extracted and subsequently converted to machine readable format or &lsquo;.txt&rsquo; files. Several libraries which can help in these tasks include:
+1. pdfminer.six
+2. textract</p>
+
+<pre><code class="language-python">## Importing Libraries
+import numpy as np
+import spacy
+from spacy import displacy
+import matplotlib.pyplot as plt
+import warnings
+import os
+warnings.filterwarnings('ignore')
+%matplotlib inline
+</code></pre>
+
+<h3 id="reading-the-contents-of-the-folder">Reading the contents of the folder</h3>
+
+<p>To read the contents of the folder, various libraries such as os, glob can be used.</p>
+
+<p>In our example, we have used the os library and then we navigate to the &lsquo;target&rsquo; folder to read the documents and process them further.</p>
+
+<pre><code class="language-python">## getting the current path
+cur_dir = os.getcwd()
+# navigating to the data folder
+data_path = os.path.join(cur_dir, &quot;data&quot;)
+
+# Iterating the contents of the folder
+for root, sub_dir,files in os.walk(data_path):
+    ## only reading the first file
+    for i,f in enumerate(files[0:1]):
+        file_path = os.path.join(data_path,f)
+        print (&quot;processing file no :&quot;, i+1,'\n')
+        text = open(file_path,'r').read()
+        ## Printing a sample text file
+        print (text)
+        
+        
+
+</code></pre>
+
+<h2 id="2-removing-special-characters-and-stopwords-using-nltk">2. Removing special characters and stopwords(using NLTK)</h2>
+
+<p>NLTK is one of the significant libraries used in natural language processing and is also widely popular among researchers and developers. We will use various tools by NLTK to process the text and mine the information needed.
+More about <a href="http://www.nltk.org/book/ch01.html">NLTK</a></p>
+
+<p>If we notice the above text, there are a lot of unwanted characters such as <strong>puncuations, newlines</strong> which we need to deal with before heading into further analysis.</p>
+
+<pre><code class="language-python">import nltk
+from nltk.corpus import words as english_words, stopwords
+import re
+
+## replacing the newlines and extra spaces
+corpus = text.replace('\n', ' ').replace('\r', '').replace('  ',' ').lower()
+
+## removing everything except alphabets
+corpus_sans_symbols = re.sub('[^a-zA-Z \n]', '', corpus)
+
+## removing stopwords
+stop_words = set(w.lower() for w in stopwords.words())
+
+corpus_sans_symbols_stopwords = ' '.join(filter(lambda x: x.lower() not in stop_words, corpus_sans_symbols.split()))
+print (corpus_sans_symbols_stopwords)
+</code></pre>
+
+<h2 id="3-stemming-and-lemmatizing-using-nltk">3. Stemming and Lemmatizing(using NLTK)</h2>
+
+<p>Now that we got rid of the unnecessary characters in the text, we can focus on the words and try to represent them in a more general and standardized format</p>
+
+<p><strong>Stemming:</strong>  Stemming is a rudimentary rule-based process of stripping the suffixes (“ing”, “ly”, “es”, “s” etc) from a word.</p>
+
+<p><strong>Lemmatization:</strong> Lemmatization, on the other hand, is an organized &amp; step by step procedure of obtaining the root form of the word, it makes use of vocabulary (dictionary importance of words) and morphological analysis (word structure and grammar relations).</p>
+
+<pre><code class="language-python">from nltk.stem import PorterStemmer
+stemmer=nltk.PorterStemmer()
+corpus_stemmed = ' ' .join (map(lambda str: stemmer.stem(str), corpus_sans_symbols_stopwords.split()))
+print (corpus_stemmed)
+</code></pre>
+
+<h3 id="checking-the-word-distribution-in-the-document">Checking the word distribution in the document</h3>
+
+<p>Now that we have a relatively cleaner corpus, lets try to vizualize the <strong>top occuring terms</strong> in the corpus.</p>
+
+<pre><code class="language-python"># Plot top 20 frequent words
+from collections import Counter
+word_freq = Counter(corpus_stemmed.split(&quot; &quot;))
+import seaborn as sns
+sns.set_style(&quot;whitegrid&quot;)
+common_words = [word[0] for word in word_freq.most_common(20)]
+common_counts = [word[1] for word in word_freq.most_common(20)]
+
+
+plt.figure(figsize=(15, 12))
+
+sns_bar = sns.barplot(x=common_words, y=common_counts)
+sns_bar.set_xticklabels(common_words, rotation=45)
+plt.title('Most Common Words in the document')
+plt.show()
+</code></pre>
+
+<p><img src="/images/nlp1.png" alt="png" /></p>
+
+<h2 id="introducing-spacy">Introducing Spacy</h2>
+
+<p>spaCy by explosion.ai is a library for advanced Natural Language Processing in Python and Cython. spaCy comes with pre-trained statistical models and word vectors, and currently supports tokenization for 20+ languages. It features the fastest syntactic parser in the world, convolutional neural network models for tagging, parsing and named entity recognition and easy deep learning integration. It&rsquo;s commercial open-source software, released under the MIT licence.</p>
+
+<p>More can be found <a href="https://spacy.io/usage/">here</a></p>
+
+<h3 id="spacy-features">Spacy features</h3>
+
+<ol>
+<li><strong>Tokenization:</strong> Segmenting text into words, punctuations marks etc.</li>
+<li><strong>Dependency Parsing:</strong> Assigning syntactic dependency labels, describing the relations between individual tokens, like subject or object.</li>
+<li><strong>Lemmatization:</strong> Assigning the base forms of words. For example, the lemma of &ldquo;was&rdquo; is &ldquo;be&rdquo;, and the lemma of &ldquo;rats&rdquo; is &ldquo;rat&rdquo;.</li>
+<li><strong>Sentence Boundary Detection (SBD):</strong>Finding and segmenting individual sentences.</li>
+<li><strong>Named Entity Recognition (NER):</strong> Labelling named &ldquo;real-world&rdquo; objects, like persons, companies or locations.</li>
+<li><strong>Part-of-speech (POS) Tagging:</strong> Assigning word types to tokens, like verb or noun.</li>
+</ol>
+
+<p>We can download other language models by running a code like below in your shell or terminal</p>
+
+<p><code>
+python -m spacy download en_core_web_sm
+</code></p>
+
+<h4 id="a-simple-example-in-spacy">A simple example in SPACY</h4>
+
+<pre><code class="language-python">import spacy
+## Spacy example 
+nlp = spacy.load('en')
+
+doc = nlp(&quot;Lets see what Spacy is capable of doing.&quot;)
+for token in doc:
+    print(&quot;{0}\t{1}\t{2}\t{3}\t{4}\t{5}&quot;.format(
+        token.text,
+        token.idx,
+        token.lemma_,
+        token.is_punct,
+        token.pos_,
+        token.tag_
+    ))
+
+</code></pre>
+
+<pre><code>Lets    0   let False   NOUN    NNS
+see 5   see False   VERB    VB
+what    9   what    False   NOUN    WP
+Spacy   14  spacy   False   PROPN   NNP
+is  20  be  False   VERB    VBZ
+capable 23  capable False   ADJ JJ
+of  31  of  False   ADP IN
+doing   34  do  False   VERB    VBG
+.   39  .   True    PUNCT   .
+</code></pre>
+
+<h2 id="preprocessing-in-spacy">Preprocessing in Spacy</h2>
+
+<p>The object “nlp” is used to create documents, access linguistic annotations and different nlp properties.</p>
+
+<p>The document is now part of spacy.english model’s class and is associated with a number of features and properties.</p>
+
+<p>We would take the text for the first document and pass it to the spacy&rsquo;s nlp object. Now doc contains various linguistic features which can be accesses quite easily.</p>
+
+<h2 id="spacy-operation-in-just-a-single-line">Spacy operation in just a single line!</h2>
+
+<pre><code class="language-python">## passing our text into spacy
+doc = nlp(text)
+
+## filtering stopwords, punctuations, checking for alphabets and capturing the lemmatized text
+spacy_tokens = [token.lemma_ for token in doc if token.is_stop != True \
+                and token.is_punct != True and token.is_alpha ==True]
+
+</code></pre>
+
+<h2 id="plotting-top-20-words">Plotting top 20 words</h2>
+
+<p>In just one line, we were able to convert the entire text file to a list of <strong>Tokens</strong>. These tokens are individual words freed from the junk and the stopwords which occur in the English lexicon.</p>
+
+<pre><code class="language-python">
+word_freq_spacy = Counter(spacy_tokens)
+
+# Plot top 20 frequent words
+
+sns.set_style(&quot;whitegrid&quot;)
+common_words = [word[0] for word in word_freq_spacy.most_common(20)]
+common_counts = [word[1] for word in word_freq_spacy.most_common(20)]
+
+
+plt.figure(figsize=(15, 12))
+
+sns_bar = sns.barplot(x=common_words, y=common_counts)
+sns_bar.set_xticklabels(common_words, rotation=45)
+plt.title('Most Common Words in the document')
+plt.show()
+</code></pre>
+
+<p><img src="/images/nlp2.png" alt="png" /></p>
+
+<h2 id="4-sentence-segmentation">4. Sentence Segmentation</h2>
+
+<p>Sentence segmentation means the task of splitting up the piece of text by sentence.</p>
+
+<p>We could do this by splitting on the . symbol, but dots are used in many other cases as well so it is not very robust because of the presence of period in other parts of the sentences.</p>
+
+<p>Still, let&rsquo;s give it a try to see the sample sentences produced</p>
+
+<pre><code class="language-python">text_str = ''.join(text.replace('\n',' ').replace('\t',' '))
+sentences_split = text_str.split(&quot;.&quot;)
+sentences_split[67]
+</code></pre>
+
+<pre><code>' This amount represents an extraordinarily large  27 4'
+</code></pre>
+
+<p>The above sentence doesn&rsquo;t seem to be complete and coherent.</p>
+
+<p>Spacy on the other hand simplifies this task and is quite robust when it comes to sentence segmentation</p>
+
+<h3 id="spacy-sentence-segmentation">Spacy sentence segmentation</h3>
+
+<pre><code class="language-python">doc = nlp(text_str)
+sentence_list = [s for s in doc.sents]
+sentence_list[67]
+</code></pre>
+
+<pre><code>Hsi entered voting agreements with Battery Ventures under which they have agreed to vote their  18 shares in favor of the adoption of the Merger Agreement.
+</code></pre>
+
+<p>The above sentence produced by spacy in indeed perfect.</p>
+
+<h1><center>Part B: Feature Generation/Document Representation</center></h1>
+
+<h2 id="1-pos-tagging-and-dependency-parsing">1. POS tagging and Dependency Parsing</h2>
+
+<p>Part-of-speech tagging is the process of assigning grammatical properties (e.g. noun, verb, adverb, adjective etc.) to words. Words that share the same POS tag tend to follow a similar syntactic structure and are useful in rule-based processes.</p>
+
+<p>spaCy features a fast and accurate syntactic <strong>dependency parser</strong>, and has a rich API for navigating the tree. The parser also powers the sentence boundary detection, and lets you iterate over base noun phrases, or &ldquo;chunks&rdquo;</p>
+
+<p>As an example, we will take the above sentence and feed that into the <strong>pos</strong> and <strong>dependency parser</strong>.</p>
+
+<pre><code class="language-python">spacy.displacy.render(sentence_list[67], style='dep',jupyter=True,options = {'compact':60})
+pos_list = [(token, token.pos_) for token in sentence_list[67]]
+</code></pre>
+
+<p><img src="/images/nlp3.svg" alt="svg" /></p>
+
+<h2 id="2-named-entity-recognition">2. Named Entity Recognition</h2>
+
+<p>Entity recognition is the process of classifying named entities found in a text into pre-defined categories, such as persons, places, organizations, dates, etc.</p>
+
+<p>spaCy uses a statistical model to classify a broad range of entities, including <strong>persons, organisations, dates</strong>.</p>
+
+<p>Even newer entities can be trained and used on a corpus of documents.</p>
+
+<p>Below, we will run the <strong>NER</strong> detection on a subset of the corpus from our text and also check the captured <strong>Names</strong> and <strong>Organisations</strong></p>
+
+<pre><code class="language-python">text_ent_example =&quot;In November 2009, unbeknownst to the Board, defendants Chen and Guasman began \
+discussing a potential sale of the Company with Battery Ventures. Also in November 2009, the  \
+Company received inquiries from other private equity firms expressing an interest in a transaction to. \
+acquire the Company. However, before the Board considered the overtures from the private equity  firms,\
+on January 27, 2010, Battery Ventures and RAE entered anon-disclosure agreement.\
+That same day, defendants Chen, Guasman, and Hsi gave a presentation to Battery Ventures about the  \
+Company\'s business and outlook. From the beginning of their discussions with Battery Ventures, \
+ defendants Chen, Gausman, and Hsi favored Battery Ventures over other suitors because of its desire \
+ to retain their services and the potential for an . equity position in the go-forward company.&quot;
+
+doc = nlp(text_ent_example)
+spacy.displacy.render(doc, style='ent',jupyter=True)
+</code></pre>
+
+<h3 id="cleaning-the-text-column-using-spacy">Cleaning the text column using Spacy</h3>
+
+<p>We will go ahead and clean the text column so that we can form word-embeddings from the text and then make our data ready for modeling.</p>
+
+<p><strong>Optimizing in Spacy</strong></p>
+
+<p>Spacy ingests the text and performs all the operations such that the objects have all the linguistic features possible and this might a bit time consuming. Since, we wont be needing the POS, NER, DEP features from the text, we would skip these. For this, we need to redefine the Spacy class.</p>
+
+<pre><code class="language-python">
+class SpacyMagic(object):
+    _spacys = {}
+
+    @classmethod
+    def get(cls, lang):
+        if lang not in cls._spacys:
+            import spacy
+            cls._spacys[lang] = spacy.load(lang, disable=['tagger', 'ner','pos'])
+        return cls._spacys[lang]
+    
+def run_spacy(text):
+    nlp = SpacyMagic.get('en')
+    doc = nlp(text)
+    return doc
+
+def clean_text(inp):
+    spacy_text = run_spacy(inp)
+    out_str= ' '.join ([token.lemma_ for token in spacy_text if token.is_stop != True and token.is_punct != True\
+                        and token.is_alpha ==True])
+    return out_str
+
+for i in df.index:
+    df.loc[i,'cleaned_text'] = clean_text(df.loc[i,'text'])
+</code></pre>
+
+<h2 id="term-frequency-array-from-the-data">Term Frequency Array from the data</h2>
+
+<pre><code class="language-python">from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+list_corpus = df[&quot;cleaned_text&quot;].tolist()
+list_labels = df[&quot;label&quot;].tolist()
+
+vectorizer = CountVectorizer(stop_words='english')
+tf = vectorizer.fit_transform(list_corpus)
+
+featurenames = vectorizer.get_feature_names()
+
+</code></pre>
+
+<p>This produces an array of 6077 rows as features where each of the words are represented as columns.</p>
+
+<pre><code class="language-python">print(featurenames[1:20])
+for doc_tf_vector in tf.toarray():
+    print(doc_tf_vector)
+    
+
+</code></pre>
+
+<p><strong>tf.toarray()</strong> contains the array with the <strong>term-frequency</strong> for all the words in the corpus</p>
+
+<h3 id="tf-idf-representation-of-the-document">TF-IDF representation of the Document</h3>
+
+<pre><code class="language-python">transformer = TfidfVectorizer(stop_words='english')
+tfidf = transformer.fit_transform(list_corpus)
+featurenames = vectorizer.get_feature_names()
+print(featurenames[1:20])
+for doc_tf_vector in tfidf.toarray():
+    print(doc_tf_vector)
+</code></pre>
+
+<p><strong>tfidf.toarray()</strong> contains the array with the <strong>tf-idf score</strong> for all the words in the corpus</p>
+
+<h1><center>Part C: Modelling and Other NLP tasks</center></h1>
+    
+
+<h2 id="1-text-classification">1. Text Classification</h2>
+
+<p>We have created embeddings for the &ldquo;cleaned text&rdquo; and now each of the words represent a feature and we can use the labels to train our data based on these embeddings.</p>
+
+<pre><code class="language-python">from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+def cv(data):
+    count_vectorizer = CountVectorizer()
+
+    emb = count_vectorizer.fit_transform(data)
+
+    return emb, count_vectorizer
+
+list_corpus = df[&quot;cleaned_text&quot;].tolist()
+list_labels = df[&quot;label&quot;].tolist()
+
+X_train, X_test, y_train, y_test = train_test_split(list_corpus, list_labels, test_size=0.2, \
+                                                                                random_state=40)
+
+X_train_counts, count_vectorizer = cv(X_train)
+X_test_counts = count_vectorizer.transform(X_test)
+
+
+## Plotting the confusion matrix
+
+import numpy as np
+import itertools
+from sklearn.metrics import confusion_matrix
+
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.winter):
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title, fontsize=30)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, fontsize=20)
+    plt.yticks(tick_marks, classes, fontsize=20)
+    
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt), horizontalalignment=&quot;center&quot;, 
+                 color=&quot;white&quot; if cm[i, j] &lt; thresh else &quot;black&quot;, fontsize=40)
+    
+    plt.tight_layout()
+    plt.ylabel('True label', fontsize=30)
+    plt.xlabel('Predicted label', fontsize=30)
+
+    return plt
+
+
+
+</code></pre>
+
+<h3 id="logistic-regression">Logistic regression</h3>
+
+<p>Let&rsquo;s start with a logistic regression model to predict whether the SMS is a spam or ham.</p>
+
+<pre><code class="language-python">from sklearn.linear_model import LogisticRegression
+
+clf = LogisticRegression(C=30.0, class_weight='balanced', solver='newton-cg', 
+                         multi_class='multinomial', n_jobs=-1, random_state=40)
+clf.fit(X_train_counts, y_train)
+
+y_predicted_counts = clf.predict(X_test_counts)
+</code></pre>
+
+<h3 id="evaulating-the-results">Evaulating the results</h3>
+
+<pre><code class="language-python">cm = confusion_matrix(y_test, y_predicted_counts)
+fig = plt.figure(figsize=(10, 10))
+plot = plot_confusion_matrix(cm, classes=['Spam','Ham'], normalize=False, title='Confusion matrix')
+plt.show()
+print(cm)
+</code></pre>
+
+<p><img src="/images/nlp4.png" alt="png" /></p>
+
+<pre><code>[[964   3]
+ [ 14 134]]
+</code></pre>
+
+<pre><code class="language-python">from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
+
+def get_metrics(y_test, y_predicted):  
+    # true positives / (true positives+false positives)
+    precision = precision_score(y_test, y_predicted, pos_label=None,
+                                    average='weighted')             
+    # true positives / (true positives + false negatives)
+    recall = recall_score(y_test, y_predicted, pos_label=None,
+                              average='weighted')
+    
+    # harmonic mean of precision and recall
+    f1 = f1_score(y_test, y_predicted, pos_label=None, average='weighted')
+    
+    # true positives + true negatives/ total
+    accuracy = accuracy_score(y_test, y_predicted)
+    return accuracy, precision, recall, f1
+
+accuracy, precision, recall, f1 = get_metrics(y_test, y_predicted_counts)
+print(&quot;accuracy = %.3f, precision = %.3f, recall = %.3f, f1 = %.3f&quot; % (accuracy, precision, recall, f1))
+</code></pre>
+
+<pre><code>accuracy = 0.985, precision = 0.985, recall = 0.985, f1 = 0.985
+</code></pre>
+
+<p>The accuracy seems to be pretty good and other models can also be tried out to improve upon the model further</p>
+
+<h2 id="2-text-similarity">2 Text Similarity</h2>
+
+<p>Textual Similarity is a process where two texts are compared to find the Similarity between them.</p>
+
+<p>The two most popular packages used are:
+1. Levenshtein
+2. Fuzzy wuzzy</p>
+
+<p><code>pip install python-Levenshtein</code></p>
+
+<p><code>pip install fuzzywuzzy</code></p>
+
+<pre><code class="language-python">
+</code></pre>
+
+    </div>
+    
+    <div class="disqus">
+        
+    </div>
+
+
+                
+                <div class="container">
+    <hr>
+</div>
+<div class="container has-text-centered top-pad">
+    <a href="#top">
+        <i class="fa fa-arrow-up"></i>
+    </a>
+</div>
+
+<div class="container">
+    <hr>
+</div>
+
+                <div class="section" id="footer">
+    <div class="container has-text-centered">
+    
+        <span class="footer-text">
+            Made with <i class="fa fa-heart"></i> and <i class="fa fa-coffee"></i>
+        </span>
+    
+    </div>
+</div>
+
+                
+            </div>
+        </section>
+        
+        
+
+
+<script src="/js/bundle.baa2874a80b328e7dec720d3a90efc6efd25ccdf1611f37d9571354e88987590.js" integrity="sha256-uqKHSoCzKOfexyDTqQ78bv0lzN8WEfN9lXE1ToiYdZA="></script>
+
+
+
+        
+        
+        
+        
+    </body>
+</html>

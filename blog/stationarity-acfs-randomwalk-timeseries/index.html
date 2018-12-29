@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Personal Blog of Siddhant Maharana">
+<title>
+Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II - Siddhant Maharana
+</title>
+
+
+
+        <meta property="og:title" content="Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II - Siddhant Maharana" />
+<meta property="og:type" content="website" />
+<meta property="og:description" content="Personal Blog of Siddhant Maharana"/>
+<meta property="og:url" content="/blog/stationarity-acfs-randomwalk-timeseries/"/>
+<meta property="og:site_name" content="Siddhant Maharana"/>
+
+
+
+
+<meta property="og:image" content="/home/profile.jpg"/>
+
+
+
+
+        
+<link rel="shortcut icon" href="/img/fav.ico">
+
+
+        
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.min.66cab924513b4e21e82a3a8bdf4737b1450d809e919f8db8b672e9744d7f2f1f.css" integrity="sha256-Zsq5JFE7TiHoKjqL30c3sUUNgJ6Rn424tnLpdE1/Lx8=" media="screen">
+
+
+
+
+
+        
+        
+        
+        
+    </head>
+    <body>
+        <section id="top" class="section">
+            
+            <div class="container hero  fade-in one ">
+                
+
+    <h1 class="bold-title is-1">Blog</h1>
+
+
+            </div>
+            
+            <div class="section  fade-in two ">
+                
+<div class="container">
+    <hr>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        
+        <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false" >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+        <div class="navbar-menu " id="navMenu">
+            
+            
+            
+            
+            <a class="navbar-item" href="/">main</a>
+            
+
+            
+            
+            
+            <a class="navbar-item" href="/#about">About</a>
+            
+            
+            
+            
+            
+
+            
+            
+            
+            
+            
+            <a class="navbar-item" href="/projects/">
+                
+                Projects
+                
+            </a>
+            
+            
+            
+
+            
+            
+            
+            
+            <a class="navbar-item" href="/blog/">
+                
+                Back to Blog
+                
+            </a>
+            
+            
+            
+
+            
+            
+            <a class="navbar-item" href="/#contact">Contact</a>
+            <a class="navbar-item" href="https://drive.google.com/open?id=1g5i2lNantxW1mSWrQ1En0N8lXZhTTf96">Resume</a>
+            
+            
+
+            
+            
+            
+
+            
+            
+        </div>
+    </nav>
+    <hr>
+</div>
+
+
+
+                
+    <div class="container">
+        <h2 class="title is-1 top-pad strong-post-title">
+            <a href="/blog/stationarity-acfs-randomwalk-timeseries/">Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II</a>
+        </h2>
+        <div class="post-data">
+            Jul 14, 2018 |
+            7 minutes read
+        </div>
+        
+        <div class="blog-share">
+            Share this:
+            
+            <a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Stationarity%2c%20ACFs%2c%20Random%20Walk%2c%20Moving%20Averages%3a%20Timeseries%20II%20%2fblog%2fstationarity-acfs-randomwalk-timeseries%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fab fa-twitter"></i>
+                <span class="hidden">Twitter</span>
+            </a>
+            
+            
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=%2fblog%2fstationarity-acfs-randomwalk-timeseries%2f"  onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <i class="fab fa-facebook-f"></i>
+                <span class="hidden">Facebook</span>
+            </a>
+            
+            
+            <a class="icon-pinterest" href="http://pinterest.com/pin/create/button/?url=%2fblog%2fstationarity-acfs-randomwalk-timeseries%2f&amp;description=Stationarity%2c%20ACFs%2c%20Random%20Walk%2c%20Moving%20Averages%3a%20Timeseries%20II" onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+                <i class="fab fa-pinterest-p"></i>
+                <span class="hidden">Pinterest</span>
+            </a>
+            
+            
+            <a class="icon-google-plus" href="https://plus.google.com/share?url=%2fblog%2fstationarity-acfs-randomwalk-timeseries%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <i class="fab fa-google-plus-g"></i>
+                <span class="hidden">Google+</span>
+            </a>
+            
+        </div>
+        
+        
+    </div>
+    
+    <div class="container markdown top-pad">
+        
+
+<h2 id="introduction">Introduction</h2>
+
+<p>This notebook contains basics concepts and theories regarding timeseries, stochastic processes, ACFs, Random Walks and Moving average. It follows the pedagogy of the <strong>Practical time series analysis from Coursera</strong> and few other sources. This is the <em>second part</em> of the series.</p>
+
+<h3 id="objective">Objective:</h3>
+
+<ol>
+<li>Time-series via time plot</li>
+<li>Stationarity, ACFs</li>
+<li>Random Walk</li>
+<li>Moving Averages</li>
+</ol>
+
+<p><h2><center>1. Time Series Data</center></h2></p>
+
+<hr />
+
+<ul>
+<li>Time series is a data collected through time</li>
+<li>Sampling adjacent points in time introduces a correlation into the system. The classical statistical inference would not work</li>
+<li>Examples include- economic and financial time series, marketing, demographic time series</li>
+</ul>
+
+<h3 id="loading-a-time-series-data">Loading a time series data</h3>
+
+<p>JJ dataset: Contains data for Johnsons and Johnsons - Quaterly earnings from 1960 to 1980(84 quarters)</p>
+
+<pre><code class="language-R">install.packages('astsa')
+require(astsa)
+help(jj)
+</code></pre>
+
+<pre><code>Warning message:
+&quot;package 'astsa' is in use and will not be installed&quot;
+</code></pre>
+
+<h3 id="plotting-the-time-series-data">Plotting the time series data</h3>
+
+<pre><code class="language-R">par(mfrow =c(1,1))
+plot(jj, type= 'o', main= 'JJs quaterly earnings per share', ylab ='Earnings', xlab ='Years')
+## type - o means that every point will have a circle on it
+
+</code></pre>
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_2/output_4_0.png" alt="png" /></p>
+
+<p>There is a obvious trend in the data; it&rsquo;s increasing through the years. Apart from the trend, there are also some fluctuations, the seasonal variations on that trend. So there is a seasonal effect on the data</p>
+
+<p><h2><center>2. Stationarity and ACFs</center></h2></p>
+
+<hr />
+
+<h3 id="stationarity">Stationarity</h3>
+
+<p>Stationary time series is what we&rsquo;re going to be building our modules on and we want our time series to be stationary. These are the ones where there is:
+- No systematic change in the mean i.e., no trend in the time plot
+- No systematic change in the variation
+- No periodic fluctuations as well</p>
+
+<p>Thus we want that one section of the data in time series are much like the properties of the other sections of the data</p>
+
+<p>For a <strong>non-stationary</strong> time series, we will do some transformations to get stationary time series</p>
+
+<h3 id="random-variable">Random Variable</h3>
+
+<p>This is a function that goes from sample space to real numbers <em>X:S&ndash;&gt;R</em><br>
+Where sample space are the number of possible outcomes of the experiment and if we map each possible outcome to the experiment to the number in the real line, we get random variables.
+We can think of it as a box generating random numbers from a dataset. If we know the distribution of the random variable, we can tell something about the dataset</p>
+
+<p>They can be <strong>discrete</strong> or <strong>continuous</strong></p>
+
+<h3 id="covariance">Covariance</h3>
+
+<p>It measures the linear dependence between two random variables.<br>
+If X,Y are two random variables, then</p>
+
+<span class="jsonly">
+     
+        $$Cov(X,Y) = E[(X-\mu_x)(Y-\mu_y)]$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?Cov%28X%2cY%29%20%3d%20E%5b%28X-%5cmu_x%29%28Y-%5cmu_y%29%5d" title="Cov(X,Y) = E[(X-\mu_x)(Y-\mu_y)]" />
+        </div>
+    
+</noscript>
+
+<h3 id="stochastic-process">Stochastic Process</h3>
+
+<ul>
+<li>Collection of random variables</li>
+<li>If we take random variables say X1, X2, X3 and give them a sequence in time 1,2,3 respectively, then we have a stochastic process</li>
+</ul>
+
+<span class="jsonly">
+     
+        $$X_t ~ \sim(\mu_t,\sigma^2)$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?X_t%20~%20%5csim%28%5cmu_t%2c%5csigma%5e2%29" title="X_t ~ \sim(\mu_t,\sigma^2)" />
+        </div>
+    
+</noscript>
+
+<ul>
+<li>Unlike a deterministic process, we have a randomness at every step</li>
+<li>Time series can be thought of as a realization of a stochastic process.</li>
+</ul>
+
+<h3 id="autocovariance-function">Autocovariance Function</h3>
+
+<p>It is defined as taking the covariance of different elements in our stochatic process.<br></p>
+
+<p><span class="jsonly">
+     
+        $$\gamma(s,t) = Cov(X_s, X_t) = E[(X_s -\mu_s)(X_t - \mu_t)]$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?%5cgamma%28s%2ct%29%20%3d%20Cov%28X_s%2c%20X_t%29%20%3d%20E%5b%28X_s%20-%5cmu_s%29%28X_t%20-%20%5cmu_t%29%5d" title="\gamma(s,t) = Cov(X_s, X_t) = E[(X_s -\mu_s)(X_t - \mu_t)]" />
+        </div>
+    
+</noscript>
+<span class="jsonly">
+     
+        $$\gamma(t,t) = Cov(X_t, X_t) = E[(X_t -\mu_t)^2] = Var(X_t) = \sigma^2$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?%5cgamma%28t%2ct%29%20%3d%20Cov%28X_t%2c%20X_t%29%20%3d%20E%5b%28X_t%20-%5cmu_t%29%5e2%5d%20%3d%20Var%28X_t%29%20%3d%20%5csigma%5e2" title="\gamma(t,t) = Cov(X_t, X_t) = E[(X_t -\mu_t)^2] = Var(X_t) = \sigma^2" />
+        </div>
+    
+</noscript></p>
+
+<p>Covariance of t with itself gives us variance at that time step</p>
+
+<p>So gamma is the Autocovariance function and it depends on the <strong>time difference(k)</strong> between the random variables and the reason is that we are working with a stationary time series data.<br>
+<em>Note: <span class="jsonly">
+                  
+        \(\gamma_k = c_k\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5cgamma_k%20%3d%20c_k" title="\gamma_k = c_k" />
+    
+</noscript> is known as the autocovariance coefficient</em></p>
+
+<span class="jsonly">
+     
+        $$\gamma_k  = \gamma(t,t&#43;k) ~ c_k$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?%5cgamma_k%20%20%3d%20%5cgamma%28t%2ct%2bk%29%20~%20c_k" title="\gamma_k  = \gamma(t,t&#43;k) ~ c_k" />
+        </div>
+    
+</noscript>
+
+<h3 id="autocovariance-coefficients">Autocovariance Coefficients</h3>
+
+<p>For a stationary process, gamma depends on k. $c_k$ is called the <strong>autocovariance coefficient</strong><br>
+In case of paired datasets(x1,y1),(x2,y2)</p>
+
+<span class="jsonly">
+     
+        $$S_{xy} = \frac{\sum(x_t - \mu_x)(y_t - \mu_y)}{(N -1)}$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?S_%7bxy%7d%20%3d%20%5cfrac%7b%5csum%28x_t%20-%20%5cmu_x%29%28y_t%20-%20%5cmu_y%29%7d%7b%28N%20-1%29%7d" title="S_{xy} = \frac{\sum(x_t - \mu_x)(y_t - \mu_y)}{(N -1)}" />
+        </div>
+    
+</noscript>
+
+<p>In R we can call <strong>cov</strong> function to calculate the covariance between the paired dataset</p>
+
+<p>Autocovariance coefficients at different lags<br></p>
+
+<span class="jsonly">
+     
+        $$\gamma_k = Cov(X_t, X_{t&#43;k})$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?%5cgamma_k%20%3d%20Cov%28X_t%2c%20X_%7bt%2bk%7d%29" title="\gamma_k = Cov(X_t, X_{t&#43;k})" />
+        </div>
+    
+</noscript>
+
+<p>where <span class="jsonly">
+                  
+        \(C_k\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;C_k" title="C_k" />
+    
+</noscript> is an estimation of <span class="jsonly">
+                  
+        \(\gamma_k\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5cgamma_k" title="\gamma_k" />
+    
+</noscript></p>
+
+<pre><code class="language-R">## we generate a random time series from a normal dist
+random_process = ts(rnorm(100))
+
+print (acf (random_process, type = 'covariance'))
+</code></pre>
+
+<pre><code>Autocovariances of series 'random_process', by lag
+
+      0       1       2       3       4       5       6       7       8       9 
+ 0.9822 -0.1811  0.0341 -0.0822  0.0295  0.1494  0.0650 -0.0534 -0.0302  0.0739 
+     10      11      12      13      14      15      16      17      18      19 
+-0.1098  0.0567 -0.1535  0.0851  0.0048  0.1612 -0.1718 -0.0488  0.0116  0.0468 
+     20 
+ 0.1260 
+</code></pre>
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_2/output_12_1.png" alt="png" /></p>
+
+<p>This gives us the autocovariance coefficients for the timeseries at different lags.</p>
+
+<h3 id="autocorrelation-function-acf">Autocorrelation Function (ACF)</h3>
+
+<ul>
+<li>We assume weak stationarity ( no change in mean/variance)</li>
+<li>The autocorrelation coefficient between <span class="jsonly">
+                  
+        \(X_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_t" title="X_t" />
+    
+</noscript> and <span class="jsonly">
+                  
+        \(X_{t_k}\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_%7bt_k%7d" title="X_{t_k}" />
+    
+</noscript>  is defined as :
+&gt; <span class="jsonly">
+     
+        $$ -1 &lt;= \rho_k = \frac {\gamma_k}{\gamma_0} &lt;= 1 $$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?%20-1%20%3c%3d%20%5crho_k%20%3d%20%5cfrac%20%7b%5cgamma_k%7d%7b%5cgamma_0%7d%20%3c%3d%201%20" title=" -1 &lt;= \rho_k = \frac {\gamma_k}{\gamma_0} &lt;= 1 " />
+        </div>
+    
+</noscript></li>
+</ul>
+
+<p>where <span class="jsonly">
+                  
+        \(\gamma_k\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5cgamma_k" title="\gamma_k" />
+    
+</noscript> is the autocovariance coefficient at lag k and <span class="jsonly">
+                  
+        \(\gamma_0\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5cgamma_0" title="\gamma_0" />
+    
+</noscript> at lag 0</p>
+
+<ul>
+<li><strong>acf</strong> routine plots the correlogram i,e autocorrelation coefficients at different lags</li>
+<li>it always starts with 1 as <span class="jsonly">
+                  
+        \(c_0/c_0\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;c_0%2fc_0" title="c_0/c_0" />
+    
+</noscript> = 1</li>
+</ul>
+
+<pre><code class="language-R">par(mfrow= c(1,1))
+random_process = ts(rnorm(100))
+(acf(random_process, main =&quot;Correlogram of a random process&quot;))
+</code></pre>
+
+<pre><code>Autocorrelations of series 'random_process', by lag
+
+     0      1      2      3      4      5      6      7      8      9     10 
+ 1.000 -0.045 -0.165  0.121  0.027 -0.132 -0.187 -0.047 -0.072  0.006 -0.039 
+    11     12     13     14     15     16     17     18     19     20 
+ 0.227  0.085  0.005  0.035  0.047  0.060 -0.229 -0.162 -0.050 -0.021 
+</code></pre>
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_2/output_15_1.png" alt="png" /></p>
+
+<p>This shows that there are no significant correlation at different lags for the time series as we produced the data from a random normal distribution. The blue dotted lines represent the significant levels for the ACF plot.</p>
+
+<p><h2><center>3. Random Walk</center></h2></p>
+
+<hr />
+
+<h3 id="generating-a-random-model">Generating a random model</h3>
+
+<p>A simple random walk can be modeled as :</p>
+
+<span class="jsonly">
+     
+        $$X_t = X_{t-1} &#43; Z_t$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?X_t%20%3d%20X_%7bt-1%7d%20%2b%20Z_t" title="X_t = X_{t-1} &#43; Z_t" />
+        </div>
+    
+</noscript>
+
+<p>where <span class="jsonly">
+                  
+        \(X_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_t" title="X_t" />
+    
+</noscript>  is the location at time t(price of stock today)<br>
+<span class="jsonly">
+                  
+        \(X_{t-1}\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_%7bt-1%7d" title="X_{t-1}" />
+    
+</noscript> is the location at time t-1 (price of stock yesterday)<br>
+and <span class="jsonly">
+                  
+        \(Z_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Z_t" title="Z_t" />
+    
+</noscript> is white noise, which is a standard normal distribution <br></p>
+
+<p>So, as we keep replacing <span class="jsonly">
+                  
+        \(X_{t-1}\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_%7bt-1%7d" title="X_{t-1}" />
+    
+</noscript> with <span class="jsonly">
+                  
+        \(X_{t-2}\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_%7bt-2%7d" title="X_{t-2}" />
+    
+</noscript> and so on, we find that <span class="jsonly">
+                  
+        \(X_{t}\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_%7bt%7d" title="X_{t}" />
+    
+</noscript> is the sum of all random noises. <br></p>
+
+<p><span class="jsonly">
+                  
+        \(X_t = \sum{Z_t}\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_t%20%3d%20%5csum%7bZ_t%7d" title="X_t = \sum{Z_t}" />
+    
+</noscript> <br>
+ <span class="jsonly">
+                  
+        \(E[X_t] = \mu t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;E%5bX_t%5d%20%3d%20%5cmu%20t" title="E[X_t] = \mu t" />
+    
+</noscript><br>
+ <span class="jsonly">
+                  
+        \(Var[X_t] = \sigma^2t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Var%5bX_t%5d%20%3d%20%5csigma%5e2t" title="Var[X_t] = \sigma^2t" />
+    
+</noscript></p>
+
+<p>The expectation and variance are dependent on t and thus random walk is <strong>not a stationary process</strong>.</p>
+
+<pre><code class="language-R">x = NULL
+x[1] = 0
+for (i in 2:1000){
+    x[i] = x[i-1] + rnorm(1)
+}
+random_walk = ts(x)
+</code></pre>
+
+<h3 id="plotting-the-random-walk-and-the-acf">Plotting the random walk and the ACF</h3>
+
+<pre><code class="language-R">par(mfrow= c(2,1))
+plot (random_walk, main = &quot;A random walk model&quot;, xlab ='Days', ylab = ' ', col = 'blue', lwd =2)
+acf(random_walk)
+</code></pre>
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_2/output_21_0.png" alt="png" /></p>
+
+<h3 id="removing-the-trend">Removing the Trend</h3>
+
+<p>We used to find the ACFs of stationary time series. Despite the random walk being a non-stationary model, we plotted the ACF and it seems that there is a heavy correlation at successive lags.</p>
+
+<p><strong>Differencing</strong> can help us remove the trend</p>
+
+<p>By rearranging the terms in the random walk model, <br>
+<span class="jsonly">
+                  
+        \(X_t - X_{t-1} = Z_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_t%20-%20X_%7bt-1%7d%20%3d%20Z_t" title="X_t - X_{t-1} = Z_t" />
+    
+</noscript> <br>
+Thus <span class="jsonly">
+                  
+        \(\Delta X_t = Z_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5cDelta%20X_t%20%3d%20Z_t" title="\Delta X_t = Z_t" />
+    
+</noscript>, which is a purely random process and thus a <strong>stationary process</strong></p>
+
+<p>We can plot the same and check the ACF again</p>
+
+<h3 id="plotting-the-random-walk-after-differencing">Plotting the Random walk after differencing</h3>
+
+<pre><code class="language-R">par(mfrow=c(2,1))
+# it gives another timeseries with the differences
+random_walk_diff = diff(random_walk)  ## diff gives difference with lag 1
+plot(random_walk_diff, main = &quot;Random walk after differencing&quot;, xlab ='Days', ylab = ' ', col = 'blue')
+acf(random_walk_diff)
+</code></pre>
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_2/output_23_0.png" alt="png" /></p>
+
+<p><h2><center>4 Moving Averages</center></h2></p>
+
+<hr />
+
+<h3 id="intuition">Intuition</h3>
+
+<ul>
+<li>Let&rsquo;s say <span class="jsonly">
+                  
+        \(X_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_t" title="X_t" />
+    
+</noscript> is the stock price of a company. And each daily announcement of the company is modeled as a noise. <br></li>
+<li>Effect of the daily announcements(noises <span class="jsonly">
+                  
+        \(Z_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Z_t" title="Z_t" />
+    
+</noscript>) on the stock price <span class="jsonly">
+                  
+        \(X_t\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;X_t" title="X_t" />
+    
+</noscript> might last few days(2 days in this case)<br></li>
+<li>So, stock price can be modeled as a linear combination of noises that affect it<br></li>
+</ul>
+
+<p><span class="jsonly">
+     
+        $$X_t = Z_t&#43; \theta_1 Z_{t-1}&#43; \theta_2 Z_{t-2}$$
+    
+</span>
+<noscript>
+     
+        <div style="text-align:center;">
+            <img src="https://latex.codecogs.com/gif.latex?X_t%20%3d%20Z_t%2b%20%5ctheta_1%20Z_%7bt-1%7d%2b%20%5ctheta_2%20Z_%7bt-2%7d" title="X_t = Z_t&#43; \theta_1 Z_{t-1}&#43; \theta_2 Z_{t-2}" />
+        </div>
+    
+</noscript><br>
+where <span class="jsonly">
+                  
+        \(Z_i\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;Z_i" title="Z_i" />
+    
+</noscript> are iid and normal distributions</p>
+
+<p>So the effect of noise from last 2 days is impacting current stock price with weights <span class="jsonly">
+                  
+        \(\theta_1\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5ctheta_1" title="\theta_1" />
+    
+</noscript> and <span class="jsonly">
+                  
+        \(\theta_2\)
+    
+</span>
+<noscript>
+                  
+        <img style="display:inline;vertical-align:middle;" src="https://latex.codecogs.com/gif.latex?\inline&space;%5ctheta_2" title="\theta_2" />
+    
+</noscript>. And this is a <strong>MA2 model</strong> and similar would be a MA(q) model.</p>
+
+<h3 id="generating-and-plotting-a-ma-2-model">Generating and Plotting a MA(2) model</h3>
+
+<pre><code class="language-R"># Generate noise
+noise=rnorm(10000)
+
+# Introduce a variable
+ma_2=NULL
+
+# Loop for generating MA(2) process
+# As it is an MA(2) process, we start the range from 3.
+
+for(i in 3:10000){
+    ma_2[i]=noise[i]+0.7*noise[i-1]+0.2*noise[i-2]
+}
+
+# Shift data to left by 2 units
+moving_average_process=ma_2[3:10000]
+
+# Put time series structure on a vanilla data
+moving_average_process=ts(moving_average_process)
+
+# Partition output graphics as a multi frame of 2 rows and 1 column
+par(mfrow=c(2,1))
+
+# plot the process and plot its ACF
+plot(moving_average_process, main='A moving average process of order 2', ylab=' ', col='blue')
+acf(moving_average_process, main='Correlogram of a moving average process of order 2')
+
+</code></pre>
+
+<p><img src="https://raw.githubusercontent.com/siddhantmaharana/siddhantmaharana.github.io/master/img/Timeseries_2/output_25_0.png" alt="png" /></p>
+
+<p>We can see that the correlogram plot <strong>cuts off</strong> after a lag of <strong>2</strong> suggesting that it is a MA2 process.</p>
+
+<hr />
+
+<h4 id="references">References:</h4>
+
+<ol>
+<li>Coursera- Practical Time Series</li>
+</ol>
+
+    </div>
+    
+    <div class="disqus">
+        
+    </div>
+
+
+                
+                <div class="container">
+    <hr>
+</div>
+<div class="container has-text-centered top-pad">
+    <a href="#top">
+        <i class="fa fa-arrow-up"></i>
+    </a>
+</div>
+
+<div class="container">
+    <hr>
+</div>
+
+                <div class="section" id="footer">
+    <div class="container has-text-centered">
+    
+        <span class="footer-text">
+            Made with <i class="fa fa-heart"></i> and <i class="fa fa-coffee"></i>
+        </span>
+    
+    </div>
+</div>
+
+                
+            </div>
+        </section>
+        
+        
+
+
+<script src="/js/bundle.baa2874a80b328e7dec720d3a90efc6efd25ccdf1611f37d9571354e88987590.js" integrity="sha256-uqKHSoCzKOfexyDTqQ78bv0lzN8WEfN9lXE1ToiYdZA="></script>
+
+
+
+        
+        
+        
+        
+    </body>
+</html>

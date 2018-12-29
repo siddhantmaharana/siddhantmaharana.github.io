@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Siddhant Maharana</title>
+    <link>/projects/</link>
+    <description>Recent content in Projects on Siddhant Maharana</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/projects/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Counting Objects</title>
+      <link>/projects/proj2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj2/</guid>
+      <description>Counting the products on the image seems to be a challenge in modern retail business. This project used various open CV techniques and various state-of-the-art deep learning algorithms using Object Detection Tensorflow API.
+The OpenCV techniques involved thresholding the images, detecting edges, finding contours and then counting the contours in order to get the count of the objects in the image.
+Tensorflow Object detection API was also used on pre-trained COCO dataset to detect and count the number of images in the picture.</description>
+    </item>
+    
+    <item>
+      <title>Learning Word Embeddings</title>
+      <link>/projects/proj1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj1/</guid>
+      <description>Domestic US companies submit annual reports on Forms 10-K,8-K etc.These forms provide firms with a unique opportunity to inform investors on an ongoing basis, and for firm’s executives to express their expectations for the future, as well as their interpretations of the past.
+This project uses the text in these SEC documents to train a classifier on the sentiment based on the price movements. It uses several neural network architectures such as RNN and LSTM to build this classifier.</description>
+    </item>
+    
+    <item>
+      <title>Legal Text Analysis</title>
+      <link>/projects/proj3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj3/</guid>
+      <description>This research study involved several text mining techniques to extract essential features from a corpus of legal documents.
+It then uses these features to answer several research questions and identify the driving factors that influence the FINRA arbitration decisions.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Predicting Crimes</title>
+      <link>/projects/proj4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj4/</guid>
+      <description>Used various demographic and spatio-temporal data for a city to engineer various features and later use them to build a classifier.
+The classifier is trained using various machine learning techniques such as Random Forest,KNN,SVC and then using other boosting techniques to tune the model.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Predicting Trip Duration</title>
+      <link>/projects/proj6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj6/</guid>
+      <description>The notebook focusses on Pyspark and demonstrates how it can used to ingest 10 gb worth of data, perform some analysis on them and even predict trip duration using Pyspark’s ML libraries.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Sentiment Classifier</title>
+      <link>/projects/proj5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj5/</guid>
+      <description>Rather than relying on older algorithms such as VADER and Textblob, this method models a classifier from scratch which also takes into account the presence of features such as emoticons, punctuations, exclamations, hashtags and other characters to determine the sentiment of the tweet.
+This project classifies tweets as either positive or negative using various machine learning models such as Naive baeyes, Random Forest and others.
+Link to Code</description>
+    </item>
+    
+  </channel>
+</rss>

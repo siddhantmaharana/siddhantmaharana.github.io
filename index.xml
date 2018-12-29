@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Siddhant Maharana</title>
+    <link>/</link>
+    <description>Recent content on Siddhant Maharana</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 07 Oct 2018 13:37:45 -0500</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Counting Objects</title>
+      <link>/projects/proj2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj2/</guid>
+      <description>Counting the products on the image seems to be a challenge in modern retail business. This project used various open CV techniques and various state-of-the-art deep learning algorithms using Object Detection Tensorflow API.
+The OpenCV techniques involved thresholding the images, detecting edges, finding contours and then counting the contours in order to get the count of the objects in the image.
+Tensorflow Object detection API was also used on pre-trained COCO dataset to detect and count the number of images in the picture.</description>
+    </item>
+    
+    <item>
+      <title>Learning Word Embeddings</title>
+      <link>/projects/proj1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj1/</guid>
+      <description>Domestic US companies submit annual reports on Forms 10-K,8-K etc.These forms provide firms with a unique opportunity to inform investors on an ongoing basis, and for firm’s executives to express their expectations for the future, as well as their interpretations of the past.
+This project uses the text in these SEC documents to train a classifier on the sentiment based on the price movements. It uses several neural network architectures such as RNN and LSTM to build this classifier.</description>
+    </item>
+    
+    <item>
+      <title>Legal Text Analysis</title>
+      <link>/projects/proj3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj3/</guid>
+      <description>This research study involved several text mining techniques to extract essential features from a corpus of legal documents.
+It then uses these features to answer several research questions and identify the driving factors that influence the FINRA arbitration decisions.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Predicting Crimes</title>
+      <link>/projects/proj4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj4/</guid>
+      <description>Used various demographic and spatio-temporal data for a city to engineer various features and later use them to build a classifier.
+The classifier is trained using various machine learning techniques such as Random Forest,KNN,SVC and then using other boosting techniques to tune the model.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Predicting Trip Duration</title>
+      <link>/projects/proj6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj6/</guid>
+      <description>The notebook focusses on Pyspark and demonstrates how it can used to ingest 10 gb worth of data, perform some analysis on them and even predict trip duration using Pyspark’s ML libraries.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Sentiment Classifier</title>
+      <link>/projects/proj5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj5/</guid>
+      <description>Rather than relying on older algorithms such as VADER and Textblob, this method models a classifier from scratch which also takes into account the presence of features such as emoticons, punctuations, exclamations, hashtags and other characters to determine the sentiment of the tweet.
+This project classifies tweets as either positive or negative using various machine learning models such as Naive baeyes, Random Forest and others.
+Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Introduction to NLP Using Python and Spacy</title>
+      <link>/blog/introduction-to-nlp-using-python-and-spacy/</link>
+      <pubDate>Sun, 07 Oct 2018 13:37:45 -0500</pubDate>
+      
+      <guid>/blog/introduction-to-nlp-using-python-and-spacy/</guid>
+      <description>This notebook contains code examples to get you started with Natural Language Processing in Python. Uses various modules of NLTK and Spacy
+The codebase and the data can be found in here
+Contents: Part A: Text Retrieval and Pre-processing  Extraction and Conversion Removing special characters and stopwords Stemming/Lemmatizing and Tokenizing Sentence Segmentation  Part B: Feature Generation/Document Representation  POS tagging and Dependency Parsing Named Entity recognition TF, TF-IDF  Part C: Modelling and Other NLP tasks  Text classification Text Similarity Topic Modelling ___  Part A: Text Retrieval and Pre-processing 1.</description>
+    </item>
+    
+    <item>
+      <title>Stationarity, ACFs, Random Walk, Moving Averages: Timeseries II</title>
+      <link>/blog/stationarity-acfs-randomwalk-timeseries/</link>
+      <pubDate>Sat, 14 Jul 2018 18:05:00 -0400</pubDate>
+      
+      <guid>/blog/stationarity-acfs-randomwalk-timeseries/</guid>
+      <description>Introduction This notebook contains basics concepts and theories regarding timeseries, stochastic processes, ACFs, Random Walks and Moving average. It follows the pedagogy of the Practical time series analysis from Coursera and few other sources. This is the second part of the series.
+Objective:  Time-series via time plot Stationarity, ACFs Random Walk Moving Averages  1. Time Series Data
+ Time series is a data collected through time Sampling adjacent points in time introduces a correlation into the system.</description>
+    </item>
+    
+    <item>
+      <title>Plotting and Introductory Stats in R: Timeseries I</title>
+      <link>/blog/plotting-introductory-stats-r-timeseries/</link>
+      <pubDate>Fri, 18 May 2018 18:05:00 -0400</pubDate>
+      
+      <guid>/blog/plotting-introductory-stats-r-timeseries/</guid>
+      <description>Introduction This notebook contains basics descriptive and inferential statistics using R and follows the pedagogy of the Practical time series analysis from Coursera and few other sources. This is the first part of the series.
+Contents:  Basic Plotting in R Linear regression T- Test  1. Basic Plotting in R
+Computing Five Number Summary and Standard Deviation To start with, we can check the basic summary statistics and the distribution of the dataset.</description>
+    </item>
+    
+    <item>
+      <title>How to work with Google Analytics API</title>
+      <link>/blog/how-to-work-with-google-analytics-api/</link>
+      <pubDate>Thu, 19 Oct 2017 09:45:12 -0400</pubDate>
+      
+      <guid>/blog/how-to-work-with-google-analytics-api/</guid>
+      <description>In this notebook, we would use the Google Analytics API to fetch the data from our Google Analytics account. The resultant csv can subsequnetly be written to a preferred database.
+For getting data from google analytics, we need to set up a project in our google developers account and obtain a keyfile (in json format).
+The module below builds a service object and takes various parameters such as api_name, api_version, scope, key_file_location, and service_account_email</description>
+    </item>
+    
+    <item>
+      <title>Google analytics on Google Spreadsheets</title>
+      <link>/blog/google-analytics-on-google-spreadsheets/</link>
+      <pubDate>Mon, 04 Sep 2017 08:30:14 -0400</pubDate>
+      
+      <guid>/blog/google-analytics-on-google-spreadsheets/</guid>
+      <description>Don’t you love excel or google spreadsheet for that matter. The formulas and flexibilities. Too much freedom to enjoy. What if we can link our google analytics data with our very own spreadsheet and our sheets would be updated automatically. Every morning, one glance and we are straight into the zone. No clutter! Read on to know how you can get that under your belt.
+I hope you are familiar with the terms such as dimensions and metrics which you can leverage to get the data in your very own sheets.</description>
+    </item>
+    
+    <item>
+      <title>Using the Query Explorer for Google Analytics</title>
+      <link>/blog/using-the-query-explorer-for-google-analytics/</link>
+      <pubDate>Thu, 03 Aug 2017 15:40:00 -0400</pubDate>
+      
+      <guid>/blog/using-the-query-explorer-for-google-analytics/</guid>
+      <description>Well, you must have heard people talk about this free tool called Google Analytics(GA) and how you can leverage it to gain some useful insights into your business. But how do you wrap your head around around the overwhelming Google Analytics interface and the sea of numbers?
+In this blog, we would close that intimidating and confusing UI and get some basics figured about the lingua franca of analytics and data used in GA and try out the simple Query Explorer.</description>
+    </item>
+    
+    <item>
+      <title>Getting started in Hugo</title>
+      <link>/blog/getting-started-in-hugo/</link>
+      <pubDate>Mon, 19 Jun 2017 09:45:12 -0400</pubDate>
+      
+      <guid>/blog/getting-started-in-hugo/</guid>
+      <description>Hugo makes life much easier when it comes to scaffolding a website. Plus the amazing themes. Thanks to the devs out there. Here we will go ahead to create one for us and host it in our favorite Github pages. Follow along and you will have an amazing website to yourself.
+Create repos in Github  Let&amp;rsquo;s call the first one &amp;lsquo;blog&amp;rsquo; - This repo is for building the hugo website and experimenting with various themes.</description>
+    </item>
+    
+  </channel>
+</rss>
