@@ -10,12 +10,12 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Personal Blog of Siddhant Maharana">
 <title>
-Learning Word Embeddings - Siddhant Maharana
+Designing a Classifier and comparing word emdeddings - Siddhant Maharana
 </title>
 
 
 
-        <meta property="og:title" content="Learning Word Embeddings - Siddhant Maharana" />
+        <meta property="og:title" content="Designing a Classifier and comparing word emdeddings - Siddhant Maharana" />
 <meta property="og:type" content="website" />
 <meta property="og:description" content="Personal Blog of Siddhant Maharana"/>
 <meta property="og:url" content="/projects/proj1/"/>
@@ -23,7 +23,7 @@ Learning Word Embeddings - Siddhant Maharana
 
 
 
-<meta property="og:image" content="/projects/proj1/graph51.jpg"/>
+<meta property="og:image" content="/projects/proj1/Webp.net-resizeimage.jpg"/>
 
 
 
@@ -58,7 +58,7 @@ Learning Word Embeddings - Siddhant Maharana
             
             <div class="container hero  fade-in one ">
                 
-                <h1 class="bold-title is-1">Learning Word Embeddings</h1>
+                <h1 class="bold-title is-1">Designing a Classifier and comparing word emdeddings</h1>
                 
             </div>
             
@@ -147,17 +147,37 @@ Learning Word Embeddings - Siddhant Maharana
                 
                     
                     
-                        <img src="/projects/proj1/graph51_hucf810cfc0da4ee79bbc425041a937b9d_50511_1000x0_resize_q75_box.jpg" class="img-responsive" alt="graph51.jpg">
+                        <img src="/projects/proj1/Webp.net-resizeimage_hu48aca18d092199bf1e425e5e46d8bf2f_42225_1000x0_resize_q75_box.jpg" class="img-responsive" alt="Webp.net-resizeimage.jpg">
                     
                 
             
         </div>
         
-        <p>Domestic US companies submit annual reports on Forms 10-K,8-K etc.These forms provide firms with a unique opportunity to inform investors on an ongoing basis, and for firm’s executives to express their expectations for the future, as well as their interpretations of the past.</p>
+        
 
-<p>This project uses the text in these SEC documents to train a classifier on the sentiment based on the price movements. It uses several neural network architectures such as RNN and LSTM to build this classifier.</p>
+<h3 id="problem-statement">Problem Statement</h3>
 
-<p>Further, this project compares the word embeddings produced from these classifiers and compares with the pre-trained word-2-vec embeddings.</p>
+<ol>
+<li>Train a sentiment classifier based on the text of Forms 10-K,8-K.</li>
+<li>Compare the embedding layers trained in the classifier with another embedding layers trained using word2vec approach.</li>
+</ol>
+
+<h3 id="approach">Approach</h3>
+
+<ol>
+<li>Extracted text from the SEC documents to form the embedding layer.</li>
+<li>Trained a sentiment classifer model using LSTM and RNN networks and adjusted the parameters on the basis of the labels derived from the stock market price movements.</li>
+<li>Extracted the embedded layer from the above trained model.</li>
+<li>Designed an embedding layer based on the word2vec based training.</li>
+<li>Compared the two embedding layers and evaluate the better technique</li>
+</ol>
+
+<h3 id="results">Results</h3>
+
+<ol>
+<li>The classifier did not perform optimally because of lower correlation of the price movements along with the SEC text information.</li>
+<li>The embedding layer designed using word2vec approach outperformed the one which was derived as a byproduct of the sentiment classifier.</li>
+</ol>
 
 <p><a href="https://github.com/siddhantmaharana/learning-word-embeddings-from-SEC-documents">Link to Code</a></p>
 

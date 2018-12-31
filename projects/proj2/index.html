@@ -10,12 +10,12 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Personal Blog of Siddhant Maharana">
 <title>
-Counting Objects - Siddhant Maharana
+Counting Objects using OpenCV and RCNN models - Siddhant Maharana
 </title>
 
 
 
-        <meta property="og:title" content="Counting Objects - Siddhant Maharana" />
+        <meta property="og:title" content="Counting Objects using OpenCV and RCNN models - Siddhant Maharana" />
 <meta property="og:type" content="website" />
 <meta property="og:description" content="Personal Blog of Siddhant Maharana"/>
 <meta property="og:url" content="/projects/proj2/"/>
@@ -23,7 +23,7 @@ Counting Objects - Siddhant Maharana
 
 
 
-<meta property="og:image" content="/projects/proj2/opencv.jpg"/>
+<meta property="og:image" content="/projects/proj2/Webp.net-resizeimage.png"/>
 
 
 
@@ -58,7 +58,7 @@ Counting Objects - Siddhant Maharana
             
             <div class="container hero  fade-in one ">
                 
-                <h1 class="bold-title is-1">Counting Objects</h1>
+                <h1 class="bold-title is-1">Counting Objects using OpenCV and RCNN models</h1>
                 
             </div>
             
@@ -147,17 +147,31 @@ Counting Objects - Siddhant Maharana
                 
                     
                     
-                        <img src="/projects/proj2/opencv_hu3288674382bcba7dc2c445c03e56bccc_2177970_1000x0_resize_q75_box.jpg" class="img-responsive" alt="opencv.jpg">
+                        <img src="/projects/proj2/Webp.net-resizeimage_hub87769a569a8f5b22924f91966cbe3ee_268741_1000x0_resize_box_2.png" class="img-responsive" alt="Webp.net-resizeimage.png">
                     
                 
             
         </div>
         
-        <p>Counting the products on the image seems to be a challenge in modern retail business. This project used various open CV techniques and various state-of-the-art deep learning algorithms using Object Detection Tensorflow API.</p>
+        
 
-<p>The OpenCV techniques involved thresholding the images, detecting edges, finding contours and then counting the contours in order to get the count of the objects in the image.</p>
+<h3 id="problem-statement">Problem Statement</h3>
 
-<p>Tensorflow Object detection API was also used on pre-trained COCO dataset to detect and count the number of images in the picture. For this project, SSD model with MobileNet and RCNN model was tried on the images, with the latter one outperforming all other techniques.</p>
+<p>Count the number of objects in the image.</p>
+
+<h3 id="approach">Approach</h3>
+
+<ol>
+<li>Used OpenCV libraries involving thresholding, edge detection, contour detection to count the objects.</li>
+<li>Used RCNN and SSD models trained on COCO dataset using Tensorflow Object Detection API</li>
+</ol>
+
+<h3 id="results">Results</h3>
+
+<ol>
+<li>OpenCV performed great when there were non overlapping images.</li>
+<li>RCNN models outperformed OpenCV results and SSD trained networks on images with objects pretrained using COCO dataset.</li>
+</ol>
 
 <p><a href="https://github.com/siddhantmaharana/counting-objects">Link to Code</a></p>
 

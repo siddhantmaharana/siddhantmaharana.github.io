@@ -10,12 +10,12 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Personal Blog of Siddhant Maharana">
 <title>
-Sentiment Classifier - Siddhant Maharana
+Sentiment classifier using Twitter data - Siddhant Maharana
 </title>
 
 
 
-        <meta property="og:title" content="Sentiment Classifier - Siddhant Maharana" />
+        <meta property="og:title" content="Sentiment classifier using Twitter data - Siddhant Maharana" />
 <meta property="og:type" content="website" />
 <meta property="og:description" content="Personal Blog of Siddhant Maharana"/>
 <meta property="og:url" content="/projects/proj5/"/>
@@ -58,7 +58,7 @@ Sentiment Classifier - Siddhant Maharana
             
             <div class="container hero  fade-in one ">
                 
-                <h1 class="bold-title is-1">Sentiment Classifier</h1>
+                <h1 class="bold-title is-1">Sentiment classifier using Twitter data</h1>
                 
             </div>
             
@@ -153,9 +153,22 @@ Sentiment Classifier - Siddhant Maharana
             
         </div>
         
-        <p>Rather than relying on older algorithms such as VADER and Textblob, this method models a classifier from scratch which also takes into account the presence of features such as emoticons, punctuations, exclamations, hashtags and other characters to determine the sentiment of the tweet.</p>
+        
 
-<p>This project classifies tweets as either positive or negative using various machine learning models such as Naive baeyes, Random Forest and others.</p>
+<h3 id="problem-statement">Problem Statement</h3>
+
+<p>Design a classifier that can detect sentiments in the tweets.</p>
+
+<h3 id="approach">Approach</h3>
+
+<ol>
+<li>Vectorized the text data using bag-of-words technique and also engineered features based on other parameters from the tweets.</li>
+<li>Modelled and tuned probabilistic and other models to perform the classification.</li>
+</ol>
+
+<h3 id="results">Results</h3>
+
+<p>Finely tuned Random forest perfomed best among Naive Baeyes, SVC and other classifiers.</p>
 
 <p><a href="https://github.com/siddhantmaharana/Twitter_sentiment_classifier">Link to Code</a></p>
 

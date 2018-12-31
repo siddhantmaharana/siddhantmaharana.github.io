@@ -11,67 +11,64 @@
     
     
     <item>
-      <title>Counting Objects</title>
+      <title>Counting Objects using OpenCV and RCNN models</title>
       <link>/projects/proj2/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/projects/proj2/</guid>
-      <description>Counting the products on the image seems to be a challenge in modern retail business. This project used various open CV techniques and various state-of-the-art deep learning algorithms using Object Detection Tensorflow API.
-The OpenCV techniques involved thresholding the images, detecting edges, finding contours and then counting the contours in order to get the count of the objects in the image.
-Tensorflow Object detection API was also used on pre-trained COCO dataset to detect and count the number of images in the picture.</description>
+      <description>Problem Statement Count the number of objects in the image.
+Approach  Used OpenCV libraries involving thresholding, edge detection, contour detection to count the objects. Used RCNN and SSD models trained on COCO dataset using Tensorflow Object Detection API  Results  OpenCV performed great when there were non overlapping images. RCNN models outperformed OpenCV results and SSD trained networks on images with objects pretrained using COCO dataset.  Link to Code</description>
     </item>
     
     <item>
-      <title>Learning Word Embeddings</title>
+      <title>Designing a Classifier and comparing word emdeddings</title>
       <link>/projects/proj1/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/projects/proj1/</guid>
-      <description>Domestic US companies submit annual reports on Forms 10-K,8-K etc.These forms provide firms with a unique opportunity to inform investors on an ongoing basis, and for firm’s executives to express their expectations for the future, as well as their interpretations of the past.
-This project uses the text in these SEC documents to train a classifier on the sentiment based on the price movements. It uses several neural network architectures such as RNN and LSTM to build this classifier.</description>
+      <description>Problem Statement  Train a sentiment classifier based on the text of Forms 10-K,8-K. Compare the embedding layers trained in the classifier with another embedding layers trained using word2vec approach.  Approach  Extracted text from the SEC documents to form the embedding layer. Trained a sentiment classifer model using LSTM and RNN networks and adjusted the parameters on the basis of the labels derived from the stock market price movements.</description>
     </item>
     
     <item>
-      <title>Legal Text Analysis</title>
-      <link>/projects/proj3/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/projects/proj3/</guid>
-      <description>This research study involved several text mining techniques to extract essential features from a corpus of legal documents.
-It then uses these features to answer several research questions and identify the driving factors that influence the FINRA arbitration decisions.
-Link to Code</description>
-    </item>
-    
-    <item>
-      <title>Predicting Crimes</title>
-      <link>/projects/proj4/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/projects/proj4/</guid>
-      <description>Used various demographic and spatio-temporal data for a city to engineer various features and later use them to build a classifier.
-The classifier is trained using various machine learning techniques such as Random Forest,KNN,SVC and then using other boosting techniques to tune the model.
-Link to Code</description>
-    </item>
-    
-    <item>
-      <title>Predicting Trip Duration</title>
+      <title>Predicting Trip Duration using PySpark</title>
       <link>/projects/proj6/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/projects/proj6/</guid>
-      <description>The notebook focusses on Pyspark and demonstrates how it can used to ingest 10 gb worth of data, perform some analysis on them and even predict trip duration using Pyspark’s ML libraries.
+      <description>Problem Statement Predict trip duration for the New York Taxis using historical data worth 10GB using PySpark modules.
+Approach  Ingested data using Spark&amp;rsquo;s RDD and dataframed to perform analyses and extract features. Used Spark ML libraries to perform regression and clustering on the data and predict trip duration.  Results Features including traffic clusters, hot spot locations in addition to the existing features improved the prediction power of the regression model.</description>
+    </item>
+    
+    <item>
+      <title>Predicting crimes using spatio temporal and demographics data</title>
+      <link>/projects/proj4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj4/</guid>
+      <description>Problem Statement Predict the occurence of the type of crime using historical crime data.
+Approach  Designed features using historical and other data related to demographics and time. Used several machine learning algorithms to build a multi class classifier.  Results XGBoost tuned optimally, performed the best among all other classifiers.
 Link to Code</description>
     </item>
     
     <item>
-      <title>Sentiment Classifier</title>
+      <title>Sentiment classifier using Twitter data</title>
       <link>/projects/proj5/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/projects/proj5/</guid>
-      <description>Rather than relying on older algorithms such as VADER and Textblob, this method models a classifier from scratch which also takes into account the presence of features such as emoticons, punctuations, exclamations, hashtags and other characters to determine the sentiment of the tweet.
-This project classifies tweets as either positive or negative using various machine learning models such as Naive baeyes, Random Forest and others.
+      <description>Problem Statement Design a classifier that can detect sentiments in the tweets.
+Approach  Vectorized the text data using bag-of-words technique and also engineered features based on other parameters from the tweets. Modelled and tuned probabilistic and other models to perform the classification.  Results Finely tuned Random forest perfomed best among Naive Baeyes, SVC and other classifiers.
 Link to Code</description>
+    </item>
+    
+    <item>
+      <title>Undestanding factors that affect FINRA arbitration decisions</title>
+      <link>/projects/proj3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/proj3/</guid>
+      <description>Problem Statement Analyse the FINRA documents to find the factors that affect the decisions made by the judge.
+Approach  Extracted documents from FINRA website to gather corpus of text documents and metadata available at the website and extracted features relevant to the analysis. Performed regression modeling and statistical analysis to determine how various factors affect the decisions.  Results Factors such as the type and number of representation, regions of the hearing sites, types of claims filed had impact on the outcome of the arbitration decisions.</description>
     </item>
     
   </channel>
