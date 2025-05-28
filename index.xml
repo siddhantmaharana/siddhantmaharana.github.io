@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Home on Sid&#39;s Blog</title>
-    <link>https://siddhantmaharana.github.io/</link>
+    <link>http://localhost:58961/</link>
     <description>Recent content in Home on Sid&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 28 Mar 2023 16:24:23 -0400</lastBuildDate>
-    <atom:link href="https://siddhantmaharana.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:58961/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Test</title>
-      <link>https://siddhantmaharana.github.io/posts/mypost/</link>
+      <link>http://localhost:58961/posts/mypost/</link>
       <pubDate>Tue, 28 Mar 2023 16:24:23 -0400</pubDate>
-      <guid>https://siddhantmaharana.github.io/posts/mypost/</guid>
-      <description>&lt;p&gt;Test post&lt;/p&gt;</description>
+      <guid>http://localhost:58961/posts/mypost/</guid>
+      <description>&lt;p&gt;Test post&lt;/p&gt;&#xA;&lt;p&gt;21211&lt;/p&gt;&#xA;&lt;p&gt;2323&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
