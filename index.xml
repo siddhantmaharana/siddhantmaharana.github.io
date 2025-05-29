@@ -6,8 +6,15 @@
     <description>Recent content in Home on Sid&#39;s Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 28 Dec 2024 16:24:23 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 28 May 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://siddhantmaharana.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://siddhantmaharana.github.io/about/</link>
+      <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
+      <guid>https://siddhantmaharana.github.io/about/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;m Siddhant, a data scientist based in Atlanta.&#xA;This is where I collect notes about whatever catches my fancy.&lt;/p&gt;&#xA;&lt;h2 class=&#34;heading&#34; id=&#34;connect&#34;&gt;&#xA;  Connect&#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#connect&#34;&gt;#&lt;/a&gt;&#xA;&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://www.linkedin.com/in/siddhantmaharana/&#34;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://github.com/siddhantmaharana&#34;&gt;GitHub&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
     <item>
       <title>AB Testing Fundamentals</title>
       <link>https://siddhantmaharana.github.io/posts/ab-testing-fundamentals/</link>
