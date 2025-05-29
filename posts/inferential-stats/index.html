@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+<link rel="icon" type="image/ico" href="https://siddhantmaharana.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://siddhantmaharana.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://siddhantmaharana.github.io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://siddhantmaharana.github.io/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://siddhantmaharana.github.io/apple-touch-icon.png">
+
+<meta name="description" content=""/>
+
+
+
+<title>
+    
+    Notes on Inferential Stats | Sid&#39;s Notes
+    
+</title>
+
+<link rel="canonical" href="https://siddhantmaharana.github.io/posts/inferential-stats/"/>
+
+<meta property="og:url" content="https://siddhantmaharana.github.io/posts/inferential-stats/">
+  <meta property="og:site_name" content="Sid&#39;s Notes">
+  <meta property="og:title" content="Notes on Inferential Stats">
+  <meta property="og:description" content="Notes on Inferential Stats # Introduction # Statistics is far more than just numbers and calculations. While it does involve mathematical computation, statistics encompasses a comprehensive range of techniques and procedures used for analyzing, interpreting, displaying, and making informed decisions with data.
+In our daily lives, we’re constantly bombarded with claims, facts, and statistical information. Without a solid understanding of statistical principles, we often struggle to distinguish between sound reasoning and faulty logic, making us vulnerable to manipulation and poor decision-making.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-04-12T16:24:23-04:00">
+    <meta property="article:modified_time" content="2022-04-12T16:24:23-04:00">
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.92c3bf7119b98cfdc79e93f36a451eb901d8bbbfed7d75814e6436cf6c9085dc.css" media="all">
+
+
+
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-xxxxxxxxx"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-xxxxxxxxx');
+        }
+      </script>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="https://siddhantmaharana.github.io/">Sid&#39;s Notes</a>
+    </h1>
+
+    <div class="header-menu">
+        
+
+        
+        
+
+        <p
+            class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+<div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
+        <a href="/posts/inferential-stats/">Notes on Inferential Stats</a></div>
+
+
+<div >
+  <article>
+    <header class="single-intro-container">
+        
+        <h1 class="single-title">Notes on Inferential Stats</h1>
+        
+        <div class="single-subsummary">
+          
+          <div>
+            
+            <p class="single-date">
+              <time datetime="2022-04-12T16:24:23-04:00">April 12, 2022</time>
+            </p>
+          </div>
+        </div>
+        
+    </header>
+    
+    <div class="single-content">
+      <h1 class="heading" id="notes-on-inferential-stats">
+  Notes on Inferential Stats
+  <a class="anchor" href="#notes-on-inferential-stats">#</a>
+</h1>
+<h2 class="heading" id="introduction">
+  Introduction
+  <a class="anchor" href="#introduction">#</a>
+</h2>
+<p>Statistics is far more than just numbers and calculations. While it does involve mathematical computation, statistics encompasses a comprehensive range of techniques and procedures used for analyzing, interpreting, displaying, and making informed decisions with data.</p>
+<p>In our daily lives, we&rsquo;re constantly bombarded with claims, facts, and statistical information. Without a solid understanding of statistical principles, we often struggle to distinguish between sound reasoning and faulty logic, making us vulnerable to manipulation and poor decision-making.</p>
+<p>There&rsquo;s an old saying: &ldquo;You can&rsquo;t make a silk purse out of a sow&rsquo;s ear.&rdquo; This wisdom applies perfectly to statistical analysis. Despite computers&rsquo; remarkable ability to process numbers with incredible speed and accuracy, the quality of output depends entirely on the quality of input. If you feed nonsensical data into a system, you&rsquo;ll get nonsensical results—no matter how sophisticated the analysis appears.</p>
+<p>This principle is especially critical in our modern computing environment, where many systems operate as &ldquo;black boxes.&rdquo; Statistical methods are essentially tools for processing information, primarily numerical data. Different statistical procedures make specific assumptions about the data they receive, and when these assumptions are violated, the results become meaningless—though they might still look impressively sophisticated.</p>
+<h2 class="heading" id="descriptive-vs-inferential-statistics">
+  Descriptive vs. Inferential Statistics
+  <a class="anchor" href="#descriptive-vs-inferential-statistics">#</a>
+</h2>
+<h3 class="heading" id="descriptive-statistics">
+  Descriptive Statistics
+  <a class="anchor" href="#descriptive-statistics">#</a>
+</h3>
+<p>Descriptive statistics use numbers to summarize and describe data. While measures like averages, variance, and other descriptive statistics might not provide information for generalizing beyond the immediate dataset, they offer valuable insights into the data at hand.</p>
+<h3 class="heading" id="inferential-statistics">
+  Inferential Statistics
+  <a class="anchor" href="#inferential-statistics">#</a>
+</h3>
+<p>In statistics, we often rely on samples to draw inferences about larger populations. The larger group from which a sample is drawn is called the <strong>population</strong>. Inferential statistics are based on the critical assumption that sampling is random.</p>
+<p>For example, if we want to draw conclusions about how Americans feel about voting procedure fairness, our sample should ideally represent different segments of society in appropriate proportions. Otherwise, we risk creating a biased sample that reflects only certain population segments.</p>
+<h2 class="heading" id="sampling-methods">
+  Sampling Methods
+  <a class="anchor" href="#sampling-methods">#</a>
+</h2>
+<p>The statistical distinction between population and sample is fundamentally the difference between &ldquo;all&rdquo; and &ldquo;some.&rdquo; When we measure all instances of a particular variable, we get a population distribution. When we measure only a limited subset, we get a sample distribution.</p>
+<p>Since populations are often too large or inaccessible to examine completely, we use systematic sampling techniques:</p>
+<h3 class="heading" id="simple-random-sampling">
+  Simple Random Sampling
+  <a class="anchor" href="#simple-random-sampling">#</a>
+</h3>
+<p>The most straightforward approach, requiring every population member to have an equal chance of selection.</p>
+<h3 class="heading" id="random-assignment">
+  Random Assignment
+  <a class="anchor" href="#random-assignment">#</a>
+</h3>
+<p>When developing truly random procedures is difficult, careful randomization is required. For instance, in testing a new antidepressant&rsquo;s effectiveness, researchers identify a population with some degree of depression, take a random sample, then randomly divide it into treatment and control groups.</p>
+<h3 class="heading" id="stratified-sampling">
+  Stratified Sampling
+  <a class="anchor" href="#stratified-sampling">#</a>
+</h3>
+<p>When populations have distinct groups or strata, stratified sampling works best. This involves identifying sample members from each group, then randomly sampling from each subgroup so that subgroup sizes in the sample are proportional to their sizes in the population.</p>
+<h2 class="heading" id="types-of-variables">
+  Types of Variables
+  <a class="anchor" href="#types-of-variables">#</a>
+</h2>
+<h3 class="heading" id="dependent-and-independent-variables">
+  Dependent and Independent Variables
+  <a class="anchor" href="#dependent-and-independent-variables">#</a>
+</h3>
+<p>Variables are characteristics of events, objects, or persons that can take different values. In experimental research:</p>
+<ul>
+<li><strong>Independent variables</strong> are manipulated by the experimenter</li>
+<li><strong>Dependent variables</strong> are measured to determine the effects of manipulation</li>
+</ul>
+<p>Example: In comparing four antidepressant drugs&rsquo; effectiveness, the drug types are independent variables, while depression relief is the dependent variable.</p>
+<h3 class="heading" id="quantitative-vs-qualitative-variables">
+  Quantitative vs. Qualitative Variables
+  <a class="anchor" href="#quantitative-vs-qualitative-variables">#</a>
+</h3>
+<ul>
+<li><strong>Quantitative variables</strong> can be measured numerically and imply numerical ordering</li>
+<li><strong>Qualitative (categorical) variables</strong> have qualitative attributes like color or gender</li>
+</ul>
+<h3 class="heading" id="discrete-vs-continuous-variables">
+  Discrete vs. Continuous Variables
+  <a class="anchor" href="#discrete-vs-continuous-variables">#</a>
+</h3>
+<ul>
+<li><strong>Discrete variables</strong> exist in whole units (e.g., number of people—can&rsquo;t have 4.5 people)</li>
+<li><strong>Continuous variables</strong> can take any value within a range (e.g., revenue of $45.55)</li>
+</ul>
+<h2 class="heading" id="levels-of-measurement">
+  Levels of Measurement
+  <a class="anchor" href="#levels-of-measurement">#</a>
+</h2>
+<p>All measurement fundamentally involves counting, ordering, or sorting:</p>
+<h3 class="heading" id="nominal-scale">
+  Nominal Scale
+  <a class="anchor" href="#nominal-scale">#</a>
+</h3>
+<p>Used for categorical responses with names (gender, color, etc.)</p>
+<h3 class="heading" id="ordinal-scale">
+  Ordinal Scale
+  <a class="anchor" href="#ordinal-scale">#</a>
+</h3>
+<p>Allows ordering and comparison of dependent variables</p>
+<h3 class="heading" id="interval-scale">
+  Interval Scale
+  <a class="anchor" href="#interval-scale">#</a>
+</h3>
+<p>Numerical scales where every interval has the same interpretation (e.g., Fahrenheit scale)</p>
+<h3 class="heading" id="ratio-scale">
+  Ratio Scale
+  <a class="anchor" href="#ratio-scale">#</a>
+</h3>
+<p>The most informative scale, with a zero position indicating absence of the measured quantity</p>
+<h2 class="heading" id="measures-of-central-tendency">
+  Measures of Central Tendency
+  <a class="anchor" href="#measures-of-central-tendency">#</a>
+</h2>
+<h3 class="heading" id="the-mean">
+  The Mean
+  <a class="anchor" href="#the-mean">#</a>
+</h3>
+<p>The arithmetic average of all values, calculated by summing all values and dividing by the number of values. The mean is crucial in analytical statistics because it can be subjected to further mathematical operations.</p>
+<h3 class="heading" id="the-median">
+  The Median
+  <a class="anchor" href="#the-median">#</a>
+</h3>
+<p>The midpoint of all individual measures when arranged in order. For odd numbers of values, it&rsquo;s the middle value; for even numbers, it&rsquo;s the average of the two middle values.</p>
+<h3 class="heading" id="the-mode">
+  The Mode
+  <a class="anchor" href="#the-mode">#</a>
+</h3>
+<p>The most frequently occurring value in the distribution.</p>
+<h3 class="heading" id="additional-measures">
+  Additional Measures
+  <a class="anchor" href="#additional-measures">#</a>
+</h3>
+<ul>
+<li><strong>Trimean</strong>: Weighted average of 25th, 50th, and 75th percentiles</li>
+<li><strong>Geometric Mean</strong>: Calculated by multiplying all numbers and taking the nth root</li>
+<li><strong>Trimmed Mean</strong>: Computed after removing specified percentages from both ends</li>
+</ul>
+<h2 class="heading" id="measures-of-variability">
+  Measures of Variability
+  <a class="anchor" href="#measures-of-variability">#</a>
+</h2>
+<h3 class="heading" id="range">
+  Range
+  <a class="anchor" href="#range">#</a>
+</h3>
+<p>The simplest measure: highest value minus lowest value.</p>
+<h3 class="heading" id="interquartile-range-iqr">
+  Interquartile Range (IQR)
+  <a class="anchor" href="#interquartile-range-iqr">#</a>
+</h3>
+<p>The range of the middle 50% of scores: 75th percentile minus 25th percentile.</p>
+<h3 class="heading" id="variance-and-standard-deviation">
+  Variance and Standard Deviation
+  <a class="anchor" href="#variance-and-standard-deviation">#</a>
+</h3>
+<p>These mathematically useful measures are related: variance = (standard deviation)². The standard deviation is more intuitive as it&rsquo;s expressed in the same units as the original data.</p>
+<p>For normal distributions, approximately 68% of values fall within one standard deviation of the mean, and 95% fall within two standard deviations.</p>
+<h2 class="heading" id="distribution-shapes">
+  Distribution Shapes
+  <a class="anchor" href="#distribution-shapes">#</a>
+</h2>
+<h3 class="heading" id="skewness">
+  Skewness
+  <a class="anchor" href="#skewness">#</a>
+</h3>
+<ul>
+<li><strong>Positively skewed</strong>: Tail extends to the right; mean typically larger than median</li>
+<li><strong>Negatively skewed</strong>: Tail extends to the left; mean typically smaller than median</li>
+</ul>
+<h3 class="heading" id="kurtosis">
+  Kurtosis
+  <a class="anchor" href="#kurtosis">#</a>
+</h3>
+<p>Describes the distribution&rsquo;s curvature:</p>
+<ul>
+<li><strong>Platykurtic</strong>: Relatively flat</li>
+<li><strong>Leptokurtic</strong>: Tall and slender</li>
+<li><strong>Mesokurtic</strong>: Medium curvature (normal)</li>
+</ul>
+<h3 class="heading" id="modality">
+  Modality
+  <a class="anchor" href="#modality">#</a>
+</h3>
+<p>Refers to the number of peaks:</p>
+<ul>
+<li><strong>Unimodal</strong>: One peak</li>
+<li><strong>Bimodal</strong>: Two peaks</li>
+<li><strong>Multimodal</strong>: Multiple peaks</li>
+</ul>
+<h2 class="heading" id="working-with-bivariate-data">
+  Working with Bivariate Data
+  <a class="anchor" href="#working-with-bivariate-data">#</a>
+</h2>
+<h3 class="heading" id="correlation">
+  Correlation
+  <a class="anchor" href="#correlation">#</a>
+</h3>
+<p>Pearson&rsquo;s correlation coefficient (r) measures linear relationship strength between two variables, ranging from -1 to +1:</p>
+<ul>
+<li>r = -1: Perfect negative relationship</li>
+<li>r = 0: No linear relationship</li>
+<li>r = +1: Perfect positive relationship</li>
+</ul>
+<p>The formula is: r = Σxy / √(Σx²Σy²)</p>
+<h2 class="heading" id="probability-fundamentals">
+  Probability Fundamentals
+  <a class="anchor" href="#probability-fundamentals">#</a>
+</h2>
+<h3 class="heading" id="basic-probability">
+  Basic Probability
+  <a class="anchor" href="#basic-probability">#</a>
+</h3>
+<p><strong>Frequentist definition</strong>: Number of favorable outcomes divided by total number of equally likely outcomes.</p>
+<h3 class="heading" id="key-rules">
+  Key Rules
+  <a class="anchor" href="#key-rules">#</a>
+</h3>
+<ul>
+<li><strong>Independent events</strong>: P(A and B) = P(A) × P(B)</li>
+<li><strong>Either/or probability</strong>: P(A or B) = P(A) + P(B) - P(A and B)</li>
+<li><strong>Conditional probability</strong>: P(A and B) = P(A) × P(B|A)</li>
+</ul>
+<h3 class="heading" id="counting-methods">
+  Counting Methods
+  <a class="anchor" href="#counting-methods">#</a>
+</h3>
+<ul>
+<li><strong>Permutations</strong>: nPr = n!/(n-r)! (order matters)</li>
+<li><strong>Combinations</strong>: nCr = n!/[(n-r)!r!] (order doesn&rsquo;t matter)</li>
+</ul>
+<h2 class="heading" id="important-probability-distributions">
+  Important Probability Distributions
+  <a class="anchor" href="#important-probability-distributions">#</a>
+</h2>
+<h3 class="heading" id="normal-distribution">
+  Normal Distribution
+  <a class="anchor" href="#normal-distribution">#</a>
+</h3>
+<ul>
+<li>Symmetric around the mean</li>
+<li>Mean, median, and mode are equal</li>
+<li>Defined by mean and standard deviation</li>
+<li>68% of data within 1 SD, 95% within 2 SD</li>
+<li>Standard normal: mean = 0, SD = 1</li>
+</ul>
+<h3 class="heading" id="binomial-distribution">
+  Binomial Distribution
+  <a class="anchor" href="#binomial-distribution">#</a>
+</h3>
+<p>For situations with two possible outcomes:</p>
+<ul>
+<li>Mean: μ = Nπ</li>
+<li>Variance: σ² = Nπ(1-π)</li>
+<li>Used for fixed number of independent trials</li>
+</ul>
+<h3 class="heading" id="poisson-distribution">
+  Poisson Distribution
+  <a class="anchor" href="#poisson-distribution">#</a>
+</h3>
+<p>For counting events in fixed intervals:</p>
+<ul>
+<li>Mean and variance both equal λ</li>
+<li>Used when events are random and independent</li>
+</ul>
+<h3 class="heading" id="other-distributions">
+  Other Distributions
+  <a class="anchor" href="#other-distributions">#</a>
+</h3>
+<ul>
+<li><strong>Multinomial</strong>: More than two possible outcomes</li>
+<li><strong>Hypergeometric</strong>: Sampling without replacement</li>
+</ul>
+<h2 class="heading" id="bayes-theorem">
+  Bayes&rsquo; Theorem
+  <a class="anchor" href="#bayes-theorem">#</a>
+</h2>
+<p>Essential for updating probabilities with new information:</p>
+<p>P(D|T) = [P(T|D) × P(D)] / [P(T|D) × P(D) + P(T|D&rsquo;) × P(D&rsquo;)]</p>
+<p>This is particularly important in medical testing, where we need to consider base rates when interpreting test results.</p>
+<h2 class="heading" id="key-takeaways">
+  Key Takeaways
+  <a class="anchor" href="#key-takeaways">#</a>
+</h2>
+<p>Understanding statistics requires grasping both the mathematical foundations and the conceptual framework. The most important principles are:</p>
+<ol>
+<li><strong>Garbage in, garbage out</strong>: Quality of analysis depends on data quality</li>
+<li><strong>Sampling matters</strong>: Random, representative sampling is crucial for valid inferences</li>
+<li><strong>Choose appropriate measures</strong>: Different situations require different statistical tools</li>
+<li><strong>Consider assumptions</strong>: Every statistical method has underlying assumptions</li>
+<li><strong>Context is crucial</strong>: Statistical significance doesn&rsquo;t always mean practical importance</li>
+</ol>
+<p>Statistics is a powerful tool for understanding our world, but it requires careful application and interpretation. By mastering these fundamentals, you&rsquo;ll be better equipped to analyze data, make informed decisions, and critically evaluate statistical claims you encounter daily.</p>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+  
+
+<div class="single-pagination">
+    <hr />
+
+    <div class="flexnowrap">
+
+        <div class="single-pagination-prev">
+            
+        </div>
+
+        <div class="single-pagination-next">
+            
+            <div class="single-pagination-container-next">
+                <div class="single-pagination-text">
+                    <a href="/posts/ab-testing-fundamentals/">
+                        AB Testing Fundamentals
+                    </a>
+                </div>
+                <div class="single-pagination-text">→</div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <hr />
+</div>
+
+
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  
+  
+
+
+
+
+
+    
+
+
+
+
+  <footer>
+    
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+    
+    <p>Powered by
+        <a href="https://gohugo.io/">Hugo</a>
+        and
+        <a href="https://github.com/tomfran/typo">tomfran/typo</a>
+    </p>
+    
+    
+    
+
+
+  </footer>
+
+  
+</body>
+
+<script src="/js/theme-switch.js"></script>
+<script defer src="/js/copy-code.js"></script>
+</html>
