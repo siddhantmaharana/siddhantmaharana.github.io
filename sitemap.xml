@@ -2,15 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:58961/posts/mypost/</loc>
+    <loc>https://siddhantmaharana.github.io/posts/ab-testing-fundamentals/</loc>
     <lastmod>2024-12-28T16:24:23-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:58961/</loc>
+    <loc>https://siddhantmaharana.github.io/</loc>
     <lastmod>2024-12-28T16:24:23-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:58961/posts/</loc>
+    <loc>https://siddhantmaharana.github.io/posts/</loc>
     <lastmod>2024-12-28T16:24:23-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:58961/tags/</loc>
+    <loc>https://siddhantmaharana.github.io/tags/</loc>
   </url>
 </urlset>
