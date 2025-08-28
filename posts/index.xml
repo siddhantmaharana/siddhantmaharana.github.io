@@ -6,19 +6,19 @@
     <description>Recent content in Posts on Sid&#39;s Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 28 Dec 2024 16:24:23 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 28 Dec 2022 16:24:23 -0400</lastBuildDate>
     <atom:link href="https://siddhantmaharana.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AB Testing Fundamentals</title>
       <link>https://siddhantmaharana.github.io/posts/ab-testing-fundamentals/</link>
-      <pubDate>Sat, 28 Dec 2024 16:24:23 -0400</pubDate>
+      <pubDate>Wed, 28 Dec 2022 16:24:23 -0400</pubDate>
       <guid>https://siddhantmaharana.github.io/posts/ab-testing-fundamentals/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been running A/B tests for a while now, and I keep coming back to these fundamental concepts. Writing them down helps me think through them more clearly - maybe they&amp;rsquo;ll be useful for you too.&lt;/p&gt;&#xA;&lt;h2 class=&#34;heading&#34; id=&#34;what-ab-testing-actually-is&#34;&gt;&#xA;  What A/B Testing Actually Is&#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#what-ab-testing-actually-is&#34;&gt;#&lt;/a&gt;&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;A/B testing is basically a controlled experiment to figure out which version of something works better. The key word here is &amp;ldquo;controlled&amp;rdquo; - you&amp;rsquo;re not just comparing random things, you&amp;rsquo;re systematically testing one change at a time.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Notes on Inferential Stats</title>
       <link>https://siddhantmaharana.github.io/posts/inferential-stats/</link>
-      <pubDate>Tue, 12 Apr 2022 16:24:23 -0400</pubDate>
+      <pubDate>Mon, 12 Apr 2021 16:24:23 -0400</pubDate>
       <guid>https://siddhantmaharana.github.io/posts/inferential-stats/</guid>
       <description>&lt;p&gt;I keep coming back to these statistical concepts in my work, so I figured I&amp;rsquo;d write down the key ideas that actually matter in practice. This isn&amp;rsquo;t meant to be comprehensive - just the stuff I find myself explaining over and over.&lt;/p&gt;&#xA;&lt;h2 class=&#34;heading&#34; id=&#34;why-statistics-matters-beyond-the-math&#34;&gt;&#xA;  Why Statistics Matters (Beyond the Math)&#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#why-statistics-matters-beyond-the-math&#34;&gt;#&lt;/a&gt;&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;People think statistics is just crunching numbers, but it&amp;rsquo;s really about making good decisions with incomplete information. Every day we&amp;rsquo;re bombarded with claims backed by &amp;ldquo;data&amp;rdquo; - political polls, product reviews, market research. Without understanding the fundamentals, it&amp;rsquo;s hard to tell good analysis from garbage.&lt;/p&gt;</description>
     </item>

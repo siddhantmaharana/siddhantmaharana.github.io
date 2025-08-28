@@ -6,12 +6,12 @@
     <description>Recent content in Statistics on Sid&#39;s Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 28 Dec 2024 16:24:23 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 28 Dec 2022 16:24:23 -0400</lastBuildDate>
     <atom:link href="https://siddhantmaharana.github.io/tags/statistics/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AB Testing Fundamentals</title>
       <link>https://siddhantmaharana.github.io/posts/ab-testing-fundamentals/</link>
-      <pubDate>Sat, 28 Dec 2024 16:24:23 -0400</pubDate>
+      <pubDate>Wed, 28 Dec 2022 16:24:23 -0400</pubDate>
       <guid>https://siddhantmaharana.github.io/posts/ab-testing-fundamentals/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been running A/B tests for a while now, and I keep coming back to these fundamental concepts. Writing them down helps me think through them more clearly - maybe they&amp;rsquo;ll be useful for you too.&lt;/p&gt;&#xA;&lt;h2 class=&#34;heading&#34; id=&#34;what-ab-testing-actually-is&#34;&gt;&#xA;  What A/B Testing Actually Is&#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#what-ab-testing-actually-is&#34;&gt;#&lt;/a&gt;&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;A/B testing is basically a controlled experiment to figure out which version of something works better. The key word here is &amp;ldquo;controlled&amp;rdquo; - you&amp;rsquo;re not just comparing random things, you&amp;rsquo;re systematically testing one change at a time.&lt;/p&gt;</description>
     </item>
