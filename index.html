@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>capture</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d0d0d">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    :root {
+      --bg:        #0d0d0d;
+      --surface:   #141414;
+      --surface2:  #1a1a1a;
+      --border:    #232323;
+      --border2:   #333;
+      --accent:    #7c6aff;
+      --text:      #e8e6e0;
+      --muted:     #555550;
+      --muted2:    #777770;
+      --danger:    #f87171;
+      --subtle:    #2a2a28;
+      --mono:      'SF Mono','Fira Code','Cascadia Code',monospace;
+
+      --mood-fire:   #f59e0b;
+      --mood-stress: #f87171;
+      --mood-calm:   #4ade80;
+      --mood-drain:  #a78bfa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 15px;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .entry-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px 0;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    .tab.active {
+      color: var(--text);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    /* ── CAPTURE SCREEN ── */
+    .mood-section {
+      padding: 12px 18px 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .mood-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mood-tile {
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .mood-tile:active { opacity: 0.75; }
+
+    .mood-tile.selected {
+      border-color: var(--mood-color, var(--accent));
+      background: color-mix(in srgb, var(--mood-color, var(--accent)) 10%, transparent);
+    }
+
+    .mood-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--mood-color);
+      flex-shrink: 0;
+    }
+
+    .mood-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted2);
+      transition: color 0.15s;
+    }
+
+    .mood-tile.selected .mood-label {
+      color: var(--mood-color);
+    }
+
+    .mood-sub {
+      font-size: 8px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 1px;
+    }
+
+    /* ── INPUT SECTION ── */
+    .input-section {
+      padding: 12px 18px 6px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .thought-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.6;
+      resize: none;
+      min-height: 72px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .thought-input::placeholder { color: var(--muted); }
+
+    /* ── AUTOCOMPLETE ── */
+    .autocomplete-wrap {
+      padding: 0 18px 6px;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .autocomplete-wrap.visible { display: block; }
+
+    .ac-inner {
+      background: var(--surface2);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+
+    .ac-hint {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .ac-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .ac-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.1s;
+      border: 1px solid transparent;
+    }
+
+    .ac-chip:active { opacity: 0.6; }
+
+    .ac-chip.match {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .ac-chip.dim {
+      background: var(--surface);
+      color: var(--muted2);
+      border-color: var(--border2);
+    }
+
+    .ac-chip.new-tag {
+      background: color-mix(in srgb, #1D9E75 12%, transparent);
+      color: #1D9E75;
+      border-color: color-mix(in srgb, #1D9E75 30%, transparent);
+    }
+
+    /* ── DETECTED TAGS ── */
+    .detected-tags {
+      padding: 0 18px 6px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      min-height: 0;
+    }
+
+    .dtag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+    }
+
+    /* ── SAVE ROW ── */
+    .save-row {
+      padding: 8px 18px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .save-hint {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .save-btn {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #fff;
+      border-radius: 7px;
+      padding: 8px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .save-btn:hover { background: #6a5aef; border-color: #6a5aef; }
+    .save-btn:active { opacity: 0.85; }
+
+    /* ── LOG SCREEN ── */
+    .log-filters {
+      padding: 8px 18px;
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+
+    .log-filters::-webkit-scrollbar { display: none; }
+
+    .filter-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .filter-chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .filter-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .log-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 0 8px;
+    }
+
+    .date-group-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: 12px 18px 5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .log-entry {
+      padding: 10px 18px;
+      border-left: 2px solid var(--border2);
+      margin: 0 18px 6px;
+      border-radius: 0 6px 6px 0;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .log-entry:hover { background: var(--surface); }
+
+    .log-entry[data-mood="fired"] { border-left-color: var(--mood-fire); }
+    .log-entry[data-mood="stressed"] { border-left-color: var(--mood-stress); }
+    .log-entry[data-mood="calm"] { border-left-color: var(--mood-calm); }
+    .log-entry[data-mood="drained"] { border-left-color: var(--mood-drain); }
+
+    .entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .entry-time {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .entry-mood-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--mood-text, var(--muted2));
+      background: var(--mood-bg, var(--surface2));
+    }
+
+    .entry-tag-list {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .entry-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .entry-body {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .entry-expanded {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--muted2);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .log-entry.open .entry-expanded { display: block; }
+
+    .entry-delete-hint {
+      font-family: var(--mono);
+      font-size: 8px;
+      color: var(--muted);
+      margin-top: 8px;
+      text-align: right;
+    }
+
+    .empty-log {
+      text-align: center;
+      padding: 64px 24px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── LOG FOOTER ── */
+    .log-footer {
+      padding: 10px 18px 14px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .export-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .export-btn:active { border-color: var(--accent); }
+
+    .export-icon {
+      font-size: 13px;
+      color: var(--muted2);
+    }
+
+    .export-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      flex: 1;
+    }
+
+    .export-meta-line {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .export-since {
+      margin-top: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: 0 2px;
+    }
+
+    .export-since span { color: var(--accent); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--mono);
+      padding: 8px 18px;
+      border-radius: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── LONG-PRESS DELETE ── */
+    .delete-confirm {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .delete-confirm.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .delete-sheet {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 18px 18px 0 0;
+      padding: 18px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .delete-sheet p {
+      font-size: 13px;
+      color: var(--muted2);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .delete-sheet-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .btn-delete {
+      flex: 1;
+      background: color-mix(in srgb, var(--danger) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent);
+      border-radius: 7px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--danger);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <span class="logo">capture</span>
+    <div class="header-right">
+      <span class="entry-count" id="entryCount">0 entries</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="capture" onclick="switchTab('capture')">capture</div>
+    <div class="tab" data-tab="log" onclick="switchTab('log')">log</div>
+  </div>
+
+  <!-- ── CAPTURE SCREEN ── -->
+  <div class="screen active" id="screen-capture">
+
+    <div class="mood-section">
+      <div class="section-label">energy · mood</div>
+      <div class="mood-grid">
+        <div class="mood-tile" data-mood="fired" style="--mood-color: var(--mood-fire)" onclick="selectMood('fired')">
+          <div class="mood-dot"></div>
+          <div>
+            <div class="mood-label">fired up</div>
+            <div class="mood-sub">high · positive</div>
+          </div>
+        </div>
+        <div class="mood-tile" data-mood="stressed" style="--mood-color: var(--mood-stress)" onclick="selectMood('stressed')">
+          <div class="mood-dot"></div>
+          <div>
+            <div class="mood-label">stressed</div>
+            <div class="mood-sub">high · negative</div>
+          </div>
+        </div>
+        <div class="mood-tile" data-mood="calm" style="--mood-color: var(--mood-calm)" onclick="selectMood('calm')">
+          <div class="mood-dot"></div>
+          <div>
+            <div class="mood-label">calm</div>
+            <div class="mood-sub">low · positive</div>
+          </div>
+        </div>
+        <div class="mood-tile" data-mood="drained" style="--mood-color: var(--mood-drain)" onclick="selectMood('drained')">
+          <div class="mood-dot"></div>
+          <div>
+            <div class="mood-label">drained</div>
+            <div class="mood-sub">low · negative</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <textarea
+        id="thoughtInput"
+        class="thought-input"
+        placeholder="what's on your mind… use #tags inline"
+        rows="4"
+      ></textarea>
+    </div>
+
+    <div class="autocomplete-wrap" id="autocompleteWrap">
+      <div class="ac-inner">
+        <div class="ac-hint">your tags — tap to insert</div>
+        <div class="ac-chips" id="acChips"></div>
+      </div>
+    </div>
+
+    <div class="detected-tags" id="detectedTags"></div>
+
+    <div style="flex:1"></div>
+
+    <div class="save-row">
+      <span class="save-hint">shift+enter for newline</span>
+      <button class="save-btn" onclick="saveEntry()">save</button>
+    </div>
+
+  </div>
+
+  <!-- ── LOG SCREEN ── -->
+  <div class="screen" id="screen-log">
+
+    <div class="log-filters" id="logFilters">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">all</div>
+      <div class="filter-chip" data-filter="mood:fired" onclick="setFilter('mood:fired')">
+        <div class="filter-dot" style="background:var(--mood-fire)"></div>fired up
+      </div>
+      <div class="filter-chip" data-filter="mood:stressed" onclick="setFilter('mood:stressed')">
+        <div class="filter-dot" style="background:var(--mood-stress)"></div>stressed
+      </div>
+      <div class="filter-chip" data-filter="mood:calm" onclick="setFilter('mood:calm')">
+        <div class="filter-dot" style="background:var(--mood-calm)"></div>calm
+      </div>
+      <div class="filter-chip" data-filter="mood:drained" onclick="setFilter('mood:drained')">
+        <div class="filter-dot" style="background:var(--mood-drain)"></div>drained
+      </div>
+    </div>
+
+    <div class="log-list" id="logList"></div>
+
+    <div class="log-footer">
+      <button class="export-btn" onclick="exportToObsidian()">
+        <span class="export-icon">↓</span>
+        <div>
+          <div class="export-label">export to obsidian</div>
+          <div class="export-meta-line" id="exportMetaLine">markdown · frontmatter · dedup-safe</div>
+        </div>
+      </button>
+      <div class="export-since" id="exportSince"></div>
+    </div>
+
+  </div>
+
+  <!-- ── DELETE CONFIRM SHEET ── -->
+  <div class="delete-confirm" id="deleteConfirm">
+    <div class="delete-sheet">
+      <p id="deletePreview">delete this entry?</p>
+      <div class="delete-sheet-btns">
+        <button class="btn-cancel" onclick="closeDelete()">cancel</button>
+        <button class="btn-delete" onclick="confirmDelete()">delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  // ── STORAGE ──
+  const KEY = 'capture_v2';
+  const META_KEY = 'capture_v2_meta';
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+  }
+
+  function saveToDisk(entries) {
+    localStorage.setItem(KEY, JSON.stringify(entries));
+  }
+
+  function loadMeta() {
+    try { return JSON.parse(localStorage.getItem(META_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function saveMeta(meta) {
+    localStorage.setItem(META_KEY, JSON.stringify(meta));
+  }
+
+  // ── STATE ──
+  let entries = load();
+  let meta = loadMeta();
+  let selectedMood = null;
+  let activeFilter = 'all';
+  let pendingDeleteId = null;
+  let longPressTimer = null;
+
+  // tag vocabulary — built from existing entries + session additions
+  function getTagVocab() {
+    const vocab = new Set(meta.tagVocab || []);
+    entries.forEach(e => (e.tags || []).forEach(t => vocab.add(t)));
+    return [...vocab].sort();
+  }
+
+  // ── HELPERS ──
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function fmtTime(ts) {
+    const d = new Date(ts);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function fmtDate(ts) {
+    const d = new Date(ts);
+    const days = ['sun','mon','tue','wed','thu','fri','sat'];
+    const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function fmtDateKey(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+
+  function isoFmt(ts) {
+    return new Date(ts).toISOString().slice(0,19);
+  }
+
+  function parseTags(text) {
+    const matches = text.match(/#[\w\-]+/g) || [];
+    return [...new Set(matches.map(t => t.toLowerCase()))];
+  }
+
+  function moodColor(mood) {
+    return { fired: '#EF9F27', stressed: '#E24B4A', calm: '#1D9E75', drained: '#7F77DD' }[mood] || '#555';
+  }
+
+  function moodLabel(mood) {
+    return { fired: 'fired up', stressed: 'stressed', calm: 'calm', drained: 'drained' }[mood] || mood;
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br>');
+  }
+
+  function showToast(msg, duration = 1800) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
+  // ── MOOD SELECTION ──
+  function selectMood(mood) {
+    selectedMood = (selectedMood === mood) ? null : mood;
+    document.querySelectorAll('.mood-tile').forEach(el => {
+      el.classList.toggle('selected', el.dataset.mood === selectedMood);
+    });
+  }
+
+  // ── TABS ──
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+    document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id === `screen-${tab}`));
+    if (tab === 'log') renderLog();
+  }
+
+  // ── AUTOCOMPLETE ──
+  const input = document.getElementById('thoughtInput');
+
+  input.addEventListener('input', handleInput);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEntry(); }
+  });
+
+  function handleInput() {
+    autoResizeInput();
+    renderDetectedTags();
+    handleAutocomplete();
+  }
+
+  function autoResizeInput() {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+  }
+
+  function handleAutocomplete() {
+    const text = input.value;
+    const cursor = input.selectionStart;
+    const before = text.slice(0, cursor);
+    const hashMatch = before.match(/#([\w\-]*)$/);
+
+    const wrap = document.getElementById('autocompleteWrap');
+    const chips = document.getElementById('acChips');
+
+    if (!hashMatch) {
+      wrap.classList.remove('visible');
+      return;
+    }
+
+    const query = hashMatch[1].toLowerCase();
+    const vocab = getTagVocab();
+    const existing = parseTags(text);
+
+    const matches = vocab
+      .filter(t => t.startsWith('#' + query) && !existing.includes(t))
+      .slice(0, 4);
+
+    chips.innerHTML = '';
+
+    if (matches.length === 0 && query.length === 0) {
+      // show all tags when just # typed
+      const all = vocab.filter(t => !existing.includes(t)).slice(0, 5);
+      all.forEach(tag => chips.appendChild(makeAcChip(tag, 'dim', query)));
+    } else {
+      matches.forEach((tag, i) => chips.appendChild(makeAcChip(tag, i < 2 ? 'match' : 'dim', query)));
+    }
+
+    if (query.length > 0 && !vocab.includes('#' + query)) {
+      const newChip = document.createElement('div');
+      newChip.className = 'ac-chip new-tag';
+      newChip.textContent = `+ #${query}`;
+      newChip.onclick = () => insertTag('#' + query);
+      chips.appendChild(newChip);
+    }
+
+    wrap.classList.toggle('visible', chips.children.length > 0);
+  }
+
+  function makeAcChip(tag, cls, query) {
+    const chip = document.createElement('div');
+    chip.className = `ac-chip ${cls}`;
+    chip.textContent = tag;
+    chip.onclick = () => insertTag(tag);
+    return chip;
+  }
+
+  function insertTag(tag) {
+    const text = input.value;
+    const cursor = input.selectionStart;
+    const before = text.slice(0, cursor);
+    const after = text.slice(cursor);
+    const replaced = before.replace(/#[\w\-]*$/, tag + ' ');
+    input.value = replaced + after;
+    input.focus();
+    const newPos = replaced.length;
+    input.setSelectionRange(newPos, newPos);
+    handleInput();
+  }
+
+  function renderDetectedTags() {
+    const tags = parseTags(input.value);
+    const container = document.getElementById('detectedTags');
+    container.innerHTML = tags.map(t => `<div class="dtag">${esc(t)}</div>`).join('');
+  }
+
+  // ── SAVE ──
+  function saveEntry() {
+    const text = input.value.trim();
+    if (!text && !selectedMood) return;
+
+    const tags = parseTags(text);
+    const id = Date.now();
+
+    const entry = { id, text, mood: selectedMood, tags, ts: id };
+    entries.unshift(entry);
+    saveToDisk(entries);
+
+    // update tag vocab
+    const vocab = new Set(meta.tagVocab || []);
+    tags.forEach(t => vocab.add(t));
+    meta.tagVocab = [...vocab];
+    saveMeta(meta);
+
+    // reset
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('detectedTags').innerHTML = '';
+    document.getElementById('autocompleteWrap').classList.remove('visible');
+    selectedMood = null;
+    document.querySelectorAll('.mood-tile').forEach(el => el.classList.remove('selected'));
+
+    updateCount();
+    showToast('saved ✓');
+    input.focus();
+  }
+
+  function updateCount() {
+    document.getElementById('entryCount').textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+  }
+
+  // ── LOG RENDER ──
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.filter === f);
+    });
+    // add tag filters dynamically
+    renderLog();
+  }
+
+  function filteredEntries() {
+    if (activeFilter === 'all') return entries;
+    if (activeFilter.startsWith('mood:')) {
+      const mood = activeFilter.slice(5);
+      return entries.filter(e => e.mood === mood);
+    }
+    if (activeFilter.startsWith('tag:')) {
+      const tag = activeFilter.slice(4);
+      return entries.filter(e => (e.tags || []).includes(tag));
+    }
+    return entries;
+  }
+
+  function renderLog() {
+    const list = document.getElementById('logList');
+    const filtered = filteredEntries();
+
+    // build tag filter chips dynamically
+    buildTagFilters();
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-log">— nothing here yet —<br>start capturing above</div>`;
+      return;
+    }
+
+    // group by date
+    const groups = {};
+    filtered.forEach(e => {
+      const dk = fmtDateKey(e.ts);
+      if (!groups[dk]) groups[dk] = [];
+      groups[dk].push(e);
+    });
+
+    list.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(dk => {
+      const dayEntries = groups[dk];
+      const label = isToday(dk) ? `today — ${fmtDate(dayEntries[0].ts)}` :
+                    isYesterday(dk) ? `yesterday — ${fmtDate(dayEntries[0].ts)}` :
+                    fmtDate(dayEntries[0].ts);
+      return `
+        <div class="date-group-label">${label}</div>
+        ${dayEntries.map(e => renderEntry(e)).join('')}
+      `;
+    }).join('');
+
+    // bind long-press
+    list.querySelectorAll('.log-entry').forEach(el => {
+      el.addEventListener('click', () => toggleExpand(el));
+      el.addEventListener('pointerdown', () => startLongPress(el.dataset.id));
+      el.addEventListener('pointerup', cancelLongPress);
+      el.addEventListener('pointerleave', cancelLongPress);
+    });
+
+    updateExportMeta();
+  }
+
+  function renderEntry(e) {
+    const color = moodColor(e.mood);
+    const tagHtml = (e.tags || []).map(t => `<span class="entry-tag" onclick="event.stopPropagation(); filterByTag('${t}')">${esc(t)}</span>`).join('');
+    const moodBadge = e.mood ? `
+      <span class="entry-mood-badge" style="background:color-mix(in srgb, ${color} 14%, transparent); color: ${color};">
+        ${moodLabel(e.mood)}
+      </span>` : '';
+
+    return `
+      <div class="log-entry" data-mood="${e.mood || ''}" data-id="${e.id}">
+        <div class="entry-meta">
+          <span class="entry-time">${fmtTime(e.ts)}</span>
+          ${moodBadge}
+          <div class="entry-tag-list">${tagHtml}</div>
+        </div>
+        <div class="entry-body">${esc(e.text)}</div>
+        <div class="entry-expanded">
+          <div class="entry-delete-hint">long-press to delete</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleExpand(el) {
+    el.classList.toggle('open');
+  }
+
+  function buildTagFilters() {
+    const vocab = getTagVocab();
+    const container = document.getElementById('logFilters');
+    // remove old tag chips
+    container.querySelectorAll('[data-filter^="tag:"]').forEach(el => el.remove());
+
+    vocab.slice(0, 6).forEach(tag => {
+      if (container.querySelector(`[data-filter="tag:${tag}"]`)) return;
+      const chip = document.createElement('div');
+      chip.className = 'filter-chip';
+      if (activeFilter === `tag:${tag}`) chip.classList.add('active');
+      chip.dataset.filter = `tag:${tag}`;
+      chip.textContent = tag;
+      chip.onclick = () => setFilter(`tag:${tag}`);
+      container.appendChild(chip);
+    });
+  }
+
+  function filterByTag(tag) {
+    switchTab('log');
+    setFilter(`tag:${tag}`);
+  }
+
+  function isToday(dk) {
+    return dk === fmtDateKey(Date.now());
+  }
+
+  function isYesterday(dk) {
+    return dk === fmtDateKey(Date.now() - 86400000);
+  }
+
+  // ── LONG PRESS DELETE ──
+  function startLongPress(id) {
+    longPressTimer = setTimeout(() => {
+      pendingDeleteId = id;
+      const entry = entries.find(e => String(e.id) === String(id));
+      if (entry) {
+        const preview = entry.text.length > 60 ? entry.text.slice(0,60) + '…' : entry.text;
+        document.getElementById('deletePreview').textContent = `delete: "${preview}"?`;
+      }
+      document.getElementById('deleteConfirm').classList.add('show');
+    }, 600);
+  }
+
+  function cancelLongPress() {
+    clearTimeout(longPressTimer);
+  }
+
+  function closeDelete() {
+    pendingDeleteId = null;
+    document.getElementById('deleteConfirm').classList.remove('show');
+  }
+
+  function confirmDelete() {
+    if (!pendingDeleteId) return;
+    entries = entries.filter(e => String(e.id) !== String(pendingDeleteId));
+    saveToDisk(entries);
+    closeDelete();
+    updateCount();
+    renderLog();
+    showToast('deleted');
+  }
+
+  // ── EXPORT ──
+  function updateExportMeta() {
+    const lastExport = meta.lastExportTs;
+    const since = document.getElementById('exportSince');
+    const metaLine = document.getElementById('exportMetaLine');
+
+    if (lastExport) {
+      const newSince = entries.filter(e => e.ts > lastExport).length;
+      metaLine.textContent = `last export: ${fmtDate(lastExport)} ${fmtTime(lastExport)}`;
+      since.innerHTML = newSince > 0
+        ? `<span>${newSince} new</span> entries since last export`
+        : `all entries already exported`;
+    } else {
+      metaLine.textContent = 'markdown · frontmatter · dedup-safe';
+      since.textContent = '';
+    }
+  }
+
+  function exportToObsidian() {
+    if (entries.length === 0) { showToast('nothing to export'); return; }
+
+    const now = Date.now();
+    const exportDate = fmtDateKey(now);
+    const lastId = entries[entries.length - 1].id;
+
+    // group by date
+    const groups = {};
+    entries.forEach(e => {
+      const dk = fmtDateKey(e.ts);
+      if (!groups[dk]) groups[dk] = [];
+      groups[dk].push(e);
+    });
+
+    const body = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(dk => {
+      const dayEntries = groups[dk];
+      const dayLabel = `## ${dk}`;
+      const entriesText = dayEntries.map(e => {
+        const lines = [
+          `### ${fmtTime(e.ts)}`,
+          e.mood ? `mood:: ${moodLabel(e.mood)}` : null,
+          (e.tags && e.tags.length) ? `tags:: ${e.tags.join(' ')}` : null,
+          '',
+          e.text,
+        ].filter(l => l !== null);
+        return lines.join('\n');
+      }).join('\n\n');
+      return `${dayLabel}\n\n${entriesText}`;
+    }).join('\n\n---\n\n');
+
+    const frontmatter = `---
+export_ts: ${isoFmt(now)}
+export_date: ${exportDate}
+entry_count: ${entries.length}
+last_id: ${lastId}
+---
+
+`;
+
+    const footer = `\n\n---\n<!-- use last_id to skip already-imported entries in Dataview -->\n<!-- TABLE mood, tags FROM "capture" WHERE mood = "calm" SORT date desc -->`;
+
+    const output = frontmatter + body + footer;
+
+    // copy to clipboard
+    navigator.clipboard.writeText(output).then(() => {
+      meta.lastExportTs = now;
+      saveMeta(meta);
+      updateExportMeta();
+      showToast(`copied — ${entries.length} entries`, 2200);
+    }).catch(() => {
+      // fallback: download as file
+      const blob = new Blob([output], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `capture-${exportDate}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      meta.lastExportTs = now;
+      saveMeta(meta);
+      updateExportMeta();
+      showToast(`downloaded — ${entries.length} entries`, 2200);
+    });
+  }
+
+  // ── INIT ──
+  updateCount();
+  input.focus();
+</script>
+</body>
+</html>
