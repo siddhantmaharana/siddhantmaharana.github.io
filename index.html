@@ -215,7 +215,8 @@
 
   <!-- Writing -->
   <div class="panel" id="panel-writing">
-    <p style="font-size:13px; color:var(--muted); padding: 0 12px;">Nothing here yet.</p>
+    <div class="writing-list" id="writing-list"></div>
+    <p style="font-size:13px; color:var(--muted); padding: 0 12px;" id="writing-empty">Loading…</p>
   </div>
 
   <div class="link-row">
@@ -231,6 +232,32 @@
       document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
       document.getElementById('panel-' + name).classList.add('active');
     }
+
+    fetch('notes/manifest.json')
+      .then(r => r.json())
+      .then(notes => {
+        const list = document.getElementById('writing-list');
+        const empty = document.getElementById('writing-empty');
+        if (!notes.length) { empty.textContent = 'Nothing here yet.'; return; }
+        empty.remove();
+        notes.slice(0, 5).forEach(n => {
+          const row = document.createElement('a');
+          row.className = 'writing-row';
+          row.href = 'notes/note.html?path=' + encodeURIComponent(n.path);
+          row.innerHTML = `
+            <span class="writing-title">${n.title}</span>
+            <span class="writing-meta">${n.date || ''}</span>`;
+          list.appendChild(row);
+        });
+        const more = document.createElement('a');
+        more.className = 'writing-row';
+        more.href = 'notes/index.html';
+        more.innerHTML = `<span class="writing-title" style="color:var(--muted)">all notes →</span>`;
+        list.appendChild(more);
+      })
+      .catch(() => {
+        document.getElementById('writing-empty').textContent = 'Nothing here yet.';
+      });
   </script>
 
 </body>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes — Siddhant Maharana</title>
+  <meta name="description" content="Notes on experimentation, data science, and things worth remembering.">
+  <style>
+    :root {
+      --bg:      #0d0d0d;
+      --surface: #141414;
+      --border:  #232323;
+      --text:    #e8e6e0;
+      --muted:   #555550;
+      --soft:    #9a9a94;
+      --accent:  #7c6aff;
+      --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .top-bar {
+      height: 3px;
+      background: var(--accent);
+      margin-bottom: 40px;
+    }
+
+    .back-link {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 24px;
+    }
+    .back-link:hover { color: var(--soft); }
+
+    .name {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .bio {
+      color: var(--soft);
+      font-size: 14px;
+      max-width: 460px;
+      margin-bottom: 36px;
+    }
+
+    .topic-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .topic-pill {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .topic-pill:hover { color: var(--soft); }
+    .topic-pill.active { color: var(--text); border-color: var(--accent); }
+
+    .topic-section { margin-bottom: 36px; }
+
+    .topic-heading {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+
+    .note-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .note-row {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 7px;
+      text-decoration: none;
+      transition: background 0.1s;
+    }
+    .note-row:hover { background: var(--surface); }
+
+    .note-title {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .note-meta {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin-top: 2px;
+    }
+
+    .note-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .note-tags {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .empty {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 0 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+  <a class="back-link" href="../index.html">← home</a>
+
+  <div class="name">Notes</div>
+  <p class="bio">Things I keep coming back to — experimentation, data science, and the occasional idea worth not losing.</p>
+
+  <div class="topic-filters" id="topic-filters"></div>
+  <div id="content"><p class="empty">Loading…</p></div>
+
+  <script>
+    let allNotes = [];
+    let activeTopic = null;
+
+    function render() {
+      const container = document.getElementById('content');
+      const filters = document.getElementById('topic-filters');
+
+      const topics = [...new Set(allNotes.map(n => n.topic))].sort();
+
+      filters.innerHTML = '';
+      const allPill = document.createElement('div');
+      allPill.className = 'topic-pill' + (activeTopic === null ? ' active' : '');
+      allPill.textContent = 'all';
+      allPill.onclick = () => { activeTopic = null; render(); };
+      filters.appendChild(allPill);
+
+      topics.forEach(topic => {
+        const pill = document.createElement('div');
+        pill.className = 'topic-pill' + (activeTopic === topic ? ' active' : '');
+        pill.textContent = topic;
+        pill.onclick = () => { activeTopic = topic; render(); };
+        filters.appendChild(pill);
+      });
+
+      if (allNotes.length === 0) {
+        container.innerHTML = '<p class="empty">No notes yet.</p>';
+        return;
+      }
+
+      const grouped = {};
+      allNotes.forEach(n => {
+        if (activeTopic && n.topic !== activeTopic) return;
+        (grouped[n.topic] = grouped[n.topic] || []).push(n);
+      });
+
+      container.innerHTML = '';
+      Object.keys(grouped).sort().forEach(topic => {
+        const section = document.createElement('div');
+        section.className = 'topic-section';
+
+        const heading = document.createElement('div');
+        heading.className = 'topic-heading';
+        heading.textContent = topic;
+        section.appendChild(heading);
+
+        const list = document.createElement('div');
+        list.className = 'note-list';
+        grouped[topic].forEach(n => {
+          const row = document.createElement('a');
+          row.className = 'note-row';
+          row.href = 'note.html?path=' + encodeURIComponent(n.path);
+          row.innerHTML = `
+            <div class="note-title">${n.title}</div>
+            <div class="note-meta">
+              <span class="note-date">${n.date || ''}</span>
+              <span class="note-tags">${(n.tags || []).join(', ')}</span>
+            </div>`;
+          list.appendChild(row);
+        });
+        section.appendChild(list);
+        container.appendChild(section);
+      });
+    }
+
+    fetch('manifest.json')
+      .then(r => r.json())
+      .then(data => { allNotes = data; render(); })
+      .catch(() => {
+        document.getElementById('content').innerHTML = '<p class="empty">Could not load notes.</p>';
+      });
+  </script>
+
+</body>
+</html>

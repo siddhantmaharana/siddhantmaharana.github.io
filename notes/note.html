@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Note — Siddhant Maharana</title>
+  <style>
+    :root {
+      --bg:      #0d0d0d;
+      --surface: #141414;
+      --border:  #232323;
+      --text:    #e8e6e0;
+      --muted:   #555550;
+      --soft:    #9a9a94;
+      --accent:  #7c6aff;
+      --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .top-bar {
+      height: 3px;
+      background: var(--accent);
+      margin-bottom: 40px;
+    }
+
+    .back-link {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 24px;
+    }
+    .back-link:hover { color: var(--soft); }
+
+    .topic-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .note-meta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .note-meta .tag { color: var(--soft); }
+
+    #note-body h1, #note-body h2, #note-body h3 {
+      margin-top: 28px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    #note-body h2 { font-size: 17px; }
+    #note-body h3 { font-size: 15px; }
+    #note-body p { margin-bottom: 14px; color: var(--text); }
+    #note-body ul, #note-body ol { margin: 0 0 14px 20px; }
+    #note-body li { margin-bottom: 4px; }
+    #note-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+    #note-body a:hover { border-bottom-color: var(--accent); }
+    #note-body code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--surface);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    #note-body pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+    #note-body pre code { background: none; padding: 0; }
+    #note-body blockquote {
+      border-left: 2px solid var(--accent);
+      padding-left: 14px;
+      color: var(--soft);
+      margin-bottom: 14px;
+    }
+    .broken-link {
+      color: var(--muted);
+      border-bottom: 1px dashed var(--muted);
+      cursor: help;
+    }
+
+    .empty { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+  <a class="back-link" href="index.html">← all notes</a>
+
+  <div id="note"><p class="empty">Loading…</p></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const FRONTMATTER_RE = /^---\s*\n([\s\S]*?)\n---\s*\n?/;
+
+    function parseFrontmatter(text) {
+      const match = text.match(FRONTMATTER_RE);
+      if (!match) return { meta: {}, body: text };
+      const meta = {};
+      match[1].split('\n').forEach(line => {
+        const idx = line.indexOf(':');
+        if (idx === -1) return;
+        const key = line.slice(0, idx).trim();
+        let value = line.slice(idx + 1).trim();
+        if (!key) return;
+        if (value.startsWith('[') && value.endsWith(']')) {
+          meta[key] = value.slice(1, -1).split(',').map(v => v.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+        } else {
+          meta[key] = value.replace(/^["']|["']$/g, '');
+        }
+      });
+      return { meta, body: text.slice(match[0].length) };
+    }
+
+    function resolveWikilinks(md, manifest) {
+      const byTitle = new Map(manifest.map(n => [n.title.toLowerCase(), n]));
+      return md.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, target, alias) => {
+        const key = target.trim().toLowerCase();
+        const note = byTitle.get(key);
+        const label = (alias || target).trim();
+        if (note) {
+          return `[${label}](note.html?path=${encodeURIComponent(note.path)})`;
+        }
+        return `<span class="broken-link" title="Note not found: ${target.trim()}">${label}</span>`;
+      });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const path = params.get('path');
+    const container = document.getElementById('note');
+
+    if (!path) {
+      container.innerHTML = '<p class="empty">No note specified.</p>';
+    } else {
+      Promise.all([
+        fetch(path).then(r => { if (!r.ok) throw new Error('not found'); return r.text(); }),
+        fetch('manifest.json').then(r => r.json()).catch(() => [])
+      ]).then(([raw, manifest]) => {
+        const { meta, body } = parseFrontmatter(raw);
+        const linked = resolveWikilinks(body, manifest);
+        const title = meta.title || path;
+        document.title = title + ' — Siddhant Maharana';
+        const tags = (meta.tags || []).map(t => `<span class="tag">${t}</span>`).join(' · ');
+        container.innerHTML = `
+          ${meta.topic ? `<div class="topic-tag">${meta.topic}</div>` : ''}
+          <h1>${title}</h1>
+          <div class="note-meta">${meta.date || ''}${tags ? ' &nbsp;·&nbsp; ' + tags : ''}</div>
+          <div id="note-body"></div>`;
+        document.getElementById('note-body').innerHTML = marked.parse(linked);
+      }).catch(() => {
+        container.innerHTML = '<p class="empty">Could not load this note.</p>';
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+[
+  {
+    "title": "Sample Ratio Mismatch",
+    "path": "experimentation/sample-ratio-mismatch.md",
+    "topic": "experimentation",
+    "tags": [
+      "ab-testing",
+      "stats"
+    ],
+    "date": "2026-07-16",
+    "summary": "What SRM is, why it happens, and why it invalidates a test before you even look at results."
+  }
+]
