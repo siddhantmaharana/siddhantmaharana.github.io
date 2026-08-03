@@ -883,8 +883,9 @@ async function sendMagicLink() {
     options: { emailRedirectTo: window.location.href.split('#')[0] },
   });
   btn.disabled = false; btn.textContent = 'send magic link';
+  if (error) console.error(error);
   document.getElementById('auth-status').textContent = error
-    ? 'could not send link — try again'
+    ? 'error: ' + error.message
     : 'check your email for the sign-in link ✓';
 }
 
