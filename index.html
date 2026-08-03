@@ -358,6 +358,10 @@
       <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person')">✕</button>
     </div>
     <div class="form-group">
+      <label>when <span style="text-transform:none;letter-spacing:0;font-size:10px;color:#333">— defaults to today, backdate if logging late</span></label>
+      <input type="date" id="f-log-date" style="color-scheme:dark" />
+    </div>
+    <div class="form-group">
       <label>log a note</label>
       <textarea id="f-note" placeholder="Quick call. Mentioned visiting Atlanta in October…"></textarea>
     </div>
@@ -654,6 +658,7 @@ function openPersonSheet(id) {
     (c.lastContact ? 'last: '+fmtDate(c.lastContact)+(d?' · '+d+'d ago':'') : 'never contacted') +
     ' · every '+(c.cadence||30)+'d';
   document.getElementById('f-note').value = '';
+  document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
   const nd = document.getElementById('f-next-date');
   nd.value = c.nextContact ? new Date(c.nextContact).toISOString().slice(0,10) : '';
   renderHistory();
@@ -672,23 +677,29 @@ function renderHistory() {
 async function logNote() {
   const note = document.getElementById('f-note').value.trim();
   if (!note) { showToast('write something first'); return; }
-  const ts = Date.now();
+  const logDate = document.getElementById('f-log-date').value;
+  const ts = logDate ? new Date(logDate+'T12:00:00').getTime() : Date.now();
   const nd = document.getElementById('f-next-date').value;
   const nextTs = nd ? new Date(nd+'T12:00:00').getTime() : null;
+
+  // backdating a note shouldn't move last-contact earlier than a more recent one already logged
+  const c = DB.contacts.find(x => x.id===activePerson);
+  const newLastContact = (c && c.lastContact && c.lastContact > ts) ? c.lastContact : ts;
 
   const userId = await currentUserId();
   const { error: logErr } = await sb.from('touch_logs').insert({
     person_id: activePerson, user_id: userId, note, ts: new Date(ts).toISOString(),
   });
   const { error: updErr } = await sb.from('people').update({
-    last_contact: new Date(ts).toISOString(),
-    next_contact: (nextTs && nextTs > ts) ? new Date(nextTs).toISOString() : null,
+    last_contact: new Date(newLastContact).toISOString(),
+    next_contact: (nextTs && nextTs > newLastContact) ? new Date(nextTs).toISOString() : null,
   }).eq('id', activePerson);
   if (logErr || updErr) { showToast('could not save — try again'); console.error(logErr||updErr); return; }
 
   await refreshData();
   document.getElementById('f-note').value = '';
   document.getElementById('f-next-date').value = '';
+  document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
   renderHistory();
   renderPeople();
   showToast('logged ✓');

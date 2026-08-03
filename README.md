@@ -1,6 +1,8 @@
 # touchbase
 
-A minimal personal CRM for staying in touch with people you care about. Built as a standalone PWA — no backend, no accounts, no subscriptions. Just a file you host and own.
+A minimal personal CRM for staying in touch with people you care about. A single-file PWA, synced across your devices via Supabase — no subscriptions, no third party seeing your data beyond the database you own.
+
+See [CHANGELOG.md](CHANGELOG.md) for what changed between versions.
 
 ## what it does
 
@@ -11,10 +13,11 @@ A minimal personal CRM for staying in touch with people you care about. Built as
 - Set a specific next contact date that overrides the default cadence
 - Export everything as markdown to paste into Obsidian and run AI on top
 - Backup and restore via JSON — your data is always yours
+- Signs in with a magic link and syncs the same contacts to every device
 
 ## stack
 
-Single HTML file. Zero dependencies. Zero network requests. Data lives in `localStorage`.
+Single HTML file, zero build step. Data lives in Supabase (Postgres, guarded by row-level security) instead of `localStorage`, reached from the browser via `supabase-js`. Auth is email magic link.
 
 ## deploy
 
@@ -26,6 +29,15 @@ cd touchbase
 
 Live at `https://yourusername.github.io/touchbase`
 
+## backend setup (one-time)
+
+1. Create a project at [supabase.com](https://supabase.com) (free tier is enough)
+2. SQL Editor → run [supabase/schema.sql](supabase/schema.sql) — creates the `people`/`touch_logs` tables and RLS policies
+3. Authentication → URL Configuration → add your deployed URL (and `http://localhost:PORT` if testing locally) to Redirect URLs
+4. Project Settings → API → copy the **Project URL** and **anon public key** into the `SUPABASE_URL` / `SUPABASE_ANON_KEY` constants near the top of `index.html`'s script
+
+The anon key is safe to commit — RLS is what actually restricts each signed-in user to their own rows.
+
 ## install on mobile
 
 **Android (Pixel)**
@@ -36,7 +48,7 @@ Safari → visit the URL → Share → Add to Home Screen
 
 ## data format
 
-All data is stored locally as JSON. You can export a backup anytime from the data sheet (↓ icon). The format is straightforward if you want to pre-populate from a spreadsheet or script:
+Data lives in Supabase (`people` and `touch_logs` tables). You can still export a JSON backup anytime from the data sheet (↓ icon) — same shape as before, useful for offline backups or scripting:
 
 ```json
 {
@@ -73,10 +85,11 @@ Tap the ↓ icon → data sheet → **import section**
 ## files
 
 ```
-index.html      the entire app
-manifest.json   PWA metadata (name, colors, icons)
-icon-192.png    home screen icon
-icon-512.png    splash screen icon
+index.html            the entire app
+manifest.json         PWA metadata (name, colors, icons)
+icon-192.png          home screen icon
+icon-512.png          splash screen icon
+supabase/schema.sql   tables + RLS policies for the backend
 ```
 
 ## roadmap ideas
