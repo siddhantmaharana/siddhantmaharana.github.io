@@ -288,9 +288,41 @@
     font-size: 11px; color: var(--muted); font-family: var(--mono);
     text-align: center; margin-top: 6px;
   }
+
+  /* ── Auth screen ── */
+  .auth-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .auth-screen .app-title { font-size: 22px; margin-bottom: 6px; }
+  .auth-tagline { font-size: 12px; color: var(--muted); font-family: var(--mono); margin-bottom: 28px; }
+  .auth-card { width: 100%; max-width: 320px; }
+  .auth-status { font-size: 12px; color: var(--green); font-family: var(--mono); margin-top: 12px; min-height: 16px; }
 </style>
 </head>
 <body>
+
+<!-- ── AUTH SCREEN ── -->
+<div class="auth-screen" id="auth-screen">
+  <div class="app-title">touchbase</div>
+  <div class="auth-tagline">// sign in to sync your contacts</div>
+  <div class="auth-card">
+    <div class="form-group" style="text-align:left">
+      <label>email</label>
+      <input id="auth-email" type="email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <button class="btn btn-primary" id="auth-send-btn" style="width:100%" onclick="sendMagicLink()">send magic link</button>
+    <div class="auth-status" id="auth-status"></div>
+  </div>
+</div>
+
+<!-- ── APP ROOT ── -->
+<div id="app-root" style="display:none">
 
 <!-- ── HEADER ── -->
 <header class="app-header">
@@ -304,6 +336,9 @@
     </button>
     <button class="icon-btn" onclick="openAddSheet()" title="Add person">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="icon-btn" onclick="signOut()" title="Sign out">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
 </header>
@@ -428,9 +463,19 @@
   </div>
 </div>
 
+</div><!-- /app-root -->
+
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
+// Get these from Supabase Dashboard -> Project Settings -> API.
+// The anon/public key is safe to expose client-side — Row Level Security policies
+// (see supabase/schema.sql) are what actually restrict access to each signed-in user's own rows.
+const SUPABASE_URL = 'https://sjycdaxraklxlnrmgqrb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeWNkYXhyYWtseGxucm1ncXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzUwMTgsImV4cCI6MjEwMTM1MTAxOH0.zNqG47w5lyEbdxV3LeK--hIMKBF7QeXW67OL-ui49NQ';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const PALETTES = [
   {bg:'#1a3d26',color:'#4ade80'},{bg:'#2d1f4a',color:'#a78bfa'},
   {bg:'#3d2010',color:'#fb923c'},{bg:'#1a2d4a',color:'#60a5fa'},
@@ -452,18 +497,72 @@ function fmtDateTime(ts)  { return new Date(ts).toLocaleString('en-US',{month:'s
 let DB = { contacts:[], logs:[] };
 let activePerson = null, editingId = null;
 
-function load() {
-  try { const s=localStorage.getItem('touchbase_v1'); if(s) DB=JSON.parse(s); } catch(e){}
-  if(!DB.contacts) DB.contacts=[];
-  if(!DB.logs)     DB.logs=[];
+function rowToContact(r) {
+  return {
+    id: r.id,
+    name: r.name,
+    about: r.about || '',
+    cadence: r.cadence_days,
+    lastContact: r.last_contact ? new Date(r.last_contact).getTime() : null,
+    nextContact: r.next_contact ? new Date(r.next_contact).getTime() : null,
+  };
 }
-function persist() { localStorage.setItem('touchbase_v1', JSON.stringify(DB)); }
+function rowToLog(r) {
+  return { id: r.id, contactId: r.person_id, note: r.note, ts: new Date(r.ts).getTime() };
+}
+
+async function refreshData() {
+  const [{data: people, error: pErr}, {data: logs, error: lErr}] = await Promise.all([
+    sb.from('people').select('*').order('created_at'),
+    sb.from('touch_logs').select('*').order('ts', {ascending:false}),
+  ]);
+  if (pErr || lErr) { showToast('sync error — check connection'); console.error(pErr||lErr); return; }
+  DB.contacts = people.map(rowToContact);
+  DB.logs     = logs.map(rowToLog);
+}
+
+async function currentUserId() {
+  const { data } = await sb.auth.getUser();
+  return data.user.id;
+}
+
+// One-time: if this browser has an old localStorage backup and the signed-in
+// account has no data yet, offer to bring it over.
+async function migrateLocalData() {
+  let local;
+  try { local = JSON.parse(localStorage.getItem('touchbase_v1') || 'null'); } catch(e) { return; }
+  if (!local || !Array.isArray(local.contacts) || !local.contacts.length) return;
+  if (DB.contacts.length) return;
+  if (!confirm(`Found ${local.contacts.length} people saved locally on this device. Import them into your account?`)) return;
+  await bulkImportRows(local.contacts, local.logs || []);
+  showToast('imported local backup ✓');
+}
+
+async function bulkImportRows(contacts, logs) {
+  const userId = await currentUserId();
+  const idMap = {};
+  for (const c of contacts) {
+    const { data, error } = await sb.from('people').insert({
+      user_id: userId,
+      name: c.name,
+      about: c.about || null,
+      cadence_days: parseInt(c.cadence) || 30,
+      last_contact: c.lastContact ? new Date(c.lastContact).toISOString() : null,
+      next_contact: c.nextContact ? new Date(c.nextContact).toISOString() : null,
+    }).select().single();
+    if (!error) idMap[c.id] = data.id;
+  }
+  const logRows = logs.filter(l => idMap[l.contactId]).map(l => ({
+    person_id: idMap[l.contactId], user_id: userId, note: l.note, ts: new Date(l.ts).toISOString(),
+  }));
+  if (logRows.length) await sb.from('touch_logs').insert(logRows);
+}
 
 function getBadge(c) {
   const d = daysSince(c.lastContact);
   const lastStr = d==null ? 'never contacted' : d===0 ? 'today' : d+'d ago';
 
-  if (c.nextContact) {
+  if (c.nextContact && (!c.lastContact || c.nextContact > c.lastContact)) {
     const left = Math.round((c.nextContact - Date.now()) / 86400000);
     const ds   = new Date(c.nextContact).toLocaleDateString('en-US',{month:'short',day:'numeric'});
     if (left < 0)  return {cls:'b-red',   text:Math.abs(left)+'d over', sub:'planned: '+ds+' · last: '+lastStr};
@@ -483,7 +582,7 @@ function getBadge(c) {
 }
 
 function urgency(c) {
-  if (c.nextContact) return (c.nextContact - Date.now()) / 86400000;
+  if (c.nextContact && (!c.lastContact || c.nextContact > c.lastContact)) return (c.nextContact - Date.now()) / 86400000;
   const d = daysSince(c.lastContact);
   if (d == null) return -9999;
   return ((parseInt(c.cadence)||30) - d);
@@ -570,19 +669,24 @@ function renderHistory() {
     logs.map(l => `<div class="log-item"><div class="log-ts">${fmtDateTime(l.ts)}</div><div class="log-txt">${l.note}</div></div>`).join('');
 }
 
-function logNote() {
+async function logNote() {
   const note = document.getElementById('f-note').value.trim();
   if (!note) { showToast('write something first'); return; }
   const ts = Date.now();
-  DB.logs.push({id:ts+'', contactId:activePerson, note, ts});
-  const c = DB.contacts.find(x => x.id===activePerson);
-  if (c) {
-    c.lastContact = ts;
-    const nd = document.getElementById('f-next-date').value;
-    if (nd) c.nextContact = new Date(nd+'T12:00:00').getTime();
-    else    delete c.nextContact;
-  }
-  persist();
+  const nd = document.getElementById('f-next-date').value;
+  const nextTs = nd ? new Date(nd+'T12:00:00').getTime() : null;
+
+  const userId = await currentUserId();
+  const { error: logErr } = await sb.from('touch_logs').insert({
+    person_id: activePerson, user_id: userId, note, ts: new Date(ts).toISOString(),
+  });
+  const { error: updErr } = await sb.from('people').update({
+    last_contact: new Date(ts).toISOString(),
+    next_contact: (nextTs && nextTs > ts) ? new Date(nextTs).toISOString() : null,
+  }).eq('id', activePerson);
+  if (logErr || updErr) { showToast('could not save — try again'); console.error(logErr||updErr); return; }
+
+  await refreshData();
   document.getElementById('f-note').value = '';
   document.getElementById('f-next-date').value = '';
   renderHistory();
@@ -614,28 +718,30 @@ function openEditSheet() {
   setTimeout(() => document.getElementById('sheet-contact').classList.add('open'), 200);
 }
 
-function saveContact() {
+async function saveContact() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { showToast('name is required'); return; }
   const about   = document.getElementById('f-about').value.trim();
   const cadence = parseInt(document.getElementById('f-cadence').value)||30;
+  let error;
   if (editingId) {
-    const c = DB.contacts.find(x => x.id===editingId);
-    if (c) { c.name=name; c.about=about; c.cadence=cadence; }
+    ({error} = await sb.from('people').update({ name, about: about||null, cadence_days: cadence }).eq('id', editingId));
   } else {
-    DB.contacts.push({id:Date.now()+'', name, about, cadence, lastContact:null});
+    const userId = await currentUserId();
+    ({error} = await sb.from('people').insert({ user_id: userId, name, about: about||null, cadence_days: cadence }));
   }
-  persist(); closeSheet('sheet-contact');
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  await refreshData(); closeSheet('sheet-contact');
   renderPeople(); populateExportSelect();
   showToast(editingId ? 'updated' : 'added');
 }
 
-function deleteContact() {
+async function deleteContact() {
   if (!editingId) return;
   if (!confirm('Delete this person and all their notes?')) return;
-  DB.contacts = DB.contacts.filter(c => c.id!==editingId);
-  DB.logs     = DB.logs.filter(l => l.contactId!==editingId);
-  persist(); closeSheet('sheet-contact');
+  const { error } = await sb.from('people').delete().eq('id', editingId);
+  if (error) { showToast('could not delete — try again'); console.error(error); return; }
+  await refreshData(); closeSheet('sheet-contact');
   renderPeople(); populateExportSelect();
   showToast('deleted');
 }
@@ -682,7 +788,7 @@ function importJSON(event, mode) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     try {
       const data = JSON.parse(e.target.result);
       if (!Array.isArray(data.contacts) || !Array.isArray(data.logs)) {
@@ -692,25 +798,26 @@ function importJSON(event, mode) {
         if (!confirm('Replace ALL existing data with this backup? This cannot be undone.')) {
           event.target.value = ''; return;
         }
-        DB = { contacts: data.contacts, logs: data.logs };
+        const userId = await currentUserId();
+        const { error } = await sb.from('people').delete().eq('user_id', userId);
+        if (error) { showToast('could not replace — try again'); console.error(error); return; }
+        await bulkImportRows(data.contacts, data.logs);
+        showToast('data restored');
       } else {
-        // merge: add contacts/logs not already present by id
-        const existingCIds = new Set(DB.contacts.map(c => c.id));
-        const existingLIds = new Set(DB.logs.map(l => l.id));
-        const newC = data.contacts.filter(c => !existingCIds.has(c.id));
-        const newL = data.logs.filter(l => !existingLIds.has(l.id));
-        DB.contacts.push(...newC);
-        DB.logs.push(...newL);
-        showToast(`merged: +${newC.length} people, +${newL.length} notes`);
+        // merge: add contacts not already present (matched by name+context), plus their notes
+        const existingKeys = new Set(DB.contacts.map(c => c.name.toLowerCase()+'|'+(c.about||'').toLowerCase()));
+        const newContacts = data.contacts.filter(c => !existingKeys.has(c.name.toLowerCase()+'|'+(c.about||'').toLowerCase()));
+        await bulkImportRows(newContacts, data.logs);
+        showToast(`merged: +${newContacts.length} people`);
       }
-      persist();
+      await refreshData();
       renderPeople();
       populateExportSelect();
       renderExport();
       event.target.value = '';
-      if (mode === 'replace') showToast('data restored');
     } catch(err) {
       showToast('could not read file');
+      console.error(err);
     }
   };
   reader.readAsText(file);
@@ -742,8 +849,58 @@ document.addEventListener('keydown', e => {
 document.getElementById('f-name').addEventListener('keydown', e => {
   if (e.key==='Enter') saveContact();
 });
+document.getElementById('auth-email').addEventListener('keydown', e => {
+  if (e.key==='Enter') sendMagicLink();
+});
 
-load(); renderPeople(); populateExportSelect();
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app-root').style.display = 'none';
+}
+function hideAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-root').style.display = 'block';
+}
+
+async function sendMagicLink() {
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) { showToast('enter your email'); return; }
+  const btn = document.getElementById('auth-send-btn');
+  btn.disabled = true; btn.textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href.split('#')[0] },
+  });
+  btn.disabled = false; btn.textContent = 'send magic link';
+  document.getElementById('auth-status').textContent = error
+    ? 'could not send link — try again'
+    : 'check your email for the sign-in link ✓';
+}
+
+function signOut() { sb.auth.signOut(); }
+
+async function onSignedIn() {
+  hideAuthScreen();
+  await refreshData();
+  renderPeople();
+  populateExportSelect();
+  await migrateLocalData();
+  await refreshData();
+  renderPeople();
+  populateExportSelect();
+}
+
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  sb.auth.onAuthStateChange((event, s) => {
+    if (event === 'SIGNED_IN')  onSignedIn();
+    if (event === 'SIGNED_OUT') showAuthScreen();
+  });
+  if (session) await onSignedIn();
+  else showAuthScreen();
+}
+
+boot();
 </script>
 </body>
 </html>
