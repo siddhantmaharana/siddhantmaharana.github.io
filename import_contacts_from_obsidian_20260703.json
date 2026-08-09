@@ -1,0 +1,275 @@
+{
+  "contacts": [
+    {
+      "id": "1782740021116",
+      "name": "Rika",
+      "about": "Friend",
+      "cadence": 15,
+      "lastContact": 1782740089978,
+      "nextContact": 1783094400000
+    },
+    {
+      "id": "1782740131925",
+      "name": "Mom",
+      "about": "",
+      "cadence": 7,
+      "lastContact": 1782771356981,
+      "nextContact": 1782835200000
+    },
+    {
+      "id": "1782740150091",
+      "name": "Dad",
+      "about": "",
+      "cadence": 10,
+      "lastContact": 1782748309133
+    },
+    {
+      "id": "1782740166709",
+      "name": "Bin D",
+      "about": "Sister",
+      "cadence": 15,
+      "lastContact": 1782748226740
+    },
+    {
+      "id": "1782740206492",
+      "name": "Dev",
+      "about": "Wife",
+      "cadence": 9999,
+      "lastContact": null
+    },
+    {
+      "id": "1782740222628",
+      "name": "Ram",
+      "about": "Friend",
+      "cadence": 15,
+      "lastContact": null
+    },
+    {
+      "id": "1782740234968",
+      "name": "Ayu",
+      "about": "Friend",
+      "cadence": 7,
+      "lastContact": null
+    },
+    {
+      "id": "1782748657241",
+      "name": "Lin",
+      "about": "College friend",
+      "cadence": 20,
+      "lastContact": 1782758486233
+    },
+    {
+      "id": "1782771406959",
+      "name": "Sarath",
+      "about": "",
+      "cadence": 30,
+      "lastContact": 1782771418203
+    },
+    {
+      "id": "1782800000001",
+      "name": "Peony",
+      "about": "Niece",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000002",
+      "name": "Uday",
+      "about": "Cousin",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000003",
+      "name": "Akhya",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000004",
+      "name": "Anirudh",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000005",
+      "name": "Aswath",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000006",
+      "name": "Bhavana",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000007",
+      "name": "Brij",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000008",
+      "name": "Dharmendra",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000009",
+      "name": "Divisha",
+      "about": "Niece",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000010",
+      "name": "Girraj",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000011",
+      "name": "Gowtham",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000012",
+      "name": "Harshit",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000013",
+      "name": "Kirti",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000014",
+      "name": "Neeta",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000015",
+      "name": "Rahul",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000016",
+      "name": "Rashmi",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000017",
+      "name": "Ronnie",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000018",
+      "name": "Sandeep",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000019",
+      "name": "Saswati",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000020",
+      "name": "Shourya",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000021",
+      "name": "Shradha",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000022",
+      "name": "Sovan",
+      "about": "Friend",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000023",
+      "name": "Srikanth",
+      "about": "Brother-in-law",
+      "cadence": null,
+      "lastContact": null
+    },
+    {
+      "id": "1782800000024",
+      "name": "Suhani",
+      "about": "Sister-in-law",
+      "cadence": null,
+      "lastContact": null
+    }
+  ],
+  "logs": [
+    {
+      "id": "1782740089978",
+      "contactId": "1782740021116",
+      "note": "Wished her happy birthday yesterday. She mostly spent time alone, no party this year with all the stuff happening. Will catch up aoon",
+      "ts": 1782740089978
+    },
+    {
+      "id": "1782748226740",
+      "contactId": "1782740166709",
+      "note": "Spoke about money matters. Have to send 16 now in addition to the 5 earlier.\nWill send 39 later",
+      "ts": 1782748226740
+    },
+    {
+      "id": "1782748309133",
+      "contactId": "1782740150091",
+      "note": "Feeling good with the Bangalore climate. Uric acid spike as he is not watching his diet lately. Have to leave rourkela early because of tenants leaving early",
+      "ts": 1782748309133
+    },
+    {
+      "id": "1782758486233",
+      "contactId": "1782748657241",
+      "note": "Shared some pictures of Alaska today. Would plan to meet this week sometime",
+      "ts": 1782758486233
+    },
+    {
+      "id": "1782771356981",
+      "contactId": "1782740131925",
+      "note": "Ndndn",
+      "ts": 1782771356981
+    },
+    {
+      "id": "1782771418203",
+      "contactId": "1782771406959",
+      "note": "Spoke about empower app",
+      "ts": 1782771418203
+    }
+  ]
+}

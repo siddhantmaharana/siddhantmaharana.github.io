@@ -26,11 +26,6 @@
       --danger:    #f87171;
       --subtle:    #2a2a28;
       --mono:      'SF Mono','Fira Code','Cascadia Code',monospace;
-
-      --mood-fire:   #f59e0b;
-      --mood-stress: #f87171;
-      --mood-calm:   #4ade80;
-      --mood-drain:  #a78bfa;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -118,12 +113,6 @@
     .screen.active { display: flex; }
 
     /* ── CAPTURE SCREEN ── */
-    .mood-section {
-      padding: 12px 18px 10px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
     .section-label {
       font-family: var(--mono);
       font-size: 10px;
@@ -133,60 +122,9 @@
       margin-bottom: 8px;
     }
 
-    .mood-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-
-    .mood-tile {
-      border: 1px solid var(--border2);
-      border-radius: 7px;
-      padding: 8px 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      user-select: none;
-    }
-
-    .mood-tile:active { opacity: 0.75; }
-
-    .mood-tile.selected {
-      border-color: var(--mood-color, var(--accent));
-      background: color-mix(in srgb, var(--mood-color, var(--accent)) 10%, transparent);
-    }
-
-    .mood-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--mood-color);
-      flex-shrink: 0;
-    }
-
-    .mood-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted2);
-      transition: color 0.15s;
-    }
-
-    .mood-tile.selected .mood-label {
-      color: var(--mood-color);
-    }
-
-    .mood-sub {
-      font-size: 8px;
-      color: var(--muted);
-      font-family: var(--mono);
-      margin-top: 1px;
-    }
-
     /* ── INPUT SECTION ── */
     .input-section {
-      padding: 12px 18px 6px;
+      padding: 16px 18px 6px;
       flex-shrink: 0;
       position: relative;
     }
@@ -390,11 +328,6 @@
 
     .log-entry:hover { background: var(--surface); }
 
-    .log-entry[data-mood="fired"] { border-left-color: var(--mood-fire); }
-    .log-entry[data-mood="stressed"] { border-left-color: var(--mood-stress); }
-    .log-entry[data-mood="calm"] { border-left-color: var(--mood-calm); }
-    .log-entry[data-mood="drained"] { border-left-color: var(--mood-drain); }
-
     .entry-meta {
       display: flex;
       align-items: center;
@@ -407,15 +340,6 @@
       font-family: var(--mono);
       font-size: 10px;
       color: var(--muted);
-    }
-
-    .entry-mood-badge {
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      color: var(--mood-text, var(--muted2));
-      background: var(--mood-bg, var(--surface2));
     }
 
     .entry-tag-list {
@@ -606,14 +530,114 @@
       color: var(--danger);
       cursor: pointer;
     }
+
+    /* ── AUTH SCREEN ── */
+    .auth-screen {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .auth-logo {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .auth-tagline {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .auth-card { width: 100%; max-width: 320px; }
+
+    .auth-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .auth-input:focus { border-color: var(--accent); }
+
+    .auth-btn {
+      width: 100%;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #fff;
+      border-radius: 7px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .auth-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .auth-status {
+      font-size: 11px;
+      color: var(--accent);
+      font-family: var(--mono);
+      margin-top: 12px;
+      min-height: 14px;
+      line-height: 1.5;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--muted2);
+      border-radius: 6px;
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover { border-color: var(--accent); color: var(--text); }
   </style>
 </head>
 <body>
+
+  <!-- ── AUTH SCREEN ── -->
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-logo">capture</div>
+    <div class="auth-tagline">// sign in to sync your entries</div>
+    <div class="auth-card">
+      <input class="auth-input" id="authEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+      <button class="auth-btn" id="authSendBtn" onclick="sendMagicLink()">send magic link</button>
+      <div class="auth-status" id="authStatus"></div>
+    </div>
+  </div>
+
+  <!-- ── APP ROOT ── -->
+  <div id="appRoot" style="display:none">
 
   <div class="header">
     <span class="logo">capture</span>
     <div class="header-right">
       <span class="entry-count" id="entryCount">0 entries</span>
+      <button class="icon-btn" onclick="signOut()" title="Sign out">⏻</button>
     </div>
   </div>
 
@@ -624,40 +648,6 @@
 
   <!-- ── CAPTURE SCREEN ── -->
   <div class="screen active" id="screen-capture">
-
-    <div class="mood-section">
-      <div class="section-label">energy · mood</div>
-      <div class="mood-grid">
-        <div class="mood-tile" data-mood="fired" style="--mood-color: var(--mood-fire)" onclick="selectMood('fired')">
-          <div class="mood-dot"></div>
-          <div>
-            <div class="mood-label">fired up</div>
-            <div class="mood-sub">high · positive</div>
-          </div>
-        </div>
-        <div class="mood-tile" data-mood="stressed" style="--mood-color: var(--mood-stress)" onclick="selectMood('stressed')">
-          <div class="mood-dot"></div>
-          <div>
-            <div class="mood-label">stressed</div>
-            <div class="mood-sub">high · negative</div>
-          </div>
-        </div>
-        <div class="mood-tile" data-mood="calm" style="--mood-color: var(--mood-calm)" onclick="selectMood('calm')">
-          <div class="mood-dot"></div>
-          <div>
-            <div class="mood-label">calm</div>
-            <div class="mood-sub">low · positive</div>
-          </div>
-        </div>
-        <div class="mood-tile" data-mood="drained" style="--mood-color: var(--mood-drain)" onclick="selectMood('drained')">
-          <div class="mood-dot"></div>
-          <div>
-            <div class="mood-label">drained</div>
-            <div class="mood-sub">low · negative</div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="input-section">
       <textarea
@@ -691,18 +681,6 @@
 
     <div class="log-filters" id="logFilters">
       <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">all</div>
-      <div class="filter-chip" data-filter="mood:fired" onclick="setFilter('mood:fired')">
-        <div class="filter-dot" style="background:var(--mood-fire)"></div>fired up
-      </div>
-      <div class="filter-chip" data-filter="mood:stressed" onclick="setFilter('mood:stressed')">
-        <div class="filter-dot" style="background:var(--mood-stress)"></div>stressed
-      </div>
-      <div class="filter-chip" data-filter="mood:calm" onclick="setFilter('mood:calm')">
-        <div class="filter-dot" style="background:var(--mood-calm)"></div>calm
-      </div>
-      <div class="filter-chip" data-filter="mood:drained" onclick="setFilter('mood:drained')">
-        <div class="filter-dot" style="background:var(--mood-drain)"></div>drained
-      </div>
     </div>
 
     <div class="log-list" id="logList"></div>
@@ -731,42 +709,56 @@
     </div>
   </div>
 
+  <!-- ── EXPORT CLEANUP SHEET ── -->
+  <div class="delete-confirm" id="exportConfirm">
+    <div class="delete-sheet">
+      <p>exported <span id="exportConfirmCount">0</span> entries to Obsidian. delete them from the database now?</p>
+      <div class="delete-sheet-btns">
+        <button class="btn-cancel" onclick="closeExportConfirm()">keep in db</button>
+        <button class="btn-delete" onclick="confirmExportCleanup()">clear db</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
+  </div><!-- /appRoot -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-  // ── STORAGE ──
+  // ── SUPABASE (same project as touchbase — shared account, separate tables) ──
+  // The anon key is safe to expose client-side: RLS (see supabase/schema.sql) is what
+  // actually restricts access to each signed-in user's own rows.
+  const SUPABASE_URL = 'https://sjycdaxraklxlnrmgqrb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeWNkYXhyYWtseGxucm1ncXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzUwMTgsImV4cCI6MjEwMTM1MTAxOH0.zNqG47w5lyEbdxV3LeK--hIMKBF7QeXW67OL-ui49NQ';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ── STORAGE (legacy localStorage — only read once, for the one-time import) ──
   const KEY = 'capture_v2';
   const META_KEY = 'capture_v2_meta';
 
-  function load() {
+  function loadLocal() {
     try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
   }
 
-  function saveToDisk(entries) {
-    localStorage.setItem(KEY, JSON.stringify(entries));
-  }
-
-  function loadMeta() {
+  function loadLocalMeta() {
     try { return JSON.parse(localStorage.getItem(META_KEY) || '{}'); } catch { return {}; }
   }
 
-  function saveMeta(meta) {
-    localStorage.setItem(META_KEY, JSON.stringify(meta));
-  }
-
   // ── STATE ──
-  let entries = load();
-  let meta = loadMeta();
-  let selectedMood = null;
+  let entries = [];       // [{id, text, tags, ts}], newest first — mirrors the `entries` table
+  let tagVocab = [];      // sorted tag strings — mirrors the `tag_vocab` table, survives export cleanup
+  let meta = { lastExportTs: null }; // local-only UI state, not synced
   let activeFilter = 'all';
   let pendingDeleteId = null;
   let longPressTimer = null;
 
-  // tag vocabulary — built from existing entries + session additions
   function getTagVocab() {
-    const vocab = new Set(meta.tagVocab || []);
-    entries.forEach(e => (e.tags || []).forEach(t => vocab.add(t)));
-    return [...vocab].sort();
+    return [...tagVocab].sort();
+  }
+
+  function rowToEntry(r) {
+    return { id: r.id, text: r.text, tags: r.tags || [], ts: new Date(r.ts).getTime() };
   }
 
   // ── HELPERS ──
@@ -798,14 +790,6 @@
     return [...new Set(matches.map(t => t.toLowerCase()))];
   }
 
-  function moodColor(mood) {
-    return { fired: '#EF9F27', stressed: '#E24B4A', calm: '#1D9E75', drained: '#7F77DD' }[mood] || '#555';
-  }
-
-  function moodLabel(mood) {
-    return { fired: 'fired up', stressed: 'stressed', calm: 'calm', drained: 'drained' }[mood] || mood;
-  }
-
   function esc(str) {
     return String(str)
       .replace(/&/g,'&amp;')
@@ -819,14 +803,6 @@
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), duration);
-  }
-
-  // ── MOOD SELECTION ──
-  function selectMood(mood) {
-    selectedMood = (selectedMood === mood) ? null : mood;
-    document.querySelectorAll('.mood-tile').forEach(el => {
-      el.classList.toggle('selected', el.dataset.mood === selectedMood);
-    });
   }
 
   // ── TABS ──
@@ -926,34 +902,56 @@
   }
 
   // ── SAVE ──
-  function saveEntry() {
+  async function saveEntry() {
     const text = input.value.trim();
-    if (!text && !selectedMood) return;
+    if (!text) return;
 
     const tags = parseTags(text);
-    const id = Date.now();
+    const now = Date.now();
+    const tempId = 'tmp-' + now;
+    const entry = { id: tempId, text, tags, ts: now };
 
-    const entry = { id, text, mood: selectedMood, tags, ts: id };
+    // optimistic: clear the input and show the entry right away — speed is the point.
+    // reconciled with the real row (or rolled back) once the write comes back.
     entries.unshift(entry);
-    saveToDisk(entries);
+    tags.forEach(t => { if (!tagVocab.includes(t)) tagVocab.push(t); });
 
-    // update tag vocab
-    const vocab = new Set(meta.tagVocab || []);
-    tags.forEach(t => vocab.add(t));
-    meta.tagVocab = [...vocab];
-    saveMeta(meta);
-
-    // reset
     input.value = '';
     input.style.height = 'auto';
     document.getElementById('detectedTags').innerHTML = '';
     document.getElementById('autocompleteWrap').classList.remove('visible');
-    selectedMood = null;
-    document.querySelectorAll('.mood-tile').forEach(el => el.classList.remove('selected'));
-
     updateCount();
-    showToast('saved ✓');
+    if (document.getElementById('screen-log').classList.contains('active')) renderLog();
     input.focus();
+
+    const { data, error } = await sb.from('entries').insert({
+      user_id: currentUser.id,
+      text,
+      tags,
+      ts: new Date(now).toISOString(),
+    }).select().single();
+
+    if (error) {
+      console.error(error);
+      entries = entries.filter(e => e.id !== tempId);
+      updateCount();
+      if (document.getElementById('screen-log').classList.contains('active')) renderLog();
+      input.value = text;
+      autoResizeInput();
+      showToast('save failed — check connection');
+      return;
+    }
+
+    entry.id = data.id;
+    upsertTagVocab(tags);
+    showToast('saved ✓');
+  }
+
+  async function upsertTagVocab(tags) {
+    if (!tags.length) return;
+    const rows = tags.map(t => ({ user_id: currentUser.id, tag: t, last_used_at: new Date().toISOString() }));
+    const { error } = await sb.from('tag_vocab').upsert(rows, { onConflict: 'user_id,tag' });
+    if (error) console.error(error);
   }
 
   function updateCount() {
@@ -972,10 +970,6 @@
 
   function filteredEntries() {
     if (activeFilter === 'all') return entries;
-    if (activeFilter.startsWith('mood:')) {
-      const mood = activeFilter.slice(5);
-      return entries.filter(e => e.mood === mood);
-    }
     if (activeFilter.startsWith('tag:')) {
       const tag = activeFilter.slice(4);
       return entries.filter(e => (e.tags || []).includes(tag));
@@ -1026,18 +1020,12 @@
   }
 
   function renderEntry(e) {
-    const color = moodColor(e.mood);
     const tagHtml = (e.tags || []).map(t => `<span class="entry-tag" onclick="event.stopPropagation(); filterByTag('${t}')">${esc(t)}</span>`).join('');
-    const moodBadge = e.mood ? `
-      <span class="entry-mood-badge" style="background:color-mix(in srgb, ${color} 14%, transparent); color: ${color};">
-        ${moodLabel(e.mood)}
-      </span>` : '';
 
     return `
-      <div class="log-entry" data-mood="${e.mood || ''}" data-id="${e.id}">
+      <div class="log-entry" data-id="${e.id}">
         <div class="entry-meta">
           <span class="entry-time">${fmtTime(e.ts)}</span>
-          ${moodBadge}
           <div class="entry-tag-list">${tagHtml}</div>
         </div>
         <div class="entry-body">${esc(e.text)}</div>
@@ -1105,11 +1093,13 @@
     document.getElementById('deleteConfirm').classList.remove('show');
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (!pendingDeleteId) return;
-    entries = entries.filter(e => String(e.id) !== String(pendingDeleteId));
-    saveToDisk(entries);
+    const id = pendingDeleteId;
     closeDelete();
+    const { error } = await sb.from('entries').delete().eq('id', id);
+    if (error) { console.error(error); showToast('delete failed — check connection'); return; }
+    entries = entries.filter(e => String(e.id) !== String(id));
     updateCount();
     renderLog();
     showToast('deleted');
@@ -1122,23 +1112,23 @@
     const metaLine = document.getElementById('exportMetaLine');
 
     if (lastExport) {
-      const newSince = entries.filter(e => e.ts > lastExport).length;
       metaLine.textContent = `last export: ${fmtDate(lastExport)} ${fmtTime(lastExport)}`;
-      since.innerHTML = newSince > 0
-        ? `<span>${newSince} new</span> entries since last export`
-        : `all entries already exported`;
+      since.textContent = `${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} in the db right now`;
     } else {
-      metaLine.textContent = 'markdown · frontmatter · dedup-safe';
+      metaLine.textContent = 'markdown · frontmatter · clears the db on export';
       since.textContent = '';
     }
   }
+
+  let pendingExportIds = [];
 
   function exportToObsidian() {
     if (entries.length === 0) { showToast('nothing to export'); return; }
 
     const now = Date.now();
     const exportDate = fmtDateKey(now);
-    const lastId = entries[entries.length - 1].id;
+    const exportedIds = entries.map(e => e.id);
+    const exportedCount = entries.length;
 
     // group by date
     const groups = {};
@@ -1154,7 +1144,6 @@
       const entriesText = dayEntries.map(e => {
         const lines = [
           `### ${fmtTime(e.ts)}`,
-          e.mood ? `mood:: ${moodLabel(e.mood)}` : null,
           (e.tags && e.tags.length) ? `tags:: ${e.tags.join(' ')}` : null,
           '',
           e.text,
@@ -1167,22 +1156,18 @@
     const frontmatter = `---
 export_ts: ${isoFmt(now)}
 export_date: ${exportDate}
-entry_count: ${entries.length}
-last_id: ${lastId}
+entry_count: ${exportedCount}
 ---
 
 `;
 
-    const footer = `\n\n---\n<!-- use last_id to skip already-imported entries in Dataview -->\n<!-- TABLE mood, tags FROM "capture" WHERE mood = "calm" SORT date desc -->`;
+    const footer = `\n\n---\n<!-- exported entries are cleared from the app's db — this file is the permanent record -->\n<!-- TABLE tags FROM "capture" WHERE contains(tags, "#idea") SORT date desc -->`;
 
     const output = frontmatter + body + footer;
 
     // copy to clipboard
     navigator.clipboard.writeText(output).then(() => {
-      meta.lastExportTs = now;
-      saveMeta(meta);
-      updateExportMeta();
-      showToast(`copied — ${entries.length} entries`, 2200);
+      afterExportSuccess(exportedIds, exportedCount, now, `copied — ${exportedCount} entries`);
     }).catch(() => {
       // fallback: download as file
       const blob = new Blob([output], { type: 'text/markdown' });
@@ -1192,16 +1177,129 @@ last_id: ${lastId}
       a.download = `capture-${exportDate}.md`;
       a.click();
       URL.revokeObjectURL(url);
-      meta.lastExportTs = now;
-      saveMeta(meta);
-      updateExportMeta();
-      showToast(`downloaded — ${entries.length} entries`, 2200);
+      afterExportSuccess(exportedIds, exportedCount, now, `downloaded — ${exportedCount} entries`);
     });
   }
 
-  // ── INIT ──
-  updateCount();
-  input.focus();
+  function afterExportSuccess(ids, count, now, toastMsg) {
+    meta.lastExportTs = now;
+    updateExportMeta();
+    showToast(toastMsg, 2200);
+    pendingExportIds = ids;
+    document.getElementById('exportConfirmCount').textContent = count;
+    document.getElementById('exportConfirm').classList.add('show');
+  }
+
+  function closeExportConfirm() {
+    pendingExportIds = [];
+    document.getElementById('exportConfirm').classList.remove('show');
+  }
+
+  async function confirmExportCleanup() {
+    const ids = pendingExportIds;
+    closeExportConfirm();
+    if (!ids.length) return;
+    const { error } = await sb.from('entries').delete().in('id', ids);
+    if (error) { console.error(error); showToast('cleanup failed — entries still in db'); return; }
+    entries = entries.filter(e => !ids.includes(e.id));
+    updateCount();
+    renderLog();
+    updateExportMeta();
+    showToast('database cleared ✓');
+  }
+
+  // ── AUTH ──
+  document.getElementById('authEmail').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMagicLink();
+  });
+
+  function showAuthScreen() {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('appRoot').style.display = 'none';
+  }
+
+  function hideAuthScreen() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'block';
+  }
+
+  async function sendMagicLink() {
+    const email = document.getElementById('authEmail').value.trim();
+    if (!email) { showToast('enter your email'); return; }
+    const btn = document.getElementById('authSendBtn');
+    btn.disabled = true; btn.textContent = 'sending…';
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.href.split('#')[0] },
+    });
+    btn.disabled = false; btn.textContent = 'send magic link';
+    if (error) console.error(error);
+    document.getElementById('authStatus').textContent = error
+      ? 'error: ' + error.message
+      : 'check your email for the sign-in link ✓';
+  }
+
+  function signOut() { sb.auth.signOut(); }
+
+  let currentUser = null;
+
+  async function refreshData() {
+    const [{ data: entryRows, error: eErr }, { data: vocabRows, error: vErr }] = await Promise.all([
+      sb.from('entries').select('*').order('ts', { ascending: false }),
+      sb.from('tag_vocab').select('tag').order('last_used_at', { ascending: false }),
+    ]);
+    if (eErr || vErr) { showToast('sync error — check connection'); console.error(eErr || vErr); return; }
+    entries = entryRows.map(rowToEntry);
+    tagVocab = vocabRows.map(r => r.tag);
+  }
+
+  // One-time: if this browser has an old localStorage capture and the signed-in
+  // account has no entries yet, bring it over.
+  async function migrateLocalData() {
+    const local = loadLocal();
+    if (!Array.isArray(local) || !local.length) return;
+    if (entries.length) return;
+    if (!confirm(`Found ${local.length} entries saved locally on this device. Import them into your account?`)) return;
+
+    const rows = local.map(e => ({
+      user_id: currentUser.id,
+      text: e.text,
+      tags: e.tags || [],
+      ts: new Date(e.ts || e.id).toISOString(),
+    }));
+    const { error } = await sb.from('entries').insert(rows);
+    if (error) { console.error(error); showToast('import failed'); return; }
+
+    const localMeta = loadLocalMeta();
+    const allTags = new Set(localMeta.tagVocab || []);
+    local.forEach(e => (e.tags || []).forEach(t => allTags.add(t)));
+    if (allTags.size) await upsertTagVocab([...allTags]);
+
+    showToast(`imported ${local.length} entries ✓`);
+  }
+
+  async function onSignedIn() {
+    const { data } = await sb.auth.getUser();
+    currentUser = data.user;
+    hideAuthScreen();
+    await refreshData();
+    await migrateLocalData();
+    await refreshData();
+    updateCount();
+    input.focus();
+  }
+
+  async function boot() {
+    const { data: { session } } = await sb.auth.getSession();
+    sb.auth.onAuthStateChange((event, s) => {
+      if (event === 'SIGNED_IN') onSignedIn();
+      if (event === 'SIGNED_OUT') { currentUser = null; showAuthScreen(); }
+    });
+    if (session) await onSignedIn();
+    else showAuthScreen();
+  }
+
+  boot();
 </script>
 </body>
 </html>
