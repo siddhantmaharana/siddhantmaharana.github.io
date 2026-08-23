@@ -1,5 +1,8 @@
 # changelog
 
+## v2.1 
+- ability to delete entries 
+
 ## v2 — 2026-08-03
 
 - Data now synced via Supabase (Postgres + RLS) instead of `localStorage` — same contacts on every device
