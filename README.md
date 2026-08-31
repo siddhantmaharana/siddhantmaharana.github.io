@@ -13,6 +13,7 @@ See [CHANGELOG.md](CHANGELOG.md) for what changed between versions.
 - Set a specific next contact date that overrides the default cadence
 - **Timeline tab** — every note you've logged, across everyone, newest first and grouped by date, so you can browse without opening each person one at a time
 - Person sheet keeps one primary action (log it); edit/delete live behind a small ⋯ menu instead of crowding the main actions
+- Any logged note can be edited or deleted after the fact, from either the person sheet or the Timeline
 - Export everything as markdown to paste into Obsidian and run AI on top
 - Backup and restore via JSON — your data is always yours
 - Signs in with a magic link and syncs the same contacts to every device

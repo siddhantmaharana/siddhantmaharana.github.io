@@ -24,7 +24,6 @@ Non-goals for v3
 * Complex task management
 * A build step, framework, or component library
 * Search across notes (Timeline is browse-only in v3; search is a later addition once browsing itself is validated)
-* Editing or deleting a single log entry from Timeline (still only add-a-log from the person sheet; log entries stay append-only for now)
 
 Why a Timeline tab instead of a separate page/URL
 

@@ -1,5 +1,10 @@
 # changelog
 
+## v3.2 — 2026-08-31
+
+- Added the ability to edit or delete an individual logged note — a small ⋯ next to any note (in the person sheet's recent notes, or in Timeline) opens it for editing, with delete alongside
+- A contact's "last contact" is now recomputed from what's left whenever a note is edited or deleted, so it can't go stale (the same class of bug the v1 `next_contact` fix addressed)
+
 ## v3.1 — 2026-08-31
 
 - Fixed: the bottom tab bar could clip the last item in a long People/Timeline list, making it impossible to scroll to. Root cause was `body { height: 100% }` absorbing its own bottom padding instead of extending the page — changed to `min-height` so the padding actually reserves scroll room, and that room is now measured from the tab bar's real height instead of a guessed pixel value

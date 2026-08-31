@@ -272,6 +272,7 @@
   input:focus, textarea:focus, select:focus { border-color: var(--accent); }
   textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
   #f-note { min-height: 180px; font-size: 15px; }
+  #sheet-log-edit textarea { min-height: 160px; font-size: 15px; }
   select {
     cursor: pointer;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555550' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -342,6 +343,8 @@
     .sheet-handle { display: none; }
     #sheet-person .sheet { max-width: 640px; }
     #sheet-person #f-note { min-height: 320px; font-size: 16px; }
+    #sheet-log-edit .sheet { max-width: 560px; }
+    #sheet-log-edit textarea { min-height: 240px; font-size: 16px; }
   }
   .sheet-header {
     display: flex;
@@ -366,6 +369,17 @@
   .log-item:last-child { border-bottom: none; }
   .log-ts  { font-size: 10px; font-family: var(--mono); color: var(--muted); margin-bottom: 3px; }
   .log-txt { font-size: 13px; line-height: 1.5; color: #9a9a94; }
+  .log-edit-btn {
+    background: none; border: none;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .log-edit-btn:hover { color: var(--text); background: var(--card); }
 
   /* ── Export sheet ── */
   .export-md {
@@ -512,6 +526,30 @@
   </div>
 </div>
 
+<!-- ── EDIT LOG SHEET ── -->
+<div class="overlay" id="sheet-log-edit">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">edit note</div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-log-edit')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>date</label>
+      <input type="date" id="f-log-edit-date" style="color-scheme:dark" />
+    </div>
+    <div class="form-group">
+      <label>note</label>
+      <textarea id="f-log-edit-note" placeholder="What happened…"></textarea>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-sm btn-danger" style="margin-right:auto" onclick="deleteLog()">delete</button>
+      <button class="btn btn-sm" onclick="closeSheet('sheet-log-edit')">cancel</button>
+      <button class="btn btn-sm btn-primary" onclick="saveLogEdit()">save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── ADD / EDIT CONTACT SHEET ── -->
 <div class="overlay" id="sheet-contact">
   <div class="sheet">
@@ -652,7 +690,7 @@ function relBucket(ts) {
 }
 
 let DB = { contacts:[], logs:[] };
-let activePerson = null, editingId = null, currentTab = 'people';
+let activePerson = null, editingId = null, editingLogId = null, currentTab = 'people';
 
 function rowToContact(r) {
   return {
@@ -832,7 +870,13 @@ function renderHistory() {
       html += `<div style="font-size:9px;font-family:var(--mono);color:#3a3a36;letter-spacing:0.05em;text-transform:uppercase;margin-top:8px">${bucket}</div>`;
       lastBucket = bucket;
     }
-    html += `<div class="log-item"><div class="log-ts">${fmtDateTime(l.ts)}</div><div class="log-txt">${l.note}</div></div>`;
+    html += `<div class="log-item">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="log-ts">${fmtDateTime(l.ts)}</div>
+        <button class="log-edit-btn" onclick="openLogEditSheet('${l.id}')" title="edit note">⋯</button>
+      </div>
+      <div class="log-txt">${l.note}</div>
+    </div>`;
   }
   if (DB.logs.filter(l => l.contactId===activePerson).length > 5) {
     html += `<div style="text-align:center;margin-top:8px"><button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person');showTab('timeline')">see all in timeline →</button></div>`;
@@ -870,6 +914,73 @@ async function logNote() {
   renderPeople();
   if (currentTab === 'timeline') renderTimeline();
   showToast('logged ✓');
+}
+
+// A contact's last_contact is a cached value set when a note is logged, not
+// derived live from touch_logs — so editing or deleting the log that set it
+// has to recompute it from what's left, or the badge goes stale (same class
+// of bug as the v1 next_contact fix).
+async function recomputeLastContact(contactId) {
+  const remaining = DB.logs.filter(l => l.contactId === contactId);
+  const maxTs = remaining.length ? Math.max(...remaining.map(l => l.ts)) : null;
+  const c = DB.contacts.find(x => x.id === contactId);
+  if (!c || c.lastContact === maxTs) return;
+  await sb.from('people').update({
+    last_contact: maxTs ? new Date(maxTs).toISOString() : null,
+  }).eq('id', contactId);
+}
+
+function openLogEditSheet(id) {
+  const log = DB.logs.find(l => l.id === id);
+  if (!log) return;
+  editingLogId = id;
+  document.getElementById('f-log-edit-note').value = log.note;
+  document.getElementById('f-log-edit-date').value = new Date(log.ts).toISOString().slice(0,10);
+  closeMenus();
+  closeSheet('sheet-person');
+  setTimeout(() => { document.getElementById('sheet-log-edit').classList.add('open'); syncTabBar(); }, 200);
+}
+
+async function saveLogEdit() {
+  const note = document.getElementById('f-log-edit-note').value.trim();
+  if (!note) { showToast('write something first'); return; }
+  const dateVal = document.getElementById('f-log-edit-date').value;
+  const ts = dateVal ? new Date(dateVal+'T12:00:00').getTime() : Date.now();
+  const log = DB.logs.find(l => l.id === editingLogId);
+  const contactId = log ? log.contactId : activePerson;
+
+  const { error } = await sb.from('touch_logs').update({
+    note, ts: new Date(ts).toISOString(),
+  }).eq('id', editingLogId);
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+
+  await refreshData();
+  await recomputeLastContact(contactId);
+  await refreshData();
+  closeSheet('sheet-log-edit');
+  renderPeople();
+  if (currentTab === 'timeline') renderTimeline();
+  if (activePerson === contactId) renderHistory();
+  showToast('updated');
+}
+
+async function deleteLog() {
+  if (!editingLogId) return;
+  if (!confirm('Delete this note?')) return;
+  const log = DB.logs.find(l => l.id === editingLogId);
+  const contactId = log ? log.contactId : activePerson;
+
+  const { error } = await sb.from('touch_logs').delete().eq('id', editingLogId);
+  if (error) { showToast('could not delete — try again'); console.error(error); return; }
+
+  await refreshData();
+  await recomputeLastContact(contactId);
+  await refreshData();
+  closeSheet('sheet-log-edit');
+  renderPeople();
+  if (currentTab === 'timeline') renderTimeline();
+  if (activePerson === contactId) renderHistory();
+  showToast('deleted');
 }
 
 function openAddSheet() {
@@ -1081,7 +1192,10 @@ function renderTimeline() {
       <div class="timeline-body">
         <div class="timeline-name-line">
           <span class="timeline-name">${c.name}</span>
-          <span class="timeline-ts">${fmtDateTime(l.ts)}</span>
+          <span style="display:flex;align-items:center;gap:2px">
+            <span class="timeline-ts">${fmtDateTime(l.ts)}</span>
+            <button class="log-edit-btn" onclick="event.stopPropagation();openLogEditSheet('${l.id}')" title="edit note">⋯</button>
+          </span>
         </div>
         <div class="timeline-note">${l.note}</div>
       </div>
