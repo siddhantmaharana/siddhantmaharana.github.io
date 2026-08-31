@@ -11,6 +11,8 @@ See [CHANGELOG.md](CHANGELOG.md) for what changed between versions.
 - Two sections: **needs attention** and **all good**
 - Log notes after a call or meetup, with a timestamp
 - Set a specific next contact date that overrides the default cadence
+- **Timeline tab** — every note you've logged, across everyone, newest first and grouped by date, so you can browse without opening each person one at a time
+- Person sheet keeps one primary action (log it); edit/delete live behind a small ⋯ menu instead of crowding the main actions
 - Export everything as markdown to paste into Obsidian and run AI on top
 - Backup and restore via JSON — your data is always yours
 - Signs in with a magic link and syncs the same contacts to every device

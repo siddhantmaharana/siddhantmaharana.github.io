@@ -1,7 +1,14 @@
 # changelog
 
-## v2.1 
-- ability to delete entries 
+## v3 — 2026-08-31
+
+- Added a **Timeline** tab — every logged note across all people, newest first, grouped by Today / Yesterday / This week / month, reachable from a new bottom tab bar (People / Timeline)
+- Person sheet decluttered: one primary "log it" button; edit and delete moved behind a small ⋯ overflow menu next to close, and the redundant "cancel" button was removed (✕ already dismisses the sheet)
+- Recent-notes history inside the person sheet is now grouped by relative date, with a link into the Timeline tab when there's more than 5 entries
+- Export/add-person icons in the header now only show on the People tab; sign-out stays available on both
+
+## v2.1
+- ability to delete entries
 
 ## v2 — 2026-08-03
 

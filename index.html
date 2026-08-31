@@ -38,7 +38,7 @@
     line-height: 1.5;
     max-width: 480px;
     margin: 0 auto;
-    padding-bottom: 40px;
+    padding-bottom: 76px;
   }
 
   /* ── Header ── */
@@ -136,6 +136,77 @@
   .b-gray   { background: var(--subtle);     color: var(--muted); }
 
   .section-divider { height: 6px; background: var(--subtle); }
+
+  /* ── Bottom tab bar ── */
+  .tab-bar {
+    position: fixed; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    display: flex;
+    background: var(--surface);
+    border-top: 1px solid var(--border-hi);
+    z-index: 50;
+  }
+  .tab-bar.hidden { display: none; }
+  .tab-btn {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 9px 0 10px;
+    background: none; border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .tab-btn.active { color: var(--accent); }
+
+  /* ── Overflow menu ── */
+  .menu-wrap { position: relative; }
+  .menu-dropdown {
+    display: none;
+    position: absolute; top: 40px; right: 0;
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    min-width: 120px;
+    overflow: hidden;
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .menu-dropdown.open { display: block; }
+  .menu-item {
+    display: block; width: 100%; text-align: left;
+    padding: 9px 14px;
+    background: none; border: none;
+    color: var(--text);
+    font-size: 13px; font-family: inherit;
+    cursor: pointer;
+  }
+  .menu-item:hover { background: var(--subtle); }
+  .menu-item.danger { color: var(--red); }
+
+  /* ── Timeline ── */
+  .timeline-group-head {
+    font-size: 10px; font-family: var(--mono);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 20px 6px;
+  }
+  .timeline-row {
+    display: flex; gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .timeline-row:hover { background: #141414; }
+  .timeline-body { flex: 1; min-width: 0; }
+  .timeline-name-line { display: flex; justify-content: space-between; gap: 8px; }
+  .timeline-name { font-size: 13px; font-weight: 500; }
+  .timeline-ts { font-size: 10px; font-family: var(--mono); color: var(--muted); white-space: nowrap; }
+  .timeline-note { font-size: 13px; color: #9a9a94; margin-top: 2px; line-height: 1.5; }
 
   /* ── Empty state ── */
   .empty {
@@ -331,12 +402,14 @@
     <span class="app-count" id="people-count"></span>
   </div>
   <div class="header-actions">
-    <button class="icon-btn" onclick="openExportSheet()" title="Export">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    </button>
-    <button class="icon-btn" onclick="openAddSheet()" title="Add person">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
+    <span id="people-header-actions" style="display:flex;gap:8px">
+      <button class="icon-btn" onclick="openExportSheet()" title="Export">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <button class="icon-btn" onclick="openAddSheet()" title="Add person">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </span>
     <button class="icon-btn" onclick="signOut()" title="Sign out">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
@@ -345,6 +418,9 @@
 
 <!-- ── PEOPLE LIST ── -->
 <main id="people-main"></main>
+
+<!-- ── TIMELINE ── -->
+<main id="timeline-main" style="display:none"></main>
 
 <!-- ── LOG NOTE SHEET ── -->
 <div class="overlay" id="sheet-person">
@@ -355,7 +431,16 @@
         <div class="sheet-title" id="person-name"></div>
         <div class="sheet-meta"  id="person-meta"></div>
       </div>
-      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person')">✕</button>
+      <div style="display:flex;gap:4px;align-items:flex-start">
+        <div class="menu-wrap">
+          <button class="btn btn-sm btn-ghost" onclick="toggleMenu(event, 'person-menu')" title="More">⋯</button>
+          <div class="menu-dropdown" id="person-menu">
+            <button class="menu-item" onclick="closeMenus();openEditSheet()">edit</button>
+            <button class="menu-item danger" onclick="closeMenus();deleteContact(activePerson)">delete</button>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person')">✕</button>
+      </div>
     </div>
     <div class="form-group">
       <label>when <span style="text-transform:none;letter-spacing:0;font-size:10px;color:#333">— defaults to today, backdate if logging late</span></label>
@@ -373,9 +458,7 @@
       </div>
     </div>
     <div class="sheet-actions">
-      <button class="btn btn-sm btn-ghost" onclick="openEditSheet()">edit</button>
-      <button class="btn btn-sm" onclick="closeSheet('sheet-person')">cancel</button>
-      <button class="btn btn-sm btn-primary" onclick="logNote()">log it</button>
+      <button class="btn btn-primary" style="width:100%" onclick="logNote()">log it</button>
     </div>
     <div id="person-history"></div>
   </div>
@@ -467,6 +550,18 @@
   </div>
 </div>
 
+<!-- ── BOTTOM TAB BAR ── -->
+<nav class="tab-bar" id="tab-bar">
+  <button class="tab-btn active" id="tab-people" onclick="showTab('people')">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    people
+  </button>
+  <button class="tab-btn" id="tab-timeline" onclick="showTab('timeline')">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    timeline
+  </button>
+</nav>
+
 </div><!-- /app-root -->
 
 <div class="toast" id="toast"></div>
@@ -498,8 +593,18 @@ function daysSince(ts)    { return ts == null ? null : Math.floor((Date.now()-ts
 function fmtDate(ts)      { return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function fmtDateTime(ts)  { return new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
 
+function relBucket(ts) {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const day = new Date(ts); day.setHours(0,0,0,0);
+  const diffDays = Math.round((now - day) / 86400000);
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays > 1 && diffDays <= 7) return 'This week';
+  return day.toLocaleDateString('en-US', {month:'long', year: day.getFullYear()===now.getFullYear() ? undefined : 'numeric'});
+}
+
 let DB = { contacts:[], logs:[] };
-let activePerson = null, editingId = null;
+let activePerson = null, editingId = null, currentTab = 'people';
 
 function rowToContact(r) {
   return {
@@ -663,6 +768,7 @@ function openPersonSheet(id) {
   nd.value = c.nextContact ? new Date(c.nextContact).toISOString().slice(0,10) : '';
   renderHistory();
   document.getElementById('sheet-person').classList.add('open');
+  syncTabBar();
   setTimeout(() => document.getElementById('f-note').focus(), 300);
 }
 
@@ -670,8 +776,20 @@ function renderHistory() {
   const logs = DB.logs.filter(l => l.contactId===activePerson).sort((a,b) => b.ts-a.ts).slice(0,5);
   const el   = document.getElementById('person-history');
   if (!logs.length) { el.innerHTML=''; return; }
-  el.innerHTML = '<div class="history-head">recent notes</div>' +
-    logs.map(l => `<div class="log-item"><div class="log-ts">${fmtDateTime(l.ts)}</div><div class="log-txt">${l.note}</div></div>`).join('');
+  let html = '<div class="history-head">recent notes</div>';
+  let lastBucket = null;
+  for (const l of logs) {
+    const bucket = relBucket(l.ts);
+    if (bucket !== lastBucket) {
+      html += `<div style="font-size:9px;font-family:var(--mono);color:#3a3a36;letter-spacing:0.05em;text-transform:uppercase;margin-top:8px">${bucket}</div>`;
+      lastBucket = bucket;
+    }
+    html += `<div class="log-item"><div class="log-ts">${fmtDateTime(l.ts)}</div><div class="log-txt">${l.note}</div></div>`;
+  }
+  if (DB.logs.filter(l => l.contactId===activePerson).length > 5) {
+    html += `<div style="text-align:center;margin-top:8px"><button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person');showTab('timeline')">see all in timeline →</button></div>`;
+  }
+  el.innerHTML = html;
 }
 
 async function logNote() {
@@ -702,6 +820,7 @@ async function logNote() {
   document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
   renderHistory();
   renderPeople();
+  if (currentTab === 'timeline') renderTimeline();
   showToast('logged ✓');
 }
 
@@ -713,6 +832,7 @@ function openAddSheet() {
   document.getElementById('f-cadence').value = '30';
   document.getElementById('delete-btn').style.display = 'none';
   document.getElementById('sheet-contact').classList.add('open');
+  syncTabBar();
   setTimeout(() => document.getElementById('f-name').focus(), 300);
 }
 
@@ -726,7 +846,7 @@ function openEditSheet() {
   document.getElementById('f-about').value   = c.about||'';
   document.getElementById('f-cadence').value = c.cadence||30;
   document.getElementById('delete-btn').style.display = 'inline-block';
-  setTimeout(() => document.getElementById('sheet-contact').classList.add('open'), 200);
+  setTimeout(() => { document.getElementById('sheet-contact').classList.add('open'); syncTabBar(); }, 200);
 }
 
 async function saveContact() {
@@ -747,13 +867,17 @@ async function saveContact() {
   showToast(editingId ? 'updated' : 'added');
 }
 
-async function deleteContact() {
-  if (!editingId) return;
+async function deleteContact(id) {
+  const targetId = id || editingId;
+  if (!targetId) return;
   if (!confirm('Delete this person and all their notes?')) return;
-  const { error } = await sb.from('people').delete().eq('id', editingId);
+  const { error } = await sb.from('people').delete().eq('id', targetId);
   if (error) { showToast('could not delete — try again'); console.error(error); return; }
-  await refreshData(); closeSheet('sheet-contact');
+  await refreshData();
+  closeSheet('sheet-contact');
+  closeSheet('sheet-person');
   renderPeople(); populateExportSelect();
+  if (currentTab === 'timeline') renderTimeline();
   showToast('deleted');
 }
 
@@ -761,6 +885,7 @@ function openExportSheet() {
   populateExportSelect();
   renderExport();
   document.getElementById('sheet-export').classList.add('open');
+  syncTabBar();
 }
 
 function populateExportSelect() {
@@ -843,7 +968,66 @@ function downloadBackup() {
   showToast('backup downloaded');
 }
 
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); syncTabBar(); }
+
+function syncTabBar() {
+  const anyOpen = document.querySelector('.overlay.open');
+  document.getElementById('tab-bar').classList.toggle('hidden', !!anyOpen);
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.getElementById('people-main').style.display = tab==='people' ? '' : 'none';
+  document.getElementById('timeline-main').style.display = tab==='timeline' ? '' : 'none';
+  document.getElementById('people-header-actions').style.display = tab==='people' ? 'flex' : 'none';
+  document.getElementById('tab-people').classList.toggle('active', tab==='people');
+  document.getElementById('tab-timeline').classList.toggle('active', tab==='timeline');
+  if (tab === 'timeline') renderTimeline();
+}
+
+function toggleMenu(e, id) {
+  e.stopPropagation();
+  const menu = document.getElementById(id);
+  const wasOpen = menu.classList.contains('open');
+  closeMenus();
+  if (!wasOpen) menu.classList.add('open');
+}
+function closeMenus() {
+  document.querySelectorAll('.menu-dropdown.open').forEach(m => m.classList.remove('open'));
+}
+document.addEventListener('click', closeMenus);
+
+function renderTimeline() {
+  const main = document.getElementById('timeline-main');
+  if (!DB.logs.length) {
+    main.innerHTML = `<div class="empty">
+      <div class="empty-glyph">[ ]</div>
+      <div class="empty-title">no notes logged yet</div>
+      <div class="empty-body">log a note from someone's page and it'll show up here.</div>
+    </div>`;
+    return;
+  }
+  const sorted = [...DB.logs].sort((a,b) => b.ts - a.ts);
+  let html = '', lastBucket = null;
+  for (const l of sorted) {
+    const c = DB.contacts.find(x => x.id===l.contactId);
+    if (!c) continue;
+    const bucket = relBucket(l.ts);
+    if (bucket !== lastBucket) { html += `<div class="timeline-group-head">${bucket}</div>`; lastBucket = bucket; }
+    const av = palette(c.name);
+    html += `<div class="timeline-row" onclick="openPersonSheet('${c.id}')">
+      <div class="avatar" style="background:${av.bg};color:${av.color}">${initials(c.name)}</div>
+      <div class="timeline-body">
+        <div class="timeline-name-line">
+          <span class="timeline-name">${c.name}</span>
+          <span class="timeline-ts">${fmtDateTime(l.ts)}</span>
+        </div>
+        <div class="timeline-note">${l.note}</div>
+      </div>
+    </div>`;
+  }
+  main.innerHTML = html || `<div class="empty"><div class="empty-body">no notes to show.</div></div>`;
+}
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -852,10 +1036,10 @@ function showToast(msg) {
 }
 
 document.querySelectorAll('.overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
+  el.addEventListener('click', e => { if (e.target===el) { el.classList.remove('open'); syncTabBar(); } });
 });
 document.addEventListener('keydown', e => {
-  if (e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open'));
+  if (e.key==='Escape') { document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open')); syncTabBar(); }
 });
 document.getElementById('f-name').addEventListener('keydown', e => {
   if (e.key==='Enter') saveContact();
