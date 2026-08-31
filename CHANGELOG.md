@@ -6,6 +6,7 @@
 - Person sheet decluttered: one primary "log it" button; edit and delete moved behind a small ⋯ overflow menu next to close, and the redundant "cancel" button was removed (✕ already dismisses the sheet)
 - Recent-notes history inside the person sheet is now grouped by relative date, with a link into the Timeline tab when there's more than 5 entries
 - Export/add-person icons in the header now only show on the People tab; sign-out stays available on both
+- The log-note sheet now leads with a much bigger note box (the date fields moved into one compact row below it), and on tablet/desktop widths it opens as a centered dialog instead of staying pinned to a phone-width bottom sheet
 
 ## v2.1
 - ability to delete entries
