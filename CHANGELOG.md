@@ -1,5 +1,11 @@
 # changelog
 
+## v3.1 — 2026-08-31
+
+- Fixed: the bottom tab bar could clip the last item in a long People/Timeline list, making it impossible to scroll to. Root cause was `body { height: 100% }` absorbing its own bottom padding instead of extending the page — changed to `min-height` so the padding actually reserves scroll room, and that room is now measured from the tab bar's real height instead of a guessed pixel value
+- On tablet/desktop widths (≥700px), navigation moves from the fixed bottom tab bar into a segmented People/Timeline control in the header — a bottom-pinned bar is a mobile convention and was wasting vertical space and looking out of place on a wide screen
+- Page content width now grows to 680px on wider screens instead of staying capped at the 480px mobile column
+
 ## v3 — 2026-08-31
 
 - Added a **Timeline** tab — every logged note across all people, newest first, grouped by Today / Yesterday / This week / month, reachable from a new bottom tab bar (People / Timeline)

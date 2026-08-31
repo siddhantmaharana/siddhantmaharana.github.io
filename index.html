@@ -29,7 +29,8 @@
     --mono: 'SF Mono','Fira Code','Cascadia Code',monospace;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html { height: 100%; }
+  body { min-height: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -38,7 +39,10 @@
     line-height: 1.5;
     max-width: 480px;
     margin: 0 auto;
-    padding-bottom: 76px;
+    padding-bottom: 90px;
+  }
+  @media (min-width: 700px) {
+    body { max-width: 680px; }
   }
 
   /* ── Header ── */
@@ -46,6 +50,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     padding: 20px 20px 14px;
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -54,6 +59,27 @@
     z-index: 10;
   }
   .app-brand { display: flex; align-items: baseline; gap: 7px; }
+
+  /* ── Header segmented tabs (desktop nav) ── */
+  .header-tabs { display: none; gap: 6px; }
+  .seg-btn {
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .seg-btn:hover  { color: var(--text); }
+  .seg-btn.active { color: var(--accent); border-color: var(--accent); }
+  @media (min-width: 700px) {
+    .header-tabs { display: flex; }
+  }
   .app-title {
     font-family: var(--mono);
     font-size: 17px;
@@ -145,6 +171,7 @@
     display: flex;
     background: var(--surface);
     border-top: 1px solid var(--border-hi);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     z-index: 50;
   }
   .tab-bar.hidden { display: none; }
@@ -305,6 +332,7 @@
 
   /* ── Wider viewports: sheets become a centered dialog, not a phone-width bottom sheet ── */
   @media (min-width: 700px) {
+    .tab-bar { display: none; }
     .overlay { align-items: center; padding: 24px; }
     .sheet {
       border-radius: 16px;
@@ -414,6 +442,10 @@
   <div class="app-brand">
     <span class="app-title">touchbase</span>
     <span class="app-count" id="people-count"></span>
+  </div>
+  <div class="header-tabs" id="header-tabs">
+    <button class="seg-btn active" id="htab-people" onclick="showTab('people')">people</button>
+    <button class="seg-btn" id="htab-timeline" onclick="showTab('timeline')">timeline</button>
   </div>
   <div class="header-actions">
     <span id="people-header-actions" style="display:flex;gap:8px">
@@ -989,7 +1021,18 @@ function closeSheet(id) { document.getElementById(id).classList.remove('open'); 
 function syncTabBar() {
   const anyOpen = document.querySelector('.overlay.open');
   document.getElementById('tab-bar').classList.toggle('hidden', !!anyOpen);
+  syncBodyPadding();
 }
+
+// Measures the actual rendered bottom-bar height (it's fixed, so it clips
+// scrollable content otherwise) instead of guessing a pixel value — stays
+// correct across breakpoints, font rendering, and iOS safe-area insets.
+function syncBodyPadding() {
+  const tb = document.getElementById('tab-bar');
+  const visible = getComputedStyle(tb).display !== 'none' && !tb.classList.contains('hidden');
+  document.body.style.paddingBottom = visible ? (tb.offsetHeight + 16) + 'px' : '24px';
+}
+window.addEventListener('resize', syncBodyPadding);
 
 function showTab(tab) {
   currentTab = tab;
@@ -998,6 +1041,8 @@ function showTab(tab) {
   document.getElementById('people-header-actions').style.display = tab==='people' ? 'flex' : 'none';
   document.getElementById('tab-people').classList.toggle('active', tab==='people');
   document.getElementById('tab-timeline').classList.toggle('active', tab==='timeline');
+  document.getElementById('htab-people').classList.toggle('active', tab==='people');
+  document.getElementById('htab-timeline').classList.toggle('active', tab==='timeline');
   if (tab === 'timeline') renderTimeline();
 }
 
@@ -1071,6 +1116,7 @@ function showAuthScreen() {
 function hideAuthScreen() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app-root').style.display = 'block';
+  syncBodyPadding();
 }
 
 async function sendMagicLink() {
