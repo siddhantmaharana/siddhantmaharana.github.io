@@ -1,4 +1,4 @@
--- capture v2 schema
+-- capture schema (v2.1: adds the entries update policy for in-place edits)
 -- Run this in the SAME Supabase project touchbase uses (Dashboard -> SQL Editor -> New query).
 -- Table names (entries, tag_vocab) don't collide with touchbase's (people, touch_logs).
 
@@ -31,6 +31,8 @@ create policy "entries_insert_own" on entries
   for insert with check (auth.uid() = user_id);
 create policy "entries_delete_own" on entries
   for delete using (auth.uid() = user_id);
+create policy "entries_update_own" on entries
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "tag_vocab_select_own" on tag_vocab
   for select using (auth.uid() = user_id);
@@ -39,5 +41,6 @@ create policy "tag_vocab_insert_own" on tag_vocab
 create policy "tag_vocab_update_own" on tag_vocab
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
--- no update policy on entries: an entry is written once and later deleted by export, never edited
--- no delete policy on tag_vocab: vocabulary is meant to persist across export/cleanup cycles
+-- entries persist indefinitely — there is no app-level purge or export-triggered delete.
+-- if you want to prune or archive old rows, do it directly in the Supabase SQL editor.
+-- no delete policy on tag_vocab: vocabulary is meant to persist even if entries are pruned

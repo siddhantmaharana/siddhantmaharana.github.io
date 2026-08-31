@@ -1,7 +1,7 @@
 {
   "name": "capture",
   "short_name": "capture",
-  "description": "Quick thought capture with mood and tags",
+  "description": "Quick thought capture with tags — write, read, and edit your notes",
   "start_url": "/capture/",
   "display": "standalone",
   "background_color": "#0d0d0d",

@@ -1,17 +1,18 @@
 # capture
 
-A minimal thought-capture PWA. Log what's on your mind, tag it, export to Obsidian, keep the database empty. A single-file PWA, synced across your devices via Supabase — the same project [touchbase](https://github.com/siddhantmaharana/touchbase) uses, one account for both apps.
+A minimal notes PWA. Log what's on your mind, tag it, read it back, edit it. Synced across your devices via Supabase — the same project [touchbase](https://github.com/siddhantmaharana/touchbase) uses, one account for both apps.
 
-See [spec_v2.md](spec_v2.md) for the full v2 design (why tags replaced mood, why export deletes from the db, why this stays a separate app from touchbase).
+See [spec_v2.1.md](spec_v2.1.md) for the current design, [CHANGELOG.md](CHANGELOG.md) for what changed and when.
 
 ## what it does
 
 - Quick capture with inline `#tags` — no mood buttons, tags are the only categorization
-- Tag autocomplete pulls from your tag vocabulary, which persists even after you clear the db out
+- Tag autocomplete pulls from your tag vocabulary
 - Log view grouped by date, filterable by tag
-- Tap to expand entries, long-press to delete
+- Tap an entry to expand it — `edit` to change the text in place, `delete` to remove it
 - Writes straight to Supabase as you capture — no local draft state to lose
-- Export to Obsidian — markdown with frontmatter, then a one-tap prompt to clear the exported rows out of the database, since Obsidian is the permanent record, not the db
+- Entries persist. There's no export-and-purge step; the database is the record
+- Responsive: a real desktop layout above 720px wide, not a phone screen stretched out
 - Signs in with a magic link and syncs the same entries to every device
 
 ## stack
@@ -38,6 +39,8 @@ Uses the same Supabase project as touchbase — no new project needed if you alr
 
 The anon key is safe to commit — RLS is what actually restricts each signed-in user to their own rows.
 
+Already running v2? Just run the new `entries_update_own` policy statement in `supabase/schema.sql` — it's additive, no data changes.
+
 ## install on mobile
 
 **Android**
@@ -46,38 +49,22 @@ Chrome → visit the URL → three-dot menu → Add to Home Screen
 **iPhone**
 Safari → visit the URL → Share → Add to Home Screen
 
-## export format
+## data lifecycle
 
-Exports clean markdown with YAML frontmatter for Obsidian, then offers to delete the exported rows from Supabase:
-
-```markdown
----
-export_ts: 2026-08-09T09:41:00
-export_date: 2026-08-09
-entry_count: 24
----
-
-## 2026-08-09
-
-### 09:38
-tags:: #idea #product
-
-index entries by energy not topic...
-```
-
-The db only ever holds what hasn't been exported yet — export is the only thing that clears it out (long-press delete on a single entry is separate).
+There's no export or purge feature in the app. Entries stay in Supabase until you delete them one at a time from the log view. If you ever want to prune or archive old rows in bulk, do it directly in the Supabase SQL editor — a deliberate, occasional action, not a button that can misfire.
 
 ## files
 
 ```
 index.html            the entire app
-manifest.json         PWA metadata (name, colors, icons)
-icon-192.png          home screen icon
-icon-512.png          splash screen icon
-supabase/schema.sql   tables + RLS policies for the backend
-spec_v2.md            full v2 design doc
+manifest.json          PWA metadata (name, colors, icons)
+icon-192.png           home screen icon
+icon-512.png           splash screen icon
+supabase/schema.sql    tables + RLS policies for the backend
+spec_v2.1.md           current design doc
+spec_v2.md             v2 design doc (superseded, kept for history)
+CHANGELOG.md           version history
 ```
-
 
 ## sister project
 
