@@ -102,6 +102,15 @@
       flex: 1;
     }
 
+    /* marks an app that needs my sign-in */
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
     .row-arrow {
       font-size: 12px;
       color: var(--muted);
@@ -182,24 +191,25 @@
 
   <!-- Projects -->
   <div class="panel active" id="panel-projects">
-    <p style="font-size:13px; color:var(--muted); padding: 0 12px;">Nothing here yet.</p>
-    <!-- <div class="project-list">
-      <a class="project-row" href="https://github.com/siddhantmaharana/touchbase" target="_blank" rel="noopener">
+    <div class="project-list">
+      <a class="project-row" href="touchbase/">
         <span class="project-name">touchbase</span>
         <span class="project-desc">personal CRM tool to help me remember things people say to me</span>
+        <span class="project-tag">private</span>
         <span class="row-arrow">↗</span>
       </a>
-      <a class="project-row" href="https://github.com/siddhantmaharana/capture" target="_blank" rel="noopener">
+      <a class="project-row" href="capture/">
         <span class="project-name">capture</span>
         <span class="project-desc">quick thought logger so that I don't lie to myself later</span>
+        <span class="project-tag">private</span>
         <span class="row-arrow">↗</span>
       </a>
-      <a class="project-row" href="https://github.com/siddhantmaharana/finance-manager" target="_blank" rel="noopener">
-      <span class="project-name">finance-manager</span>
-      <span class="project-desc">app for me and wifey to track expenses</span>
-      <span class="row-arrow">↗</span>
+      <a class="project-row" href="zentype/">
+        <span class="project-name">zentype</span>
+        <span class="project-desc">typing practice on text I actually want to read</span>
+        <span class="row-arrow">↗</span>
       </a>
-    </div> -->
+    </div>
   </div>
 
   <!-- Writing -->
