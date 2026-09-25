@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>capture</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d0d0d">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    :root {
+      --bg:        #0d0d0d;
+      --surface:   #141414;
+      --surface2:  #1a1a1a;
+      --border:    #232323;
+      --border2:   #333;
+      --accent:    #7c6aff;
+      --text:      #e8e6e0;
+      --muted:     #555550;
+      --muted2:    #777770;
+      --danger:    #f87171;
+      --subtle:    #2a2a28;
+      --mono:      'SF Mono','Fira Code','Cascadia Code',monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 15px;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── DESKTOP / WIDE VIEWPORT ── */
+    @media (min-width: 720px) {
+      body { max-width: 760px; font-size: 16px; }
+      .thought-input { font-size: 18px; min-height: 140px; max-height: 420px; }
+      .entry-body { font-size: 15px; }
+      .save-btn { padding: 10px 22px; font-size: 14px; }
+      .auth-screen, .auth-card { max-width: 380px; }
+    }
+
+    /* ── HEADER ── */
+    .header {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .entry-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px 0;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    .tab.active {
+      color: var(--text);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    /* ── CAPTURE SCREEN ── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ── INPUT SECTION ── */
+    .input-section {
+      padding: 16px 18px 6px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .thought-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.6;
+      resize: none;
+      min-height: 72px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .thought-input::placeholder { color: var(--muted); }
+
+    /* ── AUTOCOMPLETE ── */
+    .autocomplete-wrap {
+      padding: 0 18px 6px;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .autocomplete-wrap.visible { display: block; }
+
+    .ac-inner {
+      background: var(--surface2);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+
+    .ac-hint {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .ac-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .ac-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.1s;
+      border: 1px solid transparent;
+    }
+
+    .ac-chip:active { opacity: 0.6; }
+
+    .ac-chip.match {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .ac-chip.dim {
+      background: var(--surface);
+      color: var(--muted2);
+      border-color: var(--border2);
+    }
+
+    .ac-chip.new-tag {
+      background: color-mix(in srgb, #1D9E75 12%, transparent);
+      color: #1D9E75;
+      border-color: color-mix(in srgb, #1D9E75 30%, transparent);
+    }
+
+    /* ── DETECTED TAGS ── */
+    .detected-tags {
+      padding: 0 18px 6px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      min-height: 0;
+    }
+
+    .dtag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+    }
+
+    /* ── SAVE ROW ── */
+    .save-row {
+      padding: 8px 18px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .save-hint {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .save-btn {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #fff;
+      border-radius: 7px;
+      padding: 8px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .save-btn:hover { background: #6a5aef; border-color: #6a5aef; }
+    .save-btn:active { opacity: 0.85; }
+
+    /* ── LOG SCREEN ── */
+    .log-filters {
+      padding: 8px 18px;
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+
+    .log-filters::-webkit-scrollbar { display: none; }
+
+    .filter-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .filter-chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .filter-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .log-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 0 8px;
+    }
+
+    .date-group-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: 12px 18px 5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .log-entry {
+      padding: 10px 18px;
+      border-left: 2px solid var(--border2);
+      margin: 0 18px 6px;
+      border-radius: 0 6px 6px 0;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .log-entry:hover { background: var(--surface); }
+
+    .entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .entry-time {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .entry-tag-list {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .entry-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .entry-body {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .entry-expanded {
+      display: none;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--muted2);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .log-entry.open .entry-expanded { display: block; }
+
+    .entry-edit-input {
+      display: none;
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 64px;
+      margin-bottom: 8px;
+    }
+
+    .log-entry.editing .entry-body { display: none; }
+    .log-entry.editing .entry-edit-input { display: block; }
+
+    .entry-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .entry-action-btn {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--muted2);
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      padding: 4px 9px;
+      cursor: pointer;
+    }
+
+    .entry-action-btn:hover { color: var(--text); border-color: var(--accent); }
+    .entry-action-btn.danger { color: var(--danger); }
+    .entry-action-btn.danger:hover { border-color: var(--danger); }
+
+    .btn-save-only, .btn-cancel-only { display: none; }
+    .log-entry.editing .btn-edit-only { display: none; }
+    .log-entry.editing .btn-save-only,
+    .log-entry.editing .btn-cancel-only { display: inline-block; }
+
+    .empty-log {
+      text-align: center;
+      padding: 64px 24px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--mono);
+      padding: 8px 18px;
+      border-radius: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── DELETE CONFIRM ── */
+    .delete-confirm {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .delete-confirm.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .delete-sheet {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 18px 18px 0 0;
+      padding: 18px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .delete-sheet p {
+      font-size: 13px;
+      color: var(--muted2);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .delete-sheet-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .btn-delete {
+      flex: 1;
+      background: color-mix(in srgb, var(--danger) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent);
+      border-radius: 7px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--danger);
+      cursor: pointer;
+    }
+
+    /* ── AUTH SCREEN ── */
+    .auth-screen {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .auth-logo {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .auth-tagline {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .auth-card { width: 100%; max-width: 320px; }
+
+    .auth-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .auth-input:focus { border-color: var(--accent); }
+
+    .auth-btn {
+      width: 100%;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #fff;
+      border-radius: 7px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .auth-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .auth-status {
+      font-size: 11px;
+      color: var(--accent);
+      font-family: var(--mono);
+      margin-top: 12px;
+      min-height: 14px;
+      line-height: 1.5;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--muted2);
+      border-radius: 6px;
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover { border-color: var(--accent); color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <!-- ── AUTH SCREEN ── -->
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-logo">capture</div>
+    <div class="auth-tagline">// sign in to sync your entries</div>
+    <div class="auth-card">
+      <input class="auth-input" id="authEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+      <button class="auth-btn" id="authSendBtn" onclick="sendMagicLink()">send magic link</button>
+      <div class="auth-status" id="authStatus"></div>
+    </div>
+  </div>
+
+  <!-- ── APP ROOT ── -->
+  <div id="appRoot" style="display:none">
+
+  <div class="header">
+    <span class="logo">capture</span>
+    <div class="header-right">
+      <span class="entry-count" id="entryCount">0 entries</span>
+      <button class="icon-btn" onclick="manualRefresh()" title="Refresh">↻</button>
+      <button class="icon-btn" onclick="signOut()" title="Sign out">⏻</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="capture" onclick="switchTab('capture')">capture</div>
+    <div class="tab" data-tab="log" onclick="switchTab('log')">log</div>
+  </div>
+
+  <!-- ── CAPTURE SCREEN ── -->
+  <div class="screen active" id="screen-capture">
+
+    <div class="input-section">
+      <textarea
+        id="thoughtInput"
+        class="thought-input"
+        placeholder="what's on your mind… use #tags inline"
+        rows="4"
+      ></textarea>
+    </div>
+
+    <div class="autocomplete-wrap" id="autocompleteWrap">
+      <div class="ac-inner">
+        <div class="ac-hint">your tags — tap to insert</div>
+        <div class="ac-chips" id="acChips"></div>
+      </div>
+    </div>
+
+    <div class="detected-tags" id="detectedTags"></div>
+
+    <div style="flex:1"></div>
+
+    <div class="save-row">
+      <span class="save-hint" id="saveHint">enter to save · shift+enter for newline</span>
+      <button class="save-btn" onclick="saveEntry()">save</button>
+    </div>
+
+  </div>
+
+  <!-- ── LOG SCREEN ── -->
+  <div class="screen" id="screen-log">
+
+    <div class="log-filters" id="logFilters">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">all</div>
+    </div>
+
+    <div class="log-list" id="logList"></div>
+
+  </div>
+
+  <!-- ── DELETE CONFIRM SHEET ── -->
+  <div class="delete-confirm" id="deleteConfirm">
+    <div class="delete-sheet">
+      <p id="deletePreview">delete this entry?</p>
+      <div class="delete-sheet-btns">
+        <button class="btn-cancel" onclick="closeDelete()">cancel</button>
+        <button class="btn-delete" onclick="confirmDelete()">delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  </div><!-- /appRoot -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  // ── SUPABASE (same project as touchbase — shared account, separate tables) ──
+  // The anon key is safe to expose client-side: RLS (see supabase/schema.sql) is what
+  // actually restricts access to each signed-in user's own rows.
+  const SUPABASE_URL = 'https://sjycdaxraklxlnrmgqrb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeWNkYXhyYWtseGxucm1ncXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzUwMTgsImV4cCI6MjEwMTM1MTAxOH0.zNqG47w5lyEbdxV3LeK--hIMKBF7QeXW67OL-ui49NQ';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ── STATE ──
+  let entries = [];       // [{id, text, tags, ts}], newest first — mirrors the `entries` table
+  let tagVocab = [];      // sorted tag strings — mirrors the `tag_vocab` table
+  let activeFilter = 'all';
+  let pendingDeleteId = null;
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+  function getTagVocab() {
+    return [...tagVocab].sort();
+  }
+
+  function rowToEntry(r) {
+    return { id: r.id, text: r.text, tags: r.tags || [], ts: new Date(r.ts).getTime() };
+  }
+
+  // ── HELPERS ──
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function fmtTime(ts) {
+    const d = new Date(ts);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function fmtDate(ts) {
+    const d = new Date(ts);
+    const days = ['sun','mon','tue','wed','thu','fri','sat'];
+    const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function fmtDateKey(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+
+  function parseTags(text) {
+    const matches = text.match(/#[\w\-]+/g) || [];
+    return [...new Set(matches.map(t => t.toLowerCase()))];
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br>');
+  }
+
+  // same as esc() but keeps newlines literal — for textarea contents, not display html
+  function escText(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+  }
+
+  function showToast(msg, duration = 1800) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
+  // ── TABS ──
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+    document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id === `screen-${tab}`));
+    if (tab === 'log') renderLog();
+  }
+
+  // ── AUTOCOMPLETE ──
+  const input = document.getElementById('thoughtInput');
+
+  input.addEventListener('input', handleInput);
+  input.addEventListener('keydown', function(e) {
+    // on touch devices Enter is the on-screen keyboard's newline key — never hijack it.
+    // desktop keeps the fast keyboard flow: Enter saves, Shift+Enter for a newline.
+    if (isTouchDevice) return;
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEntry(); }
+  });
+
+  document.getElementById('saveHint').textContent = isTouchDevice
+    ? 'tap save to post'
+    : 'enter to save · shift+enter for newline';
+
+  function handleInput() {
+    autoResizeInput();
+    renderDetectedTags();
+    handleAutocomplete();
+  }
+
+  function autoResizeInput() {
+    const maxHeight = window.innerWidth >= 720 ? 420 : 160;
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, maxHeight) + 'px';
+  }
+
+  function handleAutocomplete() {
+    const text = input.value;
+    const cursor = input.selectionStart;
+    const before = text.slice(0, cursor);
+    const hashMatch = before.match(/#([\w\-]*)$/);
+
+    const wrap = document.getElementById('autocompleteWrap');
+    const chips = document.getElementById('acChips');
+
+    if (!hashMatch) {
+      wrap.classList.remove('visible');
+      return;
+    }
+
+    const query = hashMatch[1].toLowerCase();
+    const vocab = getTagVocab();
+    const existing = parseTags(text);
+
+    const matches = vocab
+      .filter(t => t.startsWith('#' + query) && !existing.includes(t))
+      .slice(0, 4);
+
+    chips.innerHTML = '';
+
+    if (matches.length === 0 && query.length === 0) {
+      // show all tags when just # typed
+      const all = vocab.filter(t => !existing.includes(t)).slice(0, 5);
+      all.forEach(tag => chips.appendChild(makeAcChip(tag, 'dim', query)));
+    } else {
+      matches.forEach((tag, i) => chips.appendChild(makeAcChip(tag, i < 2 ? 'match' : 'dim', query)));
+    }
+
+    if (query.length > 0 && !vocab.includes('#' + query)) {
+      const newChip = document.createElement('div');
+      newChip.className = 'ac-chip new-tag';
+      newChip.textContent = `+ #${query}`;
+      newChip.onclick = () => insertTag('#' + query);
+      chips.appendChild(newChip);
+    }
+
+    wrap.classList.toggle('visible', chips.children.length > 0);
+  }
+
+  function makeAcChip(tag, cls, query) {
+    const chip = document.createElement('div');
+    chip.className = `ac-chip ${cls}`;
+    chip.textContent = tag;
+    chip.onclick = () => insertTag(tag);
+    return chip;
+  }
+
+  function insertTag(tag) {
+    const text = input.value;
+    const cursor = input.selectionStart;
+    const before = text.slice(0, cursor);
+    const after = text.slice(cursor);
+    const replaced = before.replace(/#[\w\-]*$/, tag + ' ');
+    input.value = replaced + after;
+    input.focus();
+    const newPos = replaced.length;
+    input.setSelectionRange(newPos, newPos);
+    handleInput();
+  }
+
+  function renderDetectedTags() {
+    const tags = parseTags(input.value);
+    const container = document.getElementById('detectedTags');
+    container.innerHTML = tags.map(t => `<div class="dtag">${esc(t)}</div>`).join('');
+  }
+
+  // ── SAVE ──
+  async function saveEntry() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    const tags = parseTags(text);
+    const now = Date.now();
+    const tempId = 'tmp-' + now;
+    const entry = { id: tempId, text, tags, ts: now };
+
+    // optimistic: clear the input and show the entry right away — speed is the point.
+    // reconciled with the real row (or rolled back) once the write comes back.
+    entries.unshift(entry);
+    tags.forEach(t => { if (!tagVocab.includes(t)) tagVocab.push(t); });
+
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('detectedTags').innerHTML = '';
+    document.getElementById('autocompleteWrap').classList.remove('visible');
+    updateCount();
+    if (document.getElementById('screen-log').classList.contains('active')) renderLog();
+    input.focus();
+
+    const { data, error } = await sb.from('entries').insert({
+      user_id: currentUser.id,
+      text,
+      tags,
+      ts: new Date(now).toISOString(),
+    }).select().single();
+
+    if (error) {
+      console.error(error);
+      entries = entries.filter(e => e.id !== tempId);
+      updateCount();
+      if (document.getElementById('screen-log').classList.contains('active')) renderLog();
+      input.value = text;
+      autoResizeInput();
+      showToast('save failed — check connection');
+      return;
+    }
+
+    entry.id = data.id;
+    upsertTagVocab(tags);
+    showToast('saved ✓');
+  }
+
+  async function upsertTagVocab(tags) {
+    if (!tags.length) return;
+    const rows = tags.map(t => ({ user_id: currentUser.id, tag: t, last_used_at: new Date().toISOString() }));
+    const { error } = await sb.from('tag_vocab').upsert(rows, { onConflict: 'user_id,tag' });
+    if (error) console.error(error);
+  }
+
+  function updateCount() {
+    document.getElementById('entryCount').textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+  }
+
+  // ── LOG RENDER ──
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.filter === f);
+    });
+    // add tag filters dynamically
+    renderLog();
+  }
+
+  function filteredEntries() {
+    if (activeFilter === 'all') return entries;
+    if (activeFilter.startsWith('tag:')) {
+      const tag = activeFilter.slice(4);
+      return entries.filter(e => (e.tags || []).includes(tag));
+    }
+    return entries;
+  }
+
+  function renderLog() {
+    const list = document.getElementById('logList');
+    const filtered = filteredEntries();
+
+    // build tag filter chips dynamically
+    buildTagFilters();
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-log">— nothing here yet —<br>start capturing above</div>`;
+      return;
+    }
+
+    // group by date
+    const groups = {};
+    filtered.forEach(e => {
+      const dk = fmtDateKey(e.ts);
+      if (!groups[dk]) groups[dk] = [];
+      groups[dk].push(e);
+    });
+
+    list.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(dk => {
+      const dayEntries = groups[dk];
+      const label = isToday(dk) ? `today — ${fmtDate(dayEntries[0].ts)}` :
+                    isYesterday(dk) ? `yesterday — ${fmtDate(dayEntries[0].ts)}` :
+                    fmtDate(dayEntries[0].ts);
+      return `
+        <div class="date-group-label">${label}</div>
+        ${dayEntries.map(e => renderEntry(e)).join('')}
+      `;
+    }).join('');
+
+    list.querySelectorAll('.log-entry').forEach(el => {
+      el.addEventListener('click', () => toggleExpand(el));
+    });
+  }
+
+  function renderEntry(e) {
+    const tagHtml = (e.tags || []).map(t => `<span class="entry-tag" onclick="event.stopPropagation(); filterByTag('${t}')">${esc(t)}</span>`).join('');
+
+    return `
+      <div class="log-entry" data-id="${e.id}">
+        <div class="entry-meta">
+          <span class="entry-time">${fmtTime(e.ts)}</span>
+          <div class="entry-tag-list">${tagHtml}</div>
+        </div>
+        <div class="entry-body">${esc(e.text)}</div>
+        <textarea class="entry-edit-input">${escText(e.text)}</textarea>
+        <div class="entry-expanded">
+          <div class="entry-actions">
+            <button class="entry-action-btn btn-edit-only" onclick="event.stopPropagation(); startEdit(this)">edit</button>
+            <button class="entry-action-btn btn-save-only" onclick="event.stopPropagation(); saveEdit(this)">save</button>
+            <button class="entry-action-btn btn-cancel-only" onclick="event.stopPropagation(); cancelEdit(this)">cancel</button>
+            <button class="entry-action-btn danger" onclick="event.stopPropagation(); requestDelete('${e.id}')">delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleExpand(el) {
+    el.classList.toggle('open');
+  }
+
+  // ── EDIT ──
+  function startEdit(btn) {
+    const el = btn.closest('.log-entry');
+    el.classList.add('open', 'editing');
+    const ta = el.querySelector('.entry-edit-input');
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+  }
+
+  function cancelEdit(btn) {
+    const el = btn.closest('.log-entry');
+    const entry = entries.find(e => String(e.id) === String(el.dataset.id));
+    el.querySelector('.entry-edit-input').value = entry ? entry.text : '';
+    el.classList.remove('editing');
+  }
+
+  async function saveEdit(btn) {
+    const el = btn.closest('.log-entry');
+    const id = el.dataset.id;
+    const text = el.querySelector('.entry-edit-input').value.trim();
+    if (!text) { showToast("entry can't be empty"); return; }
+
+    const entry = entries.find(e => String(e.id) === String(id));
+    if (!entry) return;
+    const prevText = entry.text, prevTags = entry.tags;
+    const tags = parseTags(text);
+
+    entry.text = text;
+    entry.tags = tags;
+    renderLog();
+
+    const { error } = await sb.from('entries').update({ text, tags }).eq('id', id);
+    if (error) {
+      console.error(error);
+      entry.text = prevText;
+      entry.tags = prevTags;
+      renderLog();
+      showToast('update failed — check connection');
+      return;
+    }
+    tags.forEach(t => { if (!tagVocab.includes(t)) tagVocab.push(t); });
+    upsertTagVocab(tags);
+    showToast('updated ✓');
+  }
+
+  function buildTagFilters() {
+    const vocab = getTagVocab();
+    const container = document.getElementById('logFilters');
+    // remove old tag chips
+    container.querySelectorAll('[data-filter^="tag:"]').forEach(el => el.remove());
+
+    vocab.slice(0, 6).forEach(tag => {
+      if (container.querySelector(`[data-filter="tag:${tag}"]`)) return;
+      const chip = document.createElement('div');
+      chip.className = 'filter-chip';
+      if (activeFilter === `tag:${tag}`) chip.classList.add('active');
+      chip.dataset.filter = `tag:${tag}`;
+      chip.textContent = tag;
+      chip.onclick = () => setFilter(`tag:${tag}`);
+      container.appendChild(chip);
+    });
+  }
+
+  function filterByTag(tag) {
+    switchTab('log');
+    setFilter(`tag:${tag}`);
+  }
+
+  function isToday(dk) {
+    return dk === fmtDateKey(Date.now());
+  }
+
+  function isYesterday(dk) {
+    return dk === fmtDateKey(Date.now() - 86400000);
+  }
+
+  // ── DELETE ──
+  function requestDelete(id) {
+    pendingDeleteId = id;
+    const entry = entries.find(e => String(e.id) === String(id));
+    if (entry) {
+      const preview = entry.text.length > 60 ? entry.text.slice(0,60) + '…' : entry.text;
+      document.getElementById('deletePreview').textContent = `delete: "${preview}"?`;
+    }
+    document.getElementById('deleteConfirm').classList.add('show');
+  }
+
+  function closeDelete() {
+    pendingDeleteId = null;
+    document.getElementById('deleteConfirm').classList.remove('show');
+  }
+
+  async function confirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    closeDelete();
+    const { error } = await sb.from('entries').delete().eq('id', id);
+    if (error) { console.error(error); showToast('delete failed — check connection'); return; }
+    entries = entries.filter(e => String(e.id) !== String(id));
+    updateCount();
+    renderLog();
+    showToast('deleted');
+  }
+
+  // ── AUTH ──
+  document.getElementById('authEmail').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMagicLink();
+  });
+
+  function showAuthScreen() {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('appRoot').style.display = 'none';
+  }
+
+  function hideAuthScreen() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'block';
+  }
+
+  async function sendMagicLink() {
+    const email = document.getElementById('authEmail').value.trim();
+    if (!email) { showToast('enter your email'); return; }
+    const btn = document.getElementById('authSendBtn');
+    btn.disabled = true; btn.textContent = 'sending…';
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.href.split('#')[0] },
+    });
+    btn.disabled = false; btn.textContent = 'send magic link';
+    if (error) console.error(error);
+    document.getElementById('authStatus').textContent = error
+      ? 'error: ' + error.message
+      : 'check your email for the sign-in link ✓';
+  }
+
+  function signOut() { sb.auth.signOut(); }
+
+  let currentUser = null;
+
+  async function refreshData() {
+    const [{ data: entryRows, error: eErr }, { data: vocabRows, error: vErr }] = await Promise.all([
+      sb.from('entries').select('*').order('ts', { ascending: false }),
+      sb.from('tag_vocab').select('tag').order('last_used_at', { ascending: false }),
+    ]);
+    if (eErr || vErr) { showToast('sync error — check connection'); console.error(eErr || vErr); return; }
+    entries = entryRows.map(rowToEntry);
+    tagVocab = vocabRows.map(r => r.tag);
+  }
+
+  async function manualRefresh() {
+    await refreshData();
+    updateCount();
+    if (document.getElementById('screen-log').classList.contains('active')) renderLog();
+    showToast('refreshed ✓');
+  }
+
+  async function onSignedIn() {
+    const { data } = await sb.auth.getUser();
+    currentUser = data.user;
+    hideAuthScreen();
+    await refreshData();
+    updateCount();
+    input.focus();
+  }
+
+  async function boot() {
+    const { data: { session } } = await sb.auth.getSession();
+    sb.auth.onAuthStateChange((event, s) => {
+      if (event === 'SIGNED_IN') onSignedIn();
+      if (event === 'SIGNED_OUT') { currentUser = null; showAuthScreen(); }
+    });
+    if (session) await onSignedIn();
+    else showAuthScreen();
+  }
+
+  boot();
+</script>
+</body>
+</html>
