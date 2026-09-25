@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenType</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;1,7..72,300;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & variables ────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:           #141414;
+  --surface:      #1c1c1c;
+  --border:       #242424;
+  --text-dim:     #b8b8b8;       /* pending characters */
+  --text-typed:   #888888;       /* correctly typed */
+  --text-wrong:   #b85c5c;       /* mistyped */
+  --text-ui:      #404040;       /* ui labels */
+  --text-ui-hi:   #666;          /* ui values */
+  --cursor-bg:    #5a7a6a;       /* muted sage */
+  --cursor-fg:    #e8e8e8;
+  --accent:       #5a7a6a;
+  --amber:        #b8905a;
+  --mono:         'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --serif:        'Literata', 'Georgia', 'Times New Roman', serif;
+  --sans:         'Inter', system-ui, sans-serif;
+  --line-h:       32px;
+  --font-sz:      17px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text-ui);
+  font-family: var(--sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── Layout ────────────────────────────────────────────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: 48px 1fr;
+  height: 100vh;
+}
+
+/* ─── Top bar ───────────────────────────────────────────────────────────────── */
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  border-bottom: 1px solid transparent;
+  transition: opacity 0.3s;
+}
+
+#logo {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: #585858;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+#logo:hover { color: #888; }
+
+#stats {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--mono);
+}
+
+.stat-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #505050;
+}
+
+.stat-val {
+  font-size: 15px;
+  font-weight: 500;
+  color: #606060;
+  min-width: 30px;
+  text-align: right;
+  transition: color 0.3s;
+}
+
+.stat-val.live { color: var(--accent); }
+
+/* ─── Main content ──────────────────────────────────────────────────────────── */
+#main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Welcome state ── */
+#welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex: 1;
+  gap: 16px;
+  text-align: center;
+}
+
+#welcome-title {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 300;
+  color: #282828;
+  letter-spacing: 0.05em;
+}
+
+#welcome-sub {
+  font-size: 13px;
+  color: #2a2a2a;
+  line-height: 1.9;
+  max-width: 340px;
+}
+
+#drop-hint {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #252525;
+  border: 1px dashed #252525;
+  padding: 14px 28px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Typing area ── */
+#typing-area {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: min(860px, 100% - 160px);
+  flex: 1;
+  min-height: 0;
+  gap: 12px;
+}
+
+/* Continuous-scroll text container — this is now a real scrollable region */
+#text-window {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #232323 transparent;
+  cursor: text;
+  padding: 4px 4px 40vh;
+}
+#text-window::-webkit-scrollbar { width: 5px; }
+#text-window::-webkit-scrollbar-track { background: transparent; }
+#text-window::-webkit-scrollbar-thumb { background: #232323; border-radius: 3px; }
+
+#text-flow {
+  font-family: var(--serif);
+  font-size: var(--font-sz);
+  line-height: var(--line-h);
+  letter-spacing: 0.01em;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* ── Paragraph blocks ── */
+.para { margin-bottom: 30px; white-space: pre-wrap; word-break: break-word; }
+.para.pending { color: var(--text-dim); opacity: 0.5; }
+.para.done .para-text { color: var(--text-typed); }
+.para-stats {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-ui-hi);
+  letter-spacing: 0.03em;
+  margin-top: 7px;
+  opacity: 0.8;
+}
+
+.para-header {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6a7a70;
+  margin: 40px 0 22px;
+  opacity: 0.85;
+}
+.para-header.done { opacity: 0.4; }
+.para-header:first-child { margin-top: 0; }
+
+/* Character states inside the active paragraph */
+.para.current span { color: var(--text-dim); }
+.para.current span.ok   { color: var(--text-typed); }
+.para.current span.err  {
+  color: var(--text-wrong);
+  text-decoration: underline;
+  text-decoration-color: #c0392b88;
+  text-underline-offset: 3px;
+}
+.para.current span[data-sp="1"].ok {
+  text-decoration: underline;
+  text-decoration-color: #55555588;
+  text-underline-offset: 4px;
+}
+.para.current span.cur {
+  position: relative;
+  color: var(--text-dim);
+}
+.para.current span.cur::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 8%;
+  bottom: 8%;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── End of document marker ── */
+#doc-complete {
+  text-align: center;
+  padding: 30px 0 60px;
+  font-family: var(--mono);
+}
+.dc-label { color: #3a3a3a; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+.dc-stats { color: var(--accent); font-size: 13px; letter-spacing: 0.04em; }
+
+/* ── Idle / pause dimming ── */
+body.idle-paused #text-window { opacity: 0.5; transition: opacity 0.5s; }
+
+/* ── Font size controls ── */
+#font-size-ctrl {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+#font-size-ctrl.show { display: flex; }
+.btn-font {
+  background: none;
+  border: none;
+  color: #444;
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  line-height: 1;
+  transition: color 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.btn-font:hover { color: #888; }
+#font-size-val, #qs-font-val {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #404040;
+  min-width: 26px;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* ── Progress bar ── */
+#progress-bar {
+  width: 100%;
+  height: 2px;
+  background: #1e1e1e;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+#progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.4s ease;
+  opacity: 0.6;
+}
+
+/* ── File label ── */
+#file-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #505050;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  align-self: flex-start;
+}
+
+.btn {
+  background: none;
+  border: 1px solid #2e2e2e;
+  color: #5a5a5a;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 6px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.btn:hover {
+  border-color: #333;
+  color: #666;
+}
+
+.btn.accent {
+  border-color: #2a3d35;
+  color: #4a6a5a;
+}
+
+.btn.accent:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.btn[hidden] { display: none; }
+
+/* ─── Drag overlay ──────────────────────────────────────────────────────────── */
+#drag-overlay {
+  display: none;
+  position: fixed;
+  inset: 8px;
+  background: rgba(20, 20, 20, 0.96);
+  border: 1px dashed #2a3d35;
+  border-radius: 8px;
+  z-index: 200;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+#drag-overlay.show { display: flex; }
+
+/* ─── Floating toolbar ──────────────────────────────────────────────────────── */
+#toolbar {
+  display: none;
+  flex-direction: column;
+  gap: 7px;
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  transition: opacity 0.3s;
+}
+#toolbar.show { display: flex; }
+
+.tb-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #5a5a5a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.tb-btn:hover { color: var(--accent); border-color: #2a3d35; }
+.tb-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(90,122,106,0.14); }
+
+body.zen-mode #topbar,
+body.zen-mode #file-label,
+body.zen-mode #progress-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+body.zen-mode #toolbar { opacity: 0.3; }
+body.zen-mode #toolbar:hover { opacity: 1; }
+body.zen-mode .para.pending,
+body.zen-mode .para-header { opacity: 0.22; }
+
+/* ─── Side drawer (TOC / Quick Settings / Focus Sounds) ──────────────────────── */
+#side-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(360px, 92vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  user-select: text;
+  -webkit-user-select: text;
+}
+#side-drawer.open { transform: translateX(0); }
+
+#drawer-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+#drawer-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #777;
+}
+#drawer-close {
+  background: none; border: none; color: #444; font-size: 15px; cursor: pointer; padding: 2px 6px;
+}
+#drawer-close:hover { color: #888; }
+
+#drawer-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 13px;
+  color: #999;
+}
+#drawer-body::-webkit-scrollbar { width: 4px; }
+#drawer-body::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+
+.drawer-empty { color: #444; font-family: var(--mono); font-size: 12px; }
+
+/* Quick settings rows */
+.qs-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.qs-row label { font-size: 12px; color: #888; }
+.qs-row select {
+  background: var(--bg); color: #999; border: 1px solid var(--border); border-radius: 4px;
+  padding: 5px 8px; font-family: var(--mono); font-size: 11px;
+}
+.qs-font-ctrl { display: flex; align-items: center; gap: 6px; }
+.qs-divider { height: 1px; background: var(--border); margin: 2px 0; }
+.qs-toggle { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #888; cursor: pointer; }
+.qs-toggle input { accent-color: var(--accent); width: 14px; height: 14px; }
+
+/* TOC */
+.toc-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 4px;
+  border-bottom: 1px solid #1e1e1e; cursor: pointer; font-size: 12.5px; color: #888;
+  transition: color 0.15s;
+}
+.toc-item:hover { color: #ccc; }
+.toc-dot { width: 7px; height: 7px; border-radius: 50%; background: #333; flex-shrink: 0; }
+.toc-item.done .toc-dot { background: var(--accent); }
+.toc-item.current .toc-dot { background: var(--accent); box-shadow: 0 0 0 3px rgba(90,122,106,0.25); }
+.toc-item.partial .toc-dot { background: var(--amber); }
+.toc-item.current { color: var(--accent); }
+
+/* Focus sounds */
+.focus-track { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.focus-track-name { font-size: 13px; color: #ccc; }
+.focus-track-sub { font-size: 11px; color: #555; }
+input[type="range"] { accent-color: var(--accent); width: 140px; }
+
+/* ─── Pause overlay ─────────────────────────────────────────────────────────── */
+#pause-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.86);
+  z-index: 180;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+#pause-overlay.show { display: flex; }
+.pause-icon { font-size: 22px; color: var(--accent); }
+.pause-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #888; }
+.pause-hint { font-family: var(--mono); font-size: 10px; color: #444; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Top bar -->
+  <header id="topbar">
+    <span id="logo" onclick="goHome()" title="paste new text">zentype</span>
+    <div id="font-size-ctrl">
+      <button class="btn-font" onclick="changeFontSize(-1)" title="decrease font size">A−</button>
+      <span id="font-size-val"></span>
+      <button class="btn-font" onclick="changeFontSize(1)" title="increase font size">A+</button>
+    </div>
+    <div id="stats">
+      <div class="stat">
+        <span class="stat-lbl">wpm</span>
+        <span class="stat-val" id="sv-wpm">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-lbl">acc</span>
+        <span class="stat-val" id="sv-acc">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-lbl">time</span>
+        <span class="stat-val" id="sv-time">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-lbl">xp</span>
+        <span class="stat-val" id="sv-xp">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main area -->
+  <main id="main">
+
+    <!-- Welcome state -->
+    <div id="welcome">
+      <div id="welcome-title">zentype</div>
+      <div id="welcome-sub">copy some text, then paste it here to start typing.</div>
+      <div id="drop-hint">press Ctrl+V to paste</div>
+    </div>
+
+    <!-- Typing area (hidden until file loaded) -->
+    <div id="typing-area">
+      <div id="text-window">
+        <div id="text-flow"></div>
+        <div id="doc-complete" hidden></div>
+      </div>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+      <div id="file-label"></div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- Floating toolbar (typer view only) -->
+<div id="toolbar">
+  <button class="tb-btn" title="previous section" onclick="gotoAdjacentSection(-1)">‹</button>
+  <button class="tb-btn" title="table of contents" onclick="openDrawer('toc')">📖</button>
+  <button class="tb-btn" title="next section" onclick="gotoAdjacentSection(1)">›</button>
+  <button class="tb-btn" title="quick settings" onclick="openDrawer('settings')">⚙</button>
+  <button class="tb-btn" title="focus sounds" onclick="openDrawer('focus')">🎧</button>
+  <button class="tb-btn" id="tb-zen" title="zen mode" onclick="toggleZen()">☸</button>
+  <button class="tb-btn" title="restart document" onclick="restart()">↺</button>
+</div>
+
+<!-- Side drawer -->
+<div id="side-drawer">
+  <div id="drawer-header">
+    <span id="drawer-title"></span>
+    <button id="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div id="drawer-body"></div>
+</div>
+
+<!-- Pause overlay -->
+<div id="pause-overlay">
+  <div class="pause-icon">‖</div>
+  <div class="pause-label">paused</div>
+  <div class="pause-hint">click or press any key to resume</div>
+</div>
+
+<!-- Drag overlay -->
+<div id="drag-overlay"><span>↓</span><span>drop to load</span></div>
+
+<!-- Hidden textarea to capture keyboard input reliably -->
+<textarea id="kb"
+  style="position:fixed;opacity:0;width:1px;height:1px;top:-99px;left:-99px;pointer-events:none"
+  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+></textarea>
+
+<script>
+'use strict';
+
+// ─── Settings & persistence ──────────────────────────────────────────────────
+const SETTINGS_KEY = 'zentype:settings';
+const DEFAULT_SETTINGS = {
+  fontSizeIdx: 2,
+  cursorMotion: 'smooth',
+  trainingMode: false,
+  backtrackWords: 3,
+  ignoreCaps: false,
+  stopOnError: false,
+  autoSkipSymbols: false,
+  focusVolume: 0.4,
+  audioEnabled: false,
+  clickVolume: 0.5,
+  errorVolume: 0.6,
+};
+
+function loadSettings() {
+  try {
+    return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'));
+  } catch (e) {
+    return Object.assign({}, DEFAULT_SETTINGS);
+  }
+}
+function saveSettings() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+function hashText(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36);
+}
+const docKey = (hash) => 'zentype:doc:' + hash;
+
+function loadDocState(hash) {
+  try { return JSON.parse(localStorage.getItem(docKey(hash))); } catch (e) { return null; }
+}
+function saveDocState() {
+  if (!doc) return;
+  localStorage.setItem(docKey(doc.hash), JSON.stringify({
+    name: doc.name,
+    curIdx,
+    paras: paragraphs.map(p => ({ status: p.status, wpm: p.wpm, accuracy: p.accuracy, xp: p.xp, errorCount: p.errorCount })),
+    updatedAt: Date.now(),
+  }));
+}
+// ─── State ───────────────────────────────────────────────────────────────────
+let settings   = loadSettings();
+let doc        = null;   // { name, hash }
+let paragraphs = [];     // [{type:'header'|'para', text, status, wpm, accuracy, xp, errorCount}]
+let curIdx     = -1;     // index of the active paragraph
+let pos        = 0;      // char position within the active paragraph
+let errSet     = new Set();
+let startTime  = null;
+let timerTick  = null;
+let totalKeystrokes = 0;
+let corrections     = 0;
+let idleTimer  = null;
+let idleTime   = 0;
+let lastActiveTime = null;
+const IDLE_DELAY = 5000;
+
+let paused     = false;
+let pauseStart = null;
+
+let sessionXP = 0;
+
+let paraEls = [];  // DOM node per paragraph index
+let spanEls = [];  // per-character span refs for the CURRENT paragraph only
+
+// ─── DOM refs ────────────────────────────────────────────────────────────────
+const flowEl   = document.getElementById('text-flow');
+const windowEl = document.getElementById('text-window');
+const fillEl   = document.getElementById('progress-fill');
+const wpmEl    = document.getElementById('sv-wpm');
+const accEl    = document.getElementById('sv-acc');
+const timeEl   = document.getElementById('sv-time');
+const xpEl     = document.getElementById('sv-xp');
+const kb       = document.getElementById('kb');
+
+// ─── XP scoring ──────────────────────────────────────────────────────────────
+function computeXP(goodChars, accuracy) {
+  return Math.max(1, Math.round((goodChars / 5) * (accuracy / 100)));
+}
+function headerXP(text) {
+  return Math.min(6, Math.max(2, Math.round(text.length / 12)));
+}
+
+// ─── Paragraph model ─────────────────────────────────────────────────────────
+function buildParagraphs(blocks) {
+  return blocks.map(b => ({
+    type: b.type, text: b.text,
+    status: 'pending', wpm: null, accuracy: null, xp: null, errorCount: 0,
+  }));
+}
+
+// Skip/auto-complete header blocks and already-done paragraphs, landing on
+// the next paragraph that actually needs typing.
+function advanceToNextTypable(fromIdx) {
+  let i = fromIdx;
+  while (i < paragraphs.length && paragraphs[i].status !== 'done') {
+    if (paragraphs[i].type === 'header') { completeHeader(i); i++; }
+    else break;
+  }
+  while (i < paragraphs.length && paragraphs[i].status === 'done') i++;
+  return i;
+}
+
+function completeHeader(i) {
+  const p = paragraphs[i];
+  p.status = 'done';
+  p.xp = headerXP(p.text);
+  sessionXP += p.xp;
+  if (paraEls[i]) {
+    const el = buildParaNode(i);
+    paraEls[i].replaceWith(el);
+    paraEls[i] = el;
+  }
+}
+
+// ─── Rendering ───────────────────────────────────────────────────────────────
+function renderAll() {
+  flowEl.innerHTML = '';
+  paraEls = [];
+  const frag = document.createDocumentFragment();
+  paragraphs.forEach((p, i) => {
+    const el = buildParaNode(i);
+    paraEls.push(el);
+    frag.appendChild(el);
+  });
+  flowEl.appendChild(frag);
+  updateProgress();
+}
+
+function buildParaNode(i) {
+  const p = paragraphs[i];
+  if (p.type === 'header') {
+    const el = document.createElement('div');
+    el.className = 'para-header' + (p.status === 'done' ? ' done' : '');
+    el.textContent = p.text;
+    return el;
+  }
+  if (p.status === 'done') return buildDoneNode(i);
+  if (i === curIdx) return buildCurrentNode(i);
+  return buildPendingNode(i);
+}
+
+function buildDoneNode(i) {
+  const p = paragraphs[i];
+  const el = document.createElement('div');
+  el.className = 'para done';
+  const txt = document.createElement('div');
+  txt.className = 'para-text';
+  txt.textContent = p.text;
+  const stats = document.createElement('div');
+  stats.className = 'para-stats';
+  stats.textContent = `⚡ ${p.wpm} wpm  ·  ⊘ ${p.accuracy}% accuracy  ·  🏆 +${p.xp} xp`;
+  el.append(txt, stats);
+  return el;
+}
+
+function buildPendingNode(i) {
+  const el = document.createElement('div');
+  el.className = 'para pending';
+  el.textContent = paragraphs[i].text;
+  return el;
+}
+
+function buildCurrentNode(i) {
+  const p = paragraphs[i];
+  const el = document.createElement('div');
+  el.className = 'para current';
+  spanEls = [];
+  const frag = document.createDocumentFragment();
+  for (const ch of Array.from(p.text)) {
+    const s = document.createElement('span');
+    s.textContent = ch;
+    if (ch === ' ') s.dataset.sp = '1';
+    frag.appendChild(s);
+    spanEls.push(s);
+  }
+  el.appendChild(frag);
+  return el;
+}
+
+function repaintCurrent() {
+  for (let i = 0; i < spanEls.length; i++) {
+    spanEls[i].className = i < pos ? (errSet.has(i) ? 'err' : 'ok') : (i === pos ? 'cur' : '');
+  }
+  scrollCurrentIntoView();
+  updateProgress();
+}
+
+function scrollCurrentIntoView() {
+  const el = paraEls[curIdx];
+  if (!el) return;
+  const curSpan = el.querySelector ? el.querySelector('span.cur') : null;
+  const target = curSpan || el;
+  const wRect = windowEl.getBoundingClientRect();
+  const tRect = target.getBoundingClientRect();
+  const margin = wRect.height * 0.3;
+  if (tRect.top < wRect.top + margin || tRect.bottom > wRect.bottom - margin) {
+    target.scrollIntoView({ block: 'center', behavior: settings.cursorMotion === 'instant' ? 'auto' : 'smooth' });
+  }
+}
+
+function updateProgress() {
+  if (!paragraphs.length) { fillEl.style.width = '0%'; return; }
+  const done = paragraphs.filter(p => p.status === 'done').length;
+  fillEl.style.width = (done / paragraphs.length * 100) + '%';
+}
+
+// ─── Idle / active-time accounting ────────────────────────────────────────────
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  if (startTime && !paused) {
+    idleTimer = setTimeout(goIdle, IDLE_DELAY);
+    lastActiveTime = Date.now();
+  }
+}
+function goIdle() {
+  idleTimer = null;
+  document.body.classList.add('idle-paused');
+}
+function resumeFromIdle() {
+  if (startTime && !idleTimer) {
+    idleTime += Date.now() - lastActiveTime;
+    lastActiveTime = Date.now();
+    document.body.classList.remove('idle-paused');
+    resetIdleTimer();
+  }
+}
+function getActiveTime() {
+  if (!startTime) return 0;
+  const totalElapsed = Date.now() - startTime;
+  if (!idleTimer) {
+    const currentIdlePeriod = Date.now() - lastActiveTime;
+    return Math.max(0, totalElapsed - idleTime - currentIdlePeriod);
+  }
+  return Math.max(0, totalElapsed - idleTime);
+}
+
+// ─── Explicit pause (Esc) ─────────────────────────────────────────────────────
+function enterPause() {
+  if (!startTime || paused) return;
+  paused = true;
+  clearTimeout(idleTimer); idleTimer = null;
+  document.body.classList.remove('idle-paused');
+  pauseStart = Date.now();
+  document.getElementById('pause-overlay').classList.add('show');
+}
+function resumeFromPause() {
+  if (!paused) return;
+  paused = false;
+  idleTime += Date.now() - pauseStart;
+  lastActiveTime = Date.now();
+  document.getElementById('pause-overlay').classList.remove('show');
+  resetIdleTimer();
+  focusInput();
+}
+
+// ─── Live stats ──────────────────────────────────────────────────────────────
+function fmtTime(secs) {
+  return secs < 60 ? Math.round(secs) + 's' : Math.floor(secs / 60) + 'm ' + (Math.round(secs) % 60) + 's';
+}
+function liveStats() {
+  if (!startTime) return;
+  const secs = getActiveTime() / 1000;
+  const mins = secs / 60;
+  const good = pos - errSet.size;
+  const wpm  = mins > 0 ? Math.round((good / 5) / mins) : 0;
+  const acc  = totalKeystrokes > 0 ? Math.round((good / totalKeystrokes) * 100) : 100;
+  wpmEl.textContent = wpm;
+  accEl.textContent = acc + '%';
+  timeEl.textContent = fmtTime(secs);
+  xpEl.textContent = sessionXP;
+  wpmEl.classList.toggle('live', wpm > 0);
+  accEl.classList.toggle('live', acc >= 90);
+}
+function resetLiveStats() {
+  [wpmEl, accEl, timeEl].forEach(el => { el.textContent = '—'; el.classList.remove('live'); });
+  xpEl.textContent = sessionXP;
+}
+
+// ─── Paragraph lifecycle ──────────────────────────────────────────────────────
+function startParagraph(i) {
+  if (curIdx >= 0 && curIdx < paragraphs.length && paragraphs[curIdx].status !== 'done' && paragraphs[curIdx].type === 'para') {
+    const el = buildParaNode(curIdx); // re-render as plain pending text, discarding in-progress typing
+    paraEls[curIdx].replaceWith(el);
+    paraEls[curIdx] = el;
+  }
+
+  curIdx = i;
+  pos = 0;
+  errSet.clear();
+  startTime = null;
+  totalKeystrokes = 0;
+  corrections = 0;
+  clearInterval(timerTick); timerTick = null;
+  clearTimeout(idleTimer); idleTimer = null; idleTime = 0; lastActiveTime = null;
+  document.body.classList.remove('idle-paused');
+  resetLiveStats();
+
+  if (i >= paragraphs.length) { saveDocState(); showDocComplete(); return; }
+
+  const el = buildParaNode(i);
+  paraEls[i].replaceWith(el);
+  paraEls[i] = el;
+  repaintCurrent();
+  saveDocState();
+  focusInput();
+}
+
+function finishParagraph() {
+  clearInterval(timerTick); timerTick = null;
+  clearTimeout(idleTimer); idleTimer = null;
+
+  const p = paragraphs[curIdx];
+  const secs = getActiveTime() / 1000;
+  const mins = secs / 60;
+  const good = pos - errSet.size;
+  const wpm  = mins > 0 ? Math.round((good / 5) / mins) : 0;
+  const acc  = totalKeystrokes > 0 ? Math.round((good / totalKeystrokes) * 100) : 100;
+  const xp   = computeXP(good, acc);
+
+  p.status = 'done'; p.wpm = wpm; p.accuracy = acc; p.xp = xp; p.errorCount = errSet.size;
+  sessionXP += xp;
+
+  const doneEl = buildDoneNode(curIdx);
+  paraEls[curIdx].replaceWith(doneEl);
+  paraEls[curIdx] = doneEl;
+  saveDocState();
+
+  startParagraph(advanceToNextTypable(curIdx + 1));
+}
+
+function showDocComplete() {
+  const el = document.getElementById('doc-complete');
+  const doneParas = paragraphs.filter(p => p.type === 'para' && p.status === 'done');
+  const avgWpm = doneParas.length ? Math.round(doneParas.reduce((s, p) => s + p.wpm, 0) / doneParas.length) : 0;
+  const avgAcc = doneParas.length ? Math.round(doneParas.reduce((s, p) => s + p.accuracy, 0) / doneParas.length) : 0;
+  el.innerHTML = `<div class="dc-label">— end of document —</div>
+    <div class="dc-stats">avg ${avgWpm} wpm · ${avgAcc}% accuracy · ${sessionXP} xp total</div>`;
+  el.hidden = false;
+  el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function jumpToParagraph(idx) {
+  startParagraph(advanceToNextTypable(Math.max(0, idx)));
+}
+
+// ─── Training-mode backtrack ──────────────────────────────────────────────────
+function backtrack(words) {
+  const text = paragraphs[curIdx].text;
+  const typedSoFar = text.slice(0, pos);
+  const wordStarts = [];
+  const re = /\S+/g;
+  let m;
+  while ((m = re.exec(typedSoFar))) wordStarts.push(m.index);
+  const targetIdx = Math.max(0, wordStarts.length - words);
+  const newPos = wordStarts.length ? wordStarts[targetIdx] : 0;
+  for (let k = newPos; k < pos; k++) errSet.delete(k);
+  pos = newPos;
+}
+
+function autoSkipSymbols(chars) {
+  if (!settings.autoSkipSymbols) return;
+  while (pos < chars.length && /[^\w\s]/.test(chars[pos])) pos++;
+}
+
+// ─── Keyboard input ────────────────────────────────────────────────────────────
+function focusInput() { kb.focus({ preventScroll: true }); }
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('input, textarea, select, button, a, [contenteditable]')) return;
+  if (isAnyOverlayOpen() || document.getElementById('pause-overlay').classList.contains('show')) return;
+  focusInput();
+});
+
+kb.addEventListener('keydown', (e) => {
+  if (paused) { e.preventDefault(); resumeFromPause(); return; }
+
+  if (!paragraphs.length) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'v') { e.preventDefault(); handlePaste(); }
+    return;
+  }
+
+  if (isAnyOverlayOpen()) {
+    if (e.key === 'Escape') { e.preventDefault(); closeAllOverlays(); }
+    return;
+  }
+
+  if (curIdx < 0 || curIdx >= paragraphs.length) return; // document complete
+  if (e.ctrlKey || e.metaKey) return;
+
+  if (e.key === 'Escape') { e.preventDefault(); enterPause(); return; }
+
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+    if (pos > 0) {
+      pos--; corrections++; totalKeystrokes++;
+      errSet.delete(pos);
+      playClick();
+      repaintCurrent();
+      resetIdleTimer();
+    }
+    return;
+  }
+
+  if (e.key.length !== 1) return; // ignore F-keys, arrows, etc.
+  e.preventDefault();
+
+  const chars = Array.from(paragraphs[curIdx].text);
+  totalKeystrokes++;
+
+  if (!startTime) {
+    startTime = Date.now();
+    lastActiveTime = Date.now();
+    timerTick = setInterval(liveStats, 500);
+    resetIdleTimer();
+  }
+  resumeFromIdle();
+  resetIdleTimer();
+
+  const expected = chars[pos];
+  const match = settings.ignoreCaps
+    ? e.key.toLowerCase() === expected.toLowerCase()
+    : e.key === expected;
+
+  if (!match) {
+    errSet.add(pos);
+    playErrorSound();
+    if (settings.stopOnError) { repaintCurrent(); return; }
+    pos++;
+    if (settings.trainingMode) backtrack(settings.backtrackWords);
+  } else {
+    pos++;
+    playClick();
+  }
+  autoSkipSymbols(chars);
+  repaintCurrent();
+
+  if (pos >= chars.length) finishParagraph();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && isAnyOverlayOpen()) { e.preventDefault(); closeAllOverlays(); }
+});
+
+document.getElementById('pause-overlay').addEventListener('click', resumeFromPause);
+
+// ─── Font size control ─────────────────────────────────────────────────────────
+const FONT_SIZES = [13, 15, 17, 19, 22, 26];
+const FONT_LINE_RATIO = 1.85;
+
+function applyFontSize() {
+  const sz = FONT_SIZES[settings.fontSizeIdx];
+  const lh = Math.round(sz * FONT_LINE_RATIO);
+  document.documentElement.style.setProperty('--font-sz', sz + 'px');
+  document.documentElement.style.setProperty('--line-h', lh + 'px');
+  document.getElementById('font-size-val').textContent = sz + 'px';
+}
+function changeFontSize(dir) {
+  const next = settings.fontSizeIdx + dir;
+  if (next < 0 || next >= FONT_SIZES.length) return;
+  settings.fontSizeIdx = next;
+  saveSettings();
+  applyFontSize();
+}
+applyFontSize();
+
+function showFontCtrl(show) {
+  document.getElementById('font-size-ctrl').classList.toggle('show', show);
+}
+function showToolbar(show) {
+  document.getElementById('toolbar').classList.toggle('show', show);
+}
+
+// ─── Text pipeline (browser fallback — mirrors main.py's strip_markdown_blocks) ─
+function clientStripBlocks(text) {
+  text = text.replace(/^---\s*\n[\s\S]*?\n---\s*\n/, '');
+  text = text.replace(/```[\w]*\n([\s\S]*?)```/g, '$1');
+
+  const cleanInline = (s) => {
+    s = s.replace(/!\[\[.*?\]\]/g, '');
+    s = s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, a, b) => b || a);
+    s = s.replace(/!\[.*?\]\(.*?\)/g, '');
+    s = s.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    s = s.replace(/\*{1,3}([^*\n]+)\*{1,3}/g, '$1');
+    s = s.replace(/_{1,3}([^_\n]+)_{1,3}/g, '$1');
+    s = s.replace(/~~([^~]+)~~/g, '$1');
+    s = s.replace(/`([^`]+)`/g, '$1');
+    s = s.replace(/(?<!\w)#[\w/]+/g, '');
+    s = s.replace(/<[^>]+>/g, '');
+    s = s.replace(/[ \t]+/g, ' ');
+    return s.trim();
+  };
+
+  const headerRe = /^#{1,6}\s+(.*)$/;
+  const looksLikeHeading = (line) => {
+    line = line.trim();
+    if (!line || line.length > 80) return false;
+    if (!/[a-zA-Z]/.test(line)) return false;
+    if (line.split(/\s+/).length > 12) return false;
+    if (/[.,;]$/.test(line) && !/^chapter\b/i.test(line)) return false;
+    return true;
+  };
+
+  const rawBlocks = [];
+  let cur = [];
+  for (const raw of text.split('\n')) {
+    let line = raw.trim();
+    line = line.replace(/^>\s*\[!\w+\][-+]?\s*/, '');
+    line = line.replace(/^>\s*/, '');
+    line = line.replace(/^[-*_]{3,}$/, '');
+    if (line === '') { if (cur.length) { rawBlocks.push(cur); cur = []; } continue; }
+    line = line.replace(/^[ \t]*[-*+]\s+/, '');
+    line = line.replace(/^[ \t]*\d+[.)]\s+/, '');
+    cur.push(line);
+  }
+  if (cur.length) rawBlocks.push(cur);
+
+  const blocks = [];
+  for (const blockLines of rawBlocks) {
+    const first = blockLines[0];
+    const m = headerRe.exec(first);
+    let rest;
+    if (m) {
+      const txt = cleanInline(m[1]);
+      if (txt) blocks.push({ type: 'header', text: txt });
+      rest = blockLines.slice(1);
+    } else if (looksLikeHeading(first)) {
+      const txt = cleanInline(first);
+      if (txt) blocks.push({ type: 'header', text: txt });
+      rest = blockLines.slice(1);
+    } else {
+      rest = blockLines;
+    }
+    if (rest.length) {
+      const joined = rest.map(l => l.replace(headerRe, '$1')).join(' ');
+      const txt = cleanInline(joined);
+      if (txt) blocks.push({ type: 'para', text: txt });
+    }
+  }
+  return blocks;
+}
+function blocksLength(blocks) { return blocks.reduce((n, b) => n + b.text.length, 0); }
+
+// ─── Load document ─────────────────────────────────────────────────────────────
+function loadDoc(blocks, name) {
+  doc = { name, hash: hashText(blocks.map(b => b.text).join('\n')) };
+  paragraphs = buildParagraphs(blocks);
+  sessionXP = 0;
+
+  const saved = loadDocState(doc.hash);
+  if (saved && Array.isArray(saved.paras) && saved.paras.length === paragraphs.length) {
+    saved.paras.forEach((s, i) => Object.assign(paragraphs[i], s));
+    sessionXP = paragraphs.reduce((sum, p) => sum + (p.status === 'done' ? (p.xp || 0) : 0), 0);
+  }
+
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('typing-area').style.display = 'flex';
+  document.getElementById('doc-complete').hidden = true;
+  showFontCtrl(true);
+  showToolbar(true);
+  document.getElementById('file-label').textContent = name;
+
+  curIdx = -1;
+  renderAll();
+  startParagraph(advanceToNextTypable(0));
+}
+
+function restart() {
+  if (!doc) return;
+  localStorage.removeItem(docKey(doc.hash));
+  const blocks = paragraphs.map(p => ({ type: p.type, text: p.text }));
+  loadDoc(blocks, doc.name);
+}
+
+function goHome() {
+  document.getElementById('typing-area').style.display = 'none';
+  document.getElementById('welcome').style.display = 'flex';
+  document.getElementById('doc-complete').hidden = true;
+  showFontCtrl(false);
+  showToolbar(false);
+  document.body.classList.remove('zen-mode');
+  closeDrawer();
+  clearInterval(timerTick); timerTick = null;
+  clearTimeout(idleTimer); idleTimer = null;
+  doc = null; paragraphs = []; curIdx = -1; paraEls = []; spanEls = [];
+}
+
+// ─── Section navigation & TOC ───────────────────────────────────────────────────
+function headerIndices() {
+  const out = [];
+  paragraphs.forEach((p, i) => { if (p.type === 'header') out.push(i); });
+  return out;
+}
+function gotoAdjacentSection(dir) {
+  const headers = headerIndices();
+  if (!headers.length) return;
+  if (dir > 0) {
+    const target = headers.find(i => i > curIdx);
+    if (target !== undefined) jumpToParagraph(target + 1);
+  } else {
+    const currentSectionStart = headers.filter(i => i <= curIdx).pop();
+    const before = headers.filter(i => i < (currentSectionStart ?? curIdx)).pop();
+    jumpToParagraph((before !== undefined ? before : headers[0]) + 1);
+  }
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function buildTOC() {
+  const wrap = document.createElement('div');
+  const headers = headerIndices();
+  if (!headers.length) {
+    wrap.innerHTML = '<div class="drawer-empty">No sections detected in this document.</div>';
+    return wrap;
+  }
+  headers.forEach((i, idx) => {
+    const nextHeaderIdx = idx + 1 < headers.length ? headers[idx + 1] : paragraphs.length;
+    const bodyParas = paragraphs.slice(i, nextHeaderIdx).filter(p => p.type === 'para');
+    const doneCount = bodyParas.filter(p => p.status === 'done').length;
+    let status = 'not-started';
+    if (bodyParas.length && doneCount === bodyParas.length) status = 'done';
+    else if (i <= curIdx && curIdx < nextHeaderIdx) status = 'current';
+    else if (doneCount > 0) status = 'partial';
+    const row = document.createElement('div');
+    row.className = 'toc-item ' + status;
+    row.innerHTML = `<span class="toc-dot"></span><span>${escapeHtml(paragraphs[i].text)}</span>`;
+    row.onclick = () => { jumpToParagraph(i + 1); closeDrawer(); };
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+// ─── Quick settings ─────────────────────────────────────────────────────────────
+function buildQuickSettings() {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="qs-row">
+      <label>Font Size</label>
+      <div class="qs-font-ctrl">
+        <button class="btn-font" id="qs-font-minus">A−</button>
+        <span id="qs-font-val"></span>
+        <button class="btn-font" id="qs-font-plus">A+</button>
+      </div>
+    </div>
+    <div class="qs-row">
+      <label>Cursor Motion</label>
+      <select id="qs-cursor-motion">
+        <option value="smooth">Smooth</option>
+        <option value="instant">Instant</option>
+      </select>
+    </div>
+    <div class="qs-divider"></div>
+    <label class="qs-toggle"><input type="checkbox" id="qs-audio"> Enable Audio</label>
+    <div id="qs-audio-rows" style="display:flex; flex-direction:column; gap:10px;">
+      <div class="qs-row">
+        <label>Typing Sound</label>
+        <div class="qs-font-ctrl">
+          <input type="range" id="qs-click-vol" min="0" max="1" step="0.01">
+          <button class="tb-btn" id="qs-click-test" title="preview" style="width:26px;height:26px;font-size:11px;">▶</button>
+        </div>
+      </div>
+      <div class="qs-row">
+        <label>Error Sound</label>
+        <div class="qs-font-ctrl">
+          <input type="range" id="qs-error-vol" min="0" max="1" step="0.01">
+          <button class="tb-btn" id="qs-error-test" title="preview" style="width:26px;height:26px;font-size:11px;">▶</button>
+        </div>
+      </div>
+    </div>
+    <div class="qs-divider"></div>
+    <label class="qs-toggle"><input type="checkbox" id="qs-training"> Enable Training Mode</label>
+    <div class="qs-row" id="qs-backtrack-row">
+      <label>Backtrack on error</label>
+      <select id="qs-backtrack">
+        <option value="1">1 word</option>
+        <option value="3">3 words</option>
+        <option value="5">5 words</option>
+      </select>
+    </div>
+    <label class="qs-toggle"><input type="checkbox" id="qs-ignore-caps"> Ignore Capitalization</label>
+    <label class="qs-toggle"><input type="checkbox" id="qs-stop-error"> Stop on Error</label>
+    <label class="qs-toggle"><input type="checkbox" id="qs-auto-skip"> Auto Skip Symbols</label>
+  `;
+  const $ = (sel) => wrap.querySelector(sel);
+
+  $('#qs-font-val').textContent = FONT_SIZES[settings.fontSizeIdx] + 'px';
+  $('#qs-font-minus').onclick = () => { changeFontSize(-1); $('#qs-font-val').textContent = FONT_SIZES[settings.fontSizeIdx] + 'px'; };
+  $('#qs-font-plus').onclick  = () => { changeFontSize(1);  $('#qs-font-val').textContent = FONT_SIZES[settings.fontSizeIdx] + 'px'; };
+
+  $('#qs-cursor-motion').value = settings.cursorMotion;
+  $('#qs-cursor-motion').onchange = (e) => { settings.cursorMotion = e.target.value; saveSettings(); };
+
+  const audioRows = $('#qs-audio-rows');
+  audioRows.style.display = settings.audioEnabled ? 'flex' : 'none';
+  $('#qs-audio').checked = settings.audioEnabled;
+  $('#qs-audio').onchange = (e) => {
+    settings.audioEnabled = e.target.checked;
+    audioRows.style.display = settings.audioEnabled ? 'flex' : 'none';
+    saveSettings();
+  };
+  $('#qs-click-vol').value = settings.clickVolume;
+  $('#qs-click-vol').oninput = (e) => { settings.clickVolume = parseFloat(e.target.value); saveSettings(); };
+  $('#qs-click-test').onclick = () => { const was = settings.audioEnabled; settings.audioEnabled = true; playClick(); settings.audioEnabled = was; };
+  $('#qs-error-vol').value = settings.errorVolume;
+  $('#qs-error-vol').oninput = (e) => { settings.errorVolume = parseFloat(e.target.value); saveSettings(); };
+  $('#qs-error-test').onclick = () => { const was = settings.audioEnabled; settings.audioEnabled = true; playErrorSound(); settings.audioEnabled = was; };
+
+  const backtrackRow = $('#qs-backtrack-row');
+  backtrackRow.style.display = settings.trainingMode ? 'flex' : 'none';
+  $('#qs-training').checked = settings.trainingMode;
+  $('#qs-training').onchange = (e) => {
+    settings.trainingMode = e.target.checked;
+    if (settings.trainingMode) { settings.stopOnError = false; $('#qs-stop-error').checked = false; }
+    backtrackRow.style.display = settings.trainingMode ? 'flex' : 'none';
+    saveSettings();
+  };
+  $('#qs-backtrack').value = String(settings.backtrackWords);
+  $('#qs-backtrack').onchange = (e) => { settings.backtrackWords = parseInt(e.target.value, 10); saveSettings(); };
+
+  $('#qs-ignore-caps').checked = settings.ignoreCaps;
+  $('#qs-ignore-caps').onchange = (e) => { settings.ignoreCaps = e.target.checked; saveSettings(); };
+
+  $('#qs-stop-error').checked = settings.stopOnError;
+  $('#qs-stop-error').onchange = (e) => {
+    settings.stopOnError = e.target.checked;
+    if (settings.stopOnError) {
+      settings.trainingMode = false;
+      $('#qs-training').checked = false;
+      backtrackRow.style.display = 'none';
+    }
+    saveSettings();
+  };
+
+  $('#qs-auto-skip').checked = settings.autoSkipSymbols;
+  $('#qs-auto-skip').onchange = (e) => { settings.autoSkipSymbols = e.target.checked; saveSettings(); };
+
+  return wrap;
+}
+
+// ─── Typing / error sounds (synthesized — no bundled audio assets) ────────────
+// A soft two-layer "thock": a low body tone with a quick pitch-drop (the
+// switch bottoming out) plus a brief, quiet high transient for tap
+// definition. Every gain ramps in from near-zero first to avoid the
+// digital pop a hard-edged onset would otherwise leave in the waveform.
+function playClick() {
+  if (!settings.audioEnabled) return;
+  ensureAudioCtx();
+  const ctx = audioCtx;
+  const now = ctx.currentTime;
+  const out = ctx.createGain();
+  out.gain.value = settings.clickVolume;
+  out.connect(ctx.destination);
+
+  const body = ctx.createOscillator();
+  body.type = 'sine';
+  body.frequency.setValueAtTime(340, now);
+  body.frequency.exponentialRampToValueAtTime(170, now + 0.05);
+  const bodyGain = ctx.createGain();
+  bodyGain.gain.setValueAtTime(0.0001, now);
+  bodyGain.gain.exponentialRampToValueAtTime(0.85, now + 0.003);
+  bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+  body.connect(bodyGain).connect(out);
+  body.start(now);
+  body.stop(now + 0.06);
+
+  const tap = ctx.createOscillator();
+  tap.type = 'triangle';
+  tap.frequency.value = 1400;
+  const tapGain = ctx.createGain();
+  tapGain.gain.setValueAtTime(0.0001, now);
+  tapGain.gain.exponentialRampToValueAtTime(0.25, now + 0.001);
+  tapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.014);
+  tap.connect(tapGain).connect(out);
+  tap.start(now);
+  tap.stop(now + 0.016);
+}
+function playErrorSound() {
+  if (!settings.audioEnabled) return;
+  ensureAudioCtx();
+  const ctx = audioCtx;
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(220, now);
+  osc.frequency.exponentialRampToValueAtTime(150, now + 0.11);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(settings.errorVolume * 0.45, now + 0.004);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.13);
+}
+
+// ─── Focus sounds (synthesized ambient rain — no bundled audio asset) ──────────
+let audioCtx = null, noiseSource = null, noiseGain = null, rainPlaying = false;
+let focusUIRefs = null;
+
+function ensureAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+function createNoiseBuffer(ctx) {
+  const size = ctx.sampleRate * 2;
+  const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
+  return buffer;
+}
+function startRain() {
+  ensureAudioCtx();
+  const src = audioCtx.createBufferSource();
+  src.buffer = createNoiseBuffer(audioCtx);
+  src.loop = true;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 900;
+  const gain = audioCtx.createGain();
+  gain.gain.value = settings.focusVolume;
+  src.connect(filter).connect(gain).connect(audioCtx.destination);
+  src.start();
+  noiseSource = src; noiseGain = gain;
+  rainPlaying = true;
+}
+function stopRain() {
+  if (noiseSource) { try { noiseSource.stop(); } catch (e) {} noiseSource.disconnect(); noiseSource = null; }
+  rainPlaying = false;
+}
+function toggleRain() { rainPlaying ? stopRain() : startRain(); updateFocusUI(); }
+function setFocusVolume(v) { settings.focusVolume = v; saveSettings(); if (noiseGain) noiseGain.gain.value = v; }
+function updateFocusUI() {
+  if (!focusUIRefs) return;
+  focusUIRefs.playBtn.textContent = rainPlaying ? '❚❚' : '▶';
+  focusUIRefs.playBtn.classList.toggle('active', rainPlaying);
+}
+function buildFocusSounds() {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="focus-track">
+      <div class="focus-track-name">Rain<br><span class="focus-track-sub">soft indoor rain with distant thunder</span></div>
+      <button class="tb-btn" id="focus-play">▶</button>
+    </div>
+    <div class="qs-row">
+      <label>Volume</label>
+      <input type="range" id="focus-volume" min="0" max="1" step="0.01">
+    </div>
+  `;
+  const $ = (sel) => wrap.querySelector(sel);
+  focusUIRefs = { playBtn: $('#focus-play') };
+  $('#focus-play').onclick = toggleRain;
+  $('#focus-volume').value = settings.focusVolume;
+  $('#focus-volume').oninput = (e) => setFocusVolume(parseFloat(e.target.value));
+  updateFocusUI();
+  return wrap;
+}
+
+// ─── Zen mode ────────────────────────────────────────────────────────────────
+function toggleZen() {
+  const on = document.body.classList.toggle('zen-mode');
+  document.getElementById('tb-zen').classList.toggle('active', on);
+}
+
+// ─── Side drawer plumbing ──────────────────────────────────────────────────────
+function isAnyOverlayOpen() {
+  return document.getElementById('side-drawer').classList.contains('open');
+}
+function closeAllOverlays() { closeDrawer(); }
+
+function openDrawer(kind) {
+  const drawer = document.getElementById('side-drawer');
+  const title = document.getElementById('drawer-title');
+  const body = document.getElementById('drawer-body');
+  body.innerHTML = '';
+  const builders = { toc: ['Contents', buildTOC], settings: ['Quick Settings', buildQuickSettings], focus: ['Focus Sounds', buildFocusSounds] };
+  const [label, build] = builders[kind];
+  title.textContent = label;
+  body.appendChild(build());
+  drawer.classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('side-drawer').classList.remove('open');
+  focusInput();
+}
+
+// ─── Drag & drop (single file — drop the first valid one) ─────────────────────
+let dragCount = 0;
+const overlay = document.getElementById('drag-overlay');
+
+document.addEventListener('dragenter', (e) => { e.preventDefault(); dragCount++; overlay.classList.add('show'); });
+document.addEventListener('dragleave', (e) => { if (--dragCount <= 0) { dragCount = 0; overlay.classList.remove('show'); } });
+document.addEventListener('dragover',  (e) => { e.preventDefault(); });
+
+document.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  dragCount = 0;
+  overlay.classList.remove('show');
+
+  for (const f of e.dataTransfer.files) {
+    if (/\.(md|txt)$/i.test(f.name)) {
+      const raw = await f.text();
+      const blocks = clientStripBlocks(raw);
+      if (blocksLength(blocks) >= 50) {
+        loadDoc(blocks, f.name.replace(/\.(md|txt)$/i, ''));
+        return;
+      }
+    }
+  }
+
+  const textData = e.dataTransfer.getData('text/plain');
+  if (textData && textData.trim().length >= 50) {
+    const blocks = clientStripBlocks(textData);
+    if (blocksLength(blocks) >= 50) loadDoc(blocks, 'pasted text');
+  }
+});
+
+// ─── Paste ─────────────────────────────────────────────────────────────────────
+async function handlePaste() {
+  let text = '';
+  try {
+    text = await navigator.clipboard.readText();
+  } catch (err) {
+    const tempArea = document.createElement('textarea');
+    tempArea.style.position = 'fixed';
+    tempArea.style.opacity = '0';
+    document.body.appendChild(tempArea);
+    tempArea.focus();
+    document.execCommand('paste');
+    text = tempArea.value;
+    document.body.removeChild(tempArea);
+  }
+  if (!text || text.trim().length < 50) return;
+  const blocks = clientStripBlocks(text);
+  if (blocksLength(blocks) < 50) return;
+  loadDoc(blocks, 'pasted text');
+}
+
+// ─── Boot ──────────────────────────────────────────────────────────────────────
+focusInput();
+</script>
+</body>
+</html>
