@@ -24,13 +24,9 @@ Single HTML file, zero build step. Data lives in Supabase (Postgres, guarded by 
 
 ## deploy
 
-```bash
-git clone https://github.com/yourusername/touchbase
-cd touchbase
-# enable GitHub Pages: Settings → Pages → main branch → / (root)
-```
+Lives in the `touchbase/` folder of [siddhantmaharana.github.io](https://github.com/siddhantmaharana/siddhantmaharana.github.io). Push `main` there and GitHub Pages serves it — no separate repo or Pages setup.
 
-Live at `https://yourusername.github.io/touchbase`
+Live at `https://siddhantmaharana.github.io/touchbase/`
 
 ## backend setup (one-time)
 

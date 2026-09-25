@@ -1,6 +1,6 @@
 # capture
 
-A minimal notes PWA. Log what's on your mind, tag it, read it back, edit it. Synced across your devices via Supabase — the same project [touchbase](https://github.com/siddhantmaharana/touchbase) uses, one account for both apps.
+A minimal notes PWA. Log what's on your mind, tag it, read it back, edit it. Synced across your devices via Supabase — the same project [touchbase](../touchbase/) uses, one account for both apps.
 
 See [spec_v2.1.md](spec_v2.1.md) for the current design, [CHANGELOG.md](CHANGELOG.md) for what changed and when.
 
@@ -21,13 +21,9 @@ Single HTML file, zero build step. Data lives in Supabase (Postgres, guarded by 
 
 ## deploy
 
-```bash
-git clone https://github.com/siddhantmaharana/capture
-cd capture
-# enable GitHub Pages: Settings → Pages → main branch → / (root)
-```
+Lives in the `capture/` folder of [siddhantmaharana.github.io](https://github.com/siddhantmaharana/siddhantmaharana.github.io). Push `main` there and GitHub Pages serves it — no separate repo or Pages setup.
 
-Live at `https://siddhantmaharana.github.io/capture`
+Live at `https://siddhantmaharana.github.io/capture/`
 
 ## backend setup (one-time)
 
@@ -68,7 +64,7 @@ CHANGELOG.md           version history
 
 ## sister project
 
-[touchbase](https://github.com/siddhantmaharana/touchbase) — minimal personal CRM, same philosophy, same Supabase project
+[touchbase](../touchbase/) — minimal personal CRM, same philosophy, same Supabase project
 
 ## license
 

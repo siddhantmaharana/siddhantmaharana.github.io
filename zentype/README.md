@@ -31,11 +31,7 @@ python3 main.py
 
 ## Deploy
 
-Static file, no build step, no backend — GitHub Pages serves `index.html` as-is.
-
-1. Push `main` to GitHub (`origin` is already `github.com/siddhantmaharana/zentype`)
-2. Repo → **Settings → Pages** → Source: **Deploy from a branch** → Branch: `main`, folder `/ (root)` → **Save**
-3. Live at `https://siddhantmaharana.github.io/zentype/` within a minute or two
+Static file, no build step, no backend. Lives in the `zentype/` folder of [siddhantmaharana.github.io](https://github.com/siddhantmaharana/siddhantmaharana.github.io) — push `main` there and GitHub Pages serves it at `https://siddhantmaharana.github.io/zentype/`.
 
 Progress still lives in the browser's `localStorage`, just scoped to that URL instead of a local `file://` path — more reliably persistent across sessions than `file://` storage, but still per-browser, per-device, with no account and no cross-device sync (that would need a backend — see [Not in this build](#not-in-this-build)). The desktop app (`python3 main.py`) works the same regardless of whether Pages is enabled.
 

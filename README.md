@@ -1,13 +1,34 @@
 # siddhantmaharana.github.io
 
-Personal homepage. Single `index.html`, no framework, no npm. A `notes/`
-folder adds a lightweight place to publish notes from Obsidian.
+Personal homepage plus my personal apps. Every app is a single `index.html`: no
+framework, no npm, no build step. A `notes/` folder adds a lightweight place to
+publish notes from Obsidian.
+
+## Apps
+
+Each app lives in its own folder and is served at `/<app>/`. See each app's README for details.
+
+| folder | what | data |
+|---|---|---|
+| [`capture/`](capture/) | quick notes with `#tags` | Supabase (shared project) |
+| [`touchbase/`](touchbase/) | personal CRM | Supabase (shared project) |
+| [`zentype/`](zentype/) | typing practice on your own text | `localStorage` only |
+
+capture and touchbase use the same Supabase project and magic-link account. Both are on
+the same origin, so a sign-in in one browser tab carries over to the other.
+Installed home-screen PWAs (iOS in particular) each get their own storage and still sign in separately.
+
+These folders were merged in with `git subtree`, so each app's full history is kept. The
+old standalone repos (`capture`, `touchbase`, `zentype`) are retired.
 
 ## Structure
 
 ```
 index.html         — the whole homepage
 favicon*.png/ico   — browser icons
+capture/           — capture app (see capture/README.md)
+touchbase/         — touchbase app (see touchbase/README.md)
+zentype/           — zentype app (see zentype/README.md)
 notes/
   build_manifest.py  — regenerates manifest.json from the .md files (run before pushing)
   manifest.json       — generated list of published notes (topic, tags, date) — don't hand-edit
