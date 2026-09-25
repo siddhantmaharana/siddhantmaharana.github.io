@@ -9,8 +9,13 @@ from pathlib import Path
 
 
 def main():
-    html_path = Path(__file__).parent / 'index.html'
-    html = html_path.read_text(encoding='utf-8')
+    here = Path(__file__).parent
+    html = (here / 'index.html').read_text(encoding='utf-8')
+    # The window is fed an HTML string, so relative links don't resolve —
+    # inline the shared stylesheet in place of its <link>.
+    theme = (here.parent / 'shared' / 'theme.css').read_text(encoding='utf-8')
+    html = html.replace('<link rel="stylesheet" href="../shared/theme.css">',
+                        f'<style>\n{theme}</style>')
 
     webview.create_window(
         'ZenType',
@@ -18,7 +23,7 @@ def main():
         width=1280,
         height=800,
         min_size=(900, 600),
-        background_color='#141414',
+        background_color='#0d0d0d',
     )
     webview.start()
 

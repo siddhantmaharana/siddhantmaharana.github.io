@@ -12,28 +12,13 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="../shared/theme.css">
   <style>
-    :root {
-      --bg:        #0d0d0d;
-      --surface:   #141414;
-      --surface2:  #1a1a1a;
-      --border:    #232323;
-      --border2:   #333;
-      --accent:    #7c6aff;
-      --text:      #e8e6e0;
-      --muted:     #555550;
-      --muted2:    #777770;
-      --danger:    #f87171;
-      --subtle:    #2a2a28;
-      --mono:      'SF Mono','Fira Code','Cascadia Code',monospace;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-family: var(--sans);
       font-size: 15px;
       height: 100dvh;
       display: flex;
@@ -144,7 +129,7 @@
       border: none;
       outline: none;
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-family: var(--sans);
       font-size: 15px;
       font-weight: 300;
       line-height: 1.6;
@@ -166,7 +151,7 @@
     .autocomplete-wrap.visible { display: block; }
 
     .ac-inner {
-      background: var(--surface2);
+      background: var(--surface-2);
       border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
       border-radius: 8px;
       padding: 6px 10px;
@@ -206,8 +191,8 @@
 
     .ac-chip.dim {
       background: var(--surface);
-      color: var(--muted2);
-      border-color: var(--border2);
+      color: var(--muted-2);
+      border-color: var(--border-2);
     }
 
     .ac-chip.new-tag {
@@ -231,8 +216,8 @@
       font-size: 11px;
       padding: 3px 9px;
       border-radius: 6px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
       color: var(--muted);
     }
 
@@ -286,7 +271,7 @@
       font-size: 11px;
       padding: 4px 11px;
       border-radius: 6px;
-      border: 1px solid var(--border2);
+      border: 1px solid var(--border-2);
       color: var(--muted);
       cursor: pointer;
       white-space: nowrap;
@@ -327,7 +312,7 @@
 
     .log-entry {
       padding: 10px 18px;
-      border-left: 2px solid var(--border2);
+      border-left: 2px solid var(--border-2);
       margin: 0 18px 6px;
       border-radius: 0 6px 6px 0;
       cursor: pointer;
@@ -377,7 +362,7 @@
       border-top: 1px solid var(--border);
       font-size: 12px;
       font-weight: 300;
-      color: var(--muted2);
+      color: var(--muted-2);
       line-height: 1.6;
       white-space: pre-wrap;
     }
@@ -387,8 +372,8 @@
     .entry-edit-input {
       display: none;
       width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
       border-radius: 6px;
       padding: 8px 10px;
       color: var(--text);
@@ -414,9 +399,9 @@
       font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 0.04em;
-      color: var(--muted2);
+      color: var(--muted-2);
       background: var(--surface);
-      border: 1px solid var(--border2);
+      border: 1px solid var(--border-2);
       border-radius: 5px;
       padding: 4px 9px;
       cursor: pointer;
@@ -445,8 +430,8 @@
       bottom: 28px;
       left: 50%;
       transform: translateX(-50%) translateY(12px);
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
       color: var(--text);
       font-size: 13px;
       font-family: var(--mono);
@@ -484,8 +469,8 @@
     }
 
     .delete-sheet {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
       border-radius: 18px 18px 0 0;
       padding: 18px;
       width: 100%;
@@ -494,7 +479,7 @@
 
     .delete-sheet p {
       font-size: 13px;
-      color: var(--muted2);
+      color: var(--muted-2);
       margin-bottom: 14px;
       line-height: 1.5;
     }
@@ -507,7 +492,7 @@
     .btn-cancel {
       flex: 1;
       background: var(--surface);
-      border: 1px solid var(--border2);
+      border: 1px solid var(--border-2);
       border-radius: 7px;
       padding: 10px;
       font-family: var(--mono);
@@ -560,8 +545,8 @@
 
     .auth-input {
       width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
       border-radius: 7px;
       padding: 10px 12px;
       color: var(--text);
@@ -599,8 +584,8 @@
 
     .icon-btn {
       background: transparent;
-      border: 1px solid var(--border2);
-      color: var(--muted2);
+      border: 1px solid var(--border-2);
+      color: var(--muted-2);
       border-radius: 6px;
       width: 24px;
       height: 24px;

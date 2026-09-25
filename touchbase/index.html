@@ -11,30 +11,14 @@
 <meta name="theme-color" content="#0d0d0d">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="../shared/theme.css">
 <style>
-  :root {
-    --bg:        #0d0d0d;
-    --surface:   #141414;
-    --card:      #1a1a1a;
-    --border:    #232323;
-    --border-hi: #333;
-    --text:      #e8e6e0;
-    --muted:     #555550;
-    --subtle:    #2a2a28;
-    --green:     #4ade80;  --green-dim: #1a3d26;
-    --amber:     #f59e0b;  --amber-dim: #3d2d0a;
-    --red:       #f87171;  --red-dim:   #3d1a1a;
-    --purple:    #a78bfa;  --purple-dim:#2d1f4a;
-    --accent:    #7c6aff;
-    --mono: 'SF Mono','Fira Code','Cascadia Code',monospace;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { height: 100%; }
   body { min-height: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    font-family: var(--sans);
     font-size: 15px;
     line-height: 1.5;
     max-width: 480px;
@@ -63,8 +47,8 @@
   /* ── Header segmented tabs (desktop nav) ── */
   .header-tabs { display: none; gap: 6px; }
   .seg-btn {
-    background: var(--card);
-    border: 1px solid var(--border-hi);
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
     color: var(--muted);
     font-family: var(--mono);
     font-size: 11px;
@@ -96,8 +80,8 @@
   .icon-btn {
     width: 34px; height: 34px;
     border-radius: 8px;
-    background: var(--card);
-    border: 1px solid var(--border-hi);
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     color: var(--muted);
@@ -170,7 +154,7 @@
     width: 100%; max-width: 480px;
     display: flex;
     background: var(--surface);
-    border-top: 1px solid var(--border-hi);
+    border-top: 1px solid var(--border-2);
     padding-bottom: env(safe-area-inset-bottom, 0px);
     z-index: 50;
   }
@@ -194,8 +178,8 @@
   .menu-dropdown {
     display: none;
     position: absolute; top: 40px; right: 0;
-    background: var(--card);
-    border: 1px solid var(--border-hi);
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
     border-radius: 8px;
     min-width: 120px;
     overflow: hidden;
@@ -259,7 +243,7 @@
   input, textarea, select {
     width: 100%;
     background: var(--bg);
-    border: 1px solid var(--border-hi);
+    border: 1px solid var(--border-2);
     color: var(--text);
     font-size: 14px;
     font-family: inherit;
@@ -286,7 +270,7 @@
   /* ── Buttons ── */
   .btn {
     background: none;
-    border: 1px solid var(--border-hi);
+    border: 1px solid var(--border-2);
     color: var(--text);
     font-size: 13px;
     font-family: inherit;
@@ -295,12 +279,12 @@
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
   }
-  .btn:hover { background: var(--card); border-color: var(--subtle); }
+  .btn:hover { background: var(--surface-2); border-color: var(--subtle); }
   .btn-sm { padding: 6px 12px; font-size: 12px; }
   .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
   .btn-primary:hover { background: #6a5aef; border-color: #6a5aef; }
   .btn-ghost  { border-color: transparent; color: var(--muted); }
-  .btn-ghost:hover { color: var(--text); background: var(--card); border-color: transparent; }
+  .btn-ghost:hover { color: var(--text); background: var(--surface-2); border-color: transparent; }
   .btn-danger { border-color: var(--red-dim); color: var(--red); }
   .btn-danger:hover { background: var(--red-dim); }
 
@@ -316,7 +300,7 @@
   .overlay.open { display: flex; }
   .sheet {
     background: var(--surface);
-    border: 1px solid var(--border-hi);
+    border: 1px solid var(--border-2);
     border-radius: 18px 18px 0 0;
     padding: 8px 20px 32px;
     width: 100%;
@@ -379,7 +363,7 @@
     cursor: pointer;
     flex-shrink: 0;
   }
-  .log-edit-btn:hover { color: var(--text); background: var(--card); }
+  .log-edit-btn:hover { color: var(--text); background: var(--surface-2); }
 
   /* ── Export sheet ── */
   .export-md {
@@ -403,7 +387,7 @@
   .toast {
     position: fixed; bottom: 28px; left: 50%;
     transform: translateX(-50%) translateY(12px);
-    background: var(--card); border: 1px solid var(--border-hi);
+    background: var(--surface-2); border: 1px solid var(--border-2);
     color: var(--text); font-size: 13px; font-family: var(--mono);
     padding: 8px 18px; border-radius: 8px;
     opacity: 0; transition: all 0.2s ease;

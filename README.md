@@ -18,6 +18,12 @@ capture and touchbase use the same Supabase project and magic-link account. Both
 the same origin, so a sign-in in one browser tab carries over to the other.
 Installed home-screen PWAs (iOS in particular) each get their own storage and still sign in separately.
 
+Every page links `shared/theme.css` before its own `<style>`. Change a color there and
+it changes everywhere. Use the shared token names (`--surface-2`, `--border-2`, `--muted-2`, …)
+instead of hardcoding hex values. An app can override `--accent` to keep its own identity
+(zentype does). zentype's desktop app (`main.py`) inlines the sheet, since pywebview loads
+the page from a string.
+
 These folders were merged in with `git subtree`, so each app's full history is kept. The
 old standalone repos (`capture`, `touchbase`, `zentype`) are retired.
 
@@ -29,6 +35,8 @@ favicon*.png/ico   — browser icons
 capture/           — capture app (see capture/README.md)
 touchbase/         — touchbase app (see touchbase/README.md)
 zentype/           — zentype app (see zentype/README.md)
+shared/
+  theme.css          — colors, fonts, and base reset used by every page
 notes/
   build_manifest.py  — regenerates manifest.json from the .md files (run before pushing)
   manifest.json       — generated list of published notes (topic, tags, date) — don't hand-edit

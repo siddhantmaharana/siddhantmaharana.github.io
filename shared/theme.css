@@ -1,0 +1,46 @@
+/* Shared design tokens and base reset for the homepage, notes, and every app.
+   Link this before a page's own <style>; anything the page sets wins.
+   Apps may override --accent to give themselves their own identity. */
+
+:root {
+  /* surfaces, darkest to lightest */
+  --bg:         #0d0d0d;
+  --surface:    #141414;
+  --surface-2:  #1a1a1a;
+  --subtle:     #2a2a28;
+
+  /* lines */
+  --border:     #232323;
+  --border-2:   #333;
+
+  /* text, brightest to dimmest */
+  --text:       #e8e6e0;
+  --soft:       #9a9a94;
+  --muted-2:    #777770;
+  --muted:      #555550;
+
+  --accent:     #7c6aff;
+
+  /* status colors, each with a dim background tint */
+  --green:  #4ade80;  --green-dim:  #1a3d26;
+  --amber:  #f59e0b;  --amber-dim:  #3d2d0a;
+  --red:    #f87171;  --red-dim:    #3d1a1a;
+  --purple: #a78bfa;  --purple-dim: #2d1f4a;
+  --danger: var(--red);
+
+  --sans: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
