@@ -40,34 +40,23 @@
       max-width: 460px;
     }
 
-    /* ── Tabs ── */
-    .tabs {
-      display: flex;
-      gap: 20px;
+    /* ── Section heading ── */
+    .section-head {
       margin-top: 40px;
+      margin-bottom: 28px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 0;
     }
 
-    .tab {
+    .section-title {
+      display: inline-block;
       font-family: var(--mono);
       font-size: 12px;
-      color: var(--muted);
-      cursor: pointer;
-      padding-bottom: 10px;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
+      color: var(--text);
       letter-spacing: 0.04em;
-      transition: color 0.15s, border-color 0.15s;
-      user-select: none;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: -1px;
     }
-
-    .tab:hover { color: var(--soft); }
-    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
-
-    /* ── Tab panels ── */
-    .panel { display: none; padding-top: 28px; }
-    .panel.active { display: block; }
 
     /* ── Projects ── */
     .project-list {
@@ -118,39 +107,6 @@
       transition: opacity 0.1s;
     }
 
-    /* ── Writing ── */
-    .writing-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .writing-row {
-      display: flex;
-      align-items: baseline;
-      gap: 14px;
-      padding: 10px 12px;
-      border-radius: 7px;
-      text-decoration: none;
-      transition: background 0.1s;
-    }
-
-    .writing-row:hover { background: var(--surface); }
-    .writing-row:hover .row-arrow { opacity: 1; }
-
-    .writing-title {
-      font-size: 13px;
-      color: var(--text);
-      flex: 1;
-    }
-
-    .writing-meta {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
     /* ── Elsewhere ── */
     .link-row {
       display: flex;
@@ -184,38 +140,34 @@
     run, read, and build tools to fix problems I mostly caused myself.
   </p>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('projects')">projects</div>
-    <div class="tab" onclick="switchTab('writing')">writing</div>
+  <div class="section-head">
+    <span class="section-title">projects</span>
   </div>
 
-  <!-- Projects -->
-  <div class="panel active" id="panel-projects">
-    <div class="project-list">
-      <a class="project-row" href="touchbase/">
-        <span class="project-name">touchbase</span>
-        <span class="project-desc">remembers what people told me, so I don't have to pretend I did</span>
-        <span class="project-tag">private</span>
-        <span class="row-arrow">↗</span>
-      </a>
-      <a class="project-row" href="capture/">
-        <span class="project-name">capture</span>
-        <span class="project-desc">receipts for my own brain</span>
-        <span class="project-tag">private</span>
-        <span class="row-arrow">↗</span>
-      </a>
-      <a class="project-row" href="zentype/">
-        <span class="project-name">zentype</span>
-        <span class="project-desc">typing practice, but the text is actually good</span>
-        <span class="row-arrow">↗</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Writing -->
-  <div class="panel" id="panel-writing">
-    <div class="writing-list" id="writing-list"></div>
-    <p style="font-size:13px; color:var(--muted); padding: 0 12px;" id="writing-empty">Loading…</p>
+  <div class="project-list">
+    <a class="project-row" href="touchbase/">
+      <span class="project-name">touchbase</span>
+      <span class="project-desc">remembers what people told me, so I don't have to pretend I did</span>
+      <span class="project-tag">private</span>
+      <span class="row-arrow">↗</span>
+    </a>
+    <a class="project-row" href="capture/">
+      <span class="project-name">capture</span>
+      <span class="project-desc">receipts for my own brain</span>
+      <span class="project-tag">private</span>
+      <span class="row-arrow">↗</span>
+    </a>
+    <a class="project-row" href="zentype/">
+      <span class="project-name">zentype</span>
+      <span class="project-desc">typing practice, but the text is actually good</span>
+      <span class="row-arrow">↗</span>
+    </a>
+    <a class="project-row" href="https://reading-vault.siddhantcet.workers.dev/" target="_blank" rel="noopener">
+      <span class="project-name">garden</span>
+      <span class="project-desc">what I read and what I think about it. Weeds included.</span>
+      <span class="project-tag">private</span>
+      <span class="row-arrow">↗</span>
+    </a>
   </div>
 
   <div class="link-row">
@@ -223,41 +175,6 @@
     <a class="link-item" href="https://www.linkedin.com/in/siddhantmaharana/" target="_blank" rel="noopener">linkedin</a>
     <a class="link-item" href="https://www.flickr.com/photos/siddhantmaharana/" target="_blank" rel="noopener">flickr</a>
   </div>
-
-  <script>
-    function switchTab(name) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
-      document.getElementById('panel-' + name).classList.add('active');
-    }
-
-    fetch('notes/manifest.json')
-      .then(r => r.json())
-      .then(notes => {
-        const list = document.getElementById('writing-list');
-        const empty = document.getElementById('writing-empty');
-        if (!notes.length) { empty.textContent = 'Nothing here yet. Working on it. Allegedly.'; return; }
-        empty.remove();
-        notes.slice(0, 5).forEach(n => {
-          const row = document.createElement('a');
-          row.className = 'writing-row';
-          row.href = 'notes/note.html?path=' + encodeURIComponent(n.path);
-          row.innerHTML = `
-            <span class="writing-title">${n.title}</span>
-            <span class="writing-meta">${n.date || ''}</span>`;
-          list.appendChild(row);
-        });
-        const more = document.createElement('a');
-        more.className = 'writing-row';
-        more.href = 'notes/index.html';
-        more.innerHTML = `<span class="writing-title" style="color:var(--muted)">all notes →</span>`;
-        list.appendChild(more);
-      })
-      .catch(() => {
-        document.getElementById('writing-empty').textContent = 'Nothing here yet. Working on it. Allegedly.';
-      });
-  </script>
 
 </body>
 </html>
