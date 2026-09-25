@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Touchbase">
+<title>Touchbase</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg:        #0d0d0d;
+    --surface:   #141414;
+    --card:      #1a1a1a;
+    --border:    #232323;
+    --border-hi: #333;
+    --text:      #e8e6e0;
+    --muted:     #555550;
+    --subtle:    #2a2a28;
+    --green:     #4ade80;  --green-dim: #1a3d26;
+    --amber:     #f59e0b;  --amber-dim: #3d2d0a;
+    --red:       #f87171;  --red-dim:   #3d1a1a;
+    --purple:    #a78bfa;  --purple-dim:#2d1f4a;
+    --accent:    #7c6aff;
+    --mono: 'SF Mono','Fira Code','Cascadia Code',monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { height: 100%; }
+  body { min-height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 90px;
+  }
+  @media (min-width: 700px) {
+    body { max-width: 680px; }
+  }
+
+  /* ── Header ── */
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  .app-brand { display: flex; align-items: baseline; gap: 7px; }
+
+  /* ── Header segmented tabs (desktop nav) ── */
+  .header-tabs { display: none; gap: 6px; }
+  .seg-btn {
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .seg-btn:hover  { color: var(--text); }
+  .seg-btn.active { color: var(--accent); border-color: var(--accent); }
+  @media (min-width: 700px) {
+    .header-tabs { display: flex; }
+  }
+  .app-title {
+    font-family: var(--mono);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .app-count {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 17px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  /* ── Section labels ── */
+  .section-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 6px;
+  }
+  .section-label span {
+    font-size: 10px;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .section-label .count-warn { color: var(--red); }
+  .section-label .count-ok   { color: var(--green); }
+
+  /* ── Contact rows ── */
+  .contact-list { display: flex; flex-direction: column; }
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .contact-row:hover  { background: #141414; }
+  .contact-row:active { background: #1a1a1a; }
+
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    font-family: var(--mono);
+    flex-shrink: 0;
+  }
+  .contact-info { flex: 1; min-width: 0; }
+  .contact-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .contact-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .badge {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 3px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .b-red    { background: var(--red-dim);    color: var(--red); }
+  .b-amber  { background: var(--amber-dim);  color: var(--amber); }
+  .b-green  { background: var(--green-dim);  color: var(--green); }
+  .b-gray   { background: var(--subtle);     color: var(--muted); }
+
+  .section-divider { height: 6px; background: var(--subtle); }
+
+  /* ── Bottom tab bar ── */
+  .tab-bar {
+    position: fixed; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    display: flex;
+    background: var(--surface);
+    border-top: 1px solid var(--border-hi);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    z-index: 50;
+  }
+  .tab-bar.hidden { display: none; }
+  .tab-btn {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 9px 0 10px;
+    background: none; border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .tab-btn.active { color: var(--accent); }
+
+  /* ── Overflow menu ── */
+  .menu-wrap { position: relative; }
+  .menu-dropdown {
+    display: none;
+    position: absolute; top: 40px; right: 0;
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    min-width: 120px;
+    overflow: hidden;
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .menu-dropdown.open { display: block; }
+  .menu-item {
+    display: block; width: 100%; text-align: left;
+    padding: 9px 14px;
+    background: none; border: none;
+    color: var(--text);
+    font-size: 13px; font-family: inherit;
+    cursor: pointer;
+  }
+  .menu-item:hover { background: var(--subtle); }
+  .menu-item.danger { color: var(--red); }
+
+  /* ── Timeline ── */
+  .timeline-group-head {
+    font-size: 10px; font-family: var(--mono);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 20px 6px;
+  }
+  .timeline-row {
+    display: flex; gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .timeline-row:hover { background: #141414; }
+  .timeline-body { flex: 1; min-width: 0; }
+  .timeline-name-line { display: flex; justify-content: space-between; gap: 8px; }
+  .timeline-name { font-size: 13px; font-weight: 500; }
+  .timeline-ts { font-size: 10px; font-family: var(--mono); color: var(--muted); white-space: nowrap; }
+  .timeline-note { font-size: 13px; color: #9a9a94; margin-top: 2px; line-height: 1.5; }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--muted);
+  }
+  .empty-glyph { font-family: var(--mono); font-size: 28px; color: var(--accent); opacity: 0.4; margin-bottom: 12px; }
+  .empty-title { font-size: 15px; color: var(--text); margin-bottom: 6px; font-weight: 500; }
+  .empty-body  { font-size: 13px; line-height: 1.6; }
+
+  /* ── Forms ── */
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  input, textarea, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    padding: 9px 12px;
+    border-radius: 7px;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+  #f-note { min-height: 180px; font-size: 15px; }
+  #sheet-log-edit textarea { min-height: 160px; font-size: 15px; }
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555550' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+  ::placeholder { color: var(--muted); opacity: 1; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── Buttons ── */
+  .btn {
+    background: none;
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 8px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .btn:hover { background: var(--card); border-color: var(--subtle); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+  .btn-primary:hover { background: #6a5aef; border-color: #6a5aef; }
+  .btn-ghost  { border-color: transparent; color: var(--muted); }
+  .btn-ghost:hover { color: var(--text); background: var(--card); border-color: transparent; }
+  .btn-danger { border-color: var(--red-dim); color: var(--red); }
+  .btn-danger:hover { background: var(--red-dim); }
+
+  /* ── Overlay / bottom sheet ── */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.72);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .overlay.open { display: flex; }
+  .sheet {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 18px 18px 0 0;
+    padding: 8px 20px 32px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: var(--subtle);
+    border-radius: 2px;
+    margin: 8px auto 16px;
+  }
+
+  /* ── Wider viewports: sheets become a centered dialog, not a phone-width bottom sheet ── */
+  @media (min-width: 700px) {
+    .tab-bar { display: none; }
+    .overlay { align-items: center; padding: 24px; }
+    .sheet {
+      border-radius: 16px;
+      max-width: 560px;
+      max-height: 85vh;
+    }
+    .sheet-handle { display: none; }
+    #sheet-person .sheet { max-width: 640px; }
+    #sheet-person #f-note { min-height: 320px; font-size: 16px; }
+    #sheet-log-edit .sheet { max-width: 560px; }
+    #sheet-log-edit textarea { min-height: 240px; font-size: 16px; }
+  }
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .sheet-title { font-size: 16px; font-weight: 600; }
+  .sheet-meta  { font-size: 11px; font-family: var(--mono); color: var(--muted); margin-top: 3px; }
+  .sheet-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+  /* ── Log history inside person sheet ── */
+  .history-head {
+    font-size: 10px; font-family: var(--mono);
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 14px; margin-top: 14px;
+    border-top: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .log-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .log-item:last-child { border-bottom: none; }
+  .log-ts  { font-size: 10px; font-family: var(--mono); color: var(--muted); margin-bottom: 3px; }
+  .log-txt { font-size: 13px; line-height: 1.5; color: #9a9a94; }
+  .log-edit-btn {
+    background: none; border: none;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .log-edit-btn:hover { color: var(--text); background: var(--card); }
+
+  /* ── Export sheet ── */
+  .export-md {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.75;
+    color: #666660;
+    white-space: pre-wrap;
+    max-height: 40vh;
+    overflow-y: auto;
+    margin: 10px 0;
+  }
+  .export-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .export-row select { flex: 1; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--card); border: 1px solid var(--border-hi);
+    color: var(--text); font-size: 13px; font-family: var(--mono);
+    padding: 8px 18px; border-radius: 8px;
+    opacity: 0; transition: all 0.2s ease;
+    pointer-events: none; z-index: 200; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .helper-txt {
+    font-size: 11px; color: var(--muted); font-family: var(--mono);
+    text-align: center; margin-top: 6px;
+  }
+
+  /* ── Auth screen ── */
+  .auth-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .auth-screen .app-title { font-size: 22px; margin-bottom: 6px; }
+  .auth-tagline { font-size: 12px; color: var(--muted); font-family: var(--mono); margin-bottom: 28px; }
+  .auth-card { width: 100%; max-width: 320px; }
+  .auth-status { font-size: 12px; color: var(--green); font-family: var(--mono); margin-top: 12px; min-height: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH SCREEN ── -->
+<div class="auth-screen" id="auth-screen">
+  <div class="app-title">touchbase</div>
+  <div class="auth-tagline">// sign in to sync your contacts</div>
+  <div class="auth-card">
+    <div class="form-group" style="text-align:left">
+      <label>email</label>
+      <input id="auth-email" type="email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <button class="btn btn-primary" id="auth-send-btn" style="width:100%" onclick="sendMagicLink()">send magic link</button>
+    <div class="auth-status" id="auth-status"></div>
+  </div>
+</div>
+
+<!-- ── APP ROOT ── -->
+<div id="app-root" style="display:none">
+
+<!-- ── HEADER ── -->
+<header class="app-header">
+  <div class="app-brand">
+    <span class="app-title">touchbase</span>
+    <span class="app-count" id="people-count"></span>
+  </div>
+  <div class="header-tabs" id="header-tabs">
+    <button class="seg-btn active" id="htab-people" onclick="showTab('people')">people</button>
+    <button class="seg-btn" id="htab-timeline" onclick="showTab('timeline')">timeline</button>
+  </div>
+  <div class="header-actions">
+    <span id="people-header-actions" style="display:flex;gap:8px">
+      <button class="icon-btn" onclick="openExportSheet()" title="Export">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <button class="icon-btn" onclick="openAddSheet()" title="Add person">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </span>
+    <button class="icon-btn" onclick="signOut()" title="Sign out">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── PEOPLE LIST ── -->
+<main id="people-main"></main>
+
+<!-- ── TIMELINE ── -->
+<main id="timeline-main" style="display:none"></main>
+
+<!-- ── LOG NOTE SHEET ── -->
+<div class="overlay" id="sheet-person">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-title" id="person-name"></div>
+        <div class="sheet-meta"  id="person-meta"></div>
+      </div>
+      <div style="display:flex;gap:4px;align-items:flex-start">
+        <div class="menu-wrap">
+          <button class="btn btn-sm btn-ghost" onclick="toggleMenu(event, 'person-menu')" title="More">⋯</button>
+          <div class="menu-dropdown" id="person-menu">
+            <button class="menu-item" onclick="closeMenus();openEditSheet()">edit</button>
+            <button class="menu-item danger" onclick="closeMenus();deleteContact(activePerson)">delete</button>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person')">✕</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>log a note</label>
+      <textarea id="f-note" placeholder="Quick call. Mentioned visiting Atlanta in October…"></textarea>
+    </div>
+    <div class="two-col">
+      <div class="form-group">
+        <label>when <span style="text-transform:none;letter-spacing:0;font-size:9px;color:#333">backdate if late</span></label>
+        <input type="date" id="f-log-date" style="color-scheme:dark" />
+      </div>
+      <div class="form-group">
+        <label>next contact <span style="text-transform:none;letter-spacing:0;font-size:9px;color:#333">optional</span></label>
+        <div style="display:flex;gap:6px">
+          <input type="date" id="f-next-date" style="flex:1;color-scheme:dark" />
+          <button class="btn btn-sm btn-ghost" style="padding:9px 10px" onclick="document.getElementById('f-next-date').value=''" title="clear">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" style="width:100%" onclick="logNote()">log it</button>
+    </div>
+    <div id="person-history"></div>
+  </div>
+</div>
+
+<!-- ── EDIT LOG SHEET ── -->
+<div class="overlay" id="sheet-log-edit">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">edit note</div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-log-edit')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>date</label>
+      <input type="date" id="f-log-edit-date" style="color-scheme:dark" />
+    </div>
+    <div class="form-group">
+      <label>note</label>
+      <textarea id="f-log-edit-note" placeholder="What happened…"></textarea>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-sm btn-danger" style="margin-right:auto" onclick="deleteLog()">delete</button>
+      <button class="btn btn-sm" onclick="closeSheet('sheet-log-edit')">cancel</button>
+      <button class="btn btn-sm btn-primary" onclick="saveLogEdit()">save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD / EDIT CONTACT SHEET ── -->
+<div class="overlay" id="sheet-contact">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="contact-sheet-title">add person</div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-contact')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>name</label>
+      <input id="f-name" placeholder="Rohan Sharma" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label>context</label>
+      <input id="f-about" placeholder="College friend, lives in Pune" autocomplete="off" />
+    </div>
+    <div class="two-col">
+      <div class="form-group">
+        <label>check in every</label>
+        <input id="f-cadence" type="number" value="30" min="1" />
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <input value="days" disabled style="color:var(--muted)" />
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-sm btn-danger" id="delete-btn" onclick="deleteContact()" style="display:none;margin-right:auto">delete</button>
+      <button class="btn btn-sm" onclick="closeSheet('sheet-contact')">cancel</button>
+      <button class="btn btn-sm btn-primary" onclick="saveContact()">save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── EXPORT SHEET ── -->
+<div class="overlay" id="sheet-export">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-title">data</div>
+        <div class="sheet-meta">export · import · backup</div>
+      </div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-export')">✕</button>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
+      <div style="font-size:10px;font-family:var(--mono);color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px">import</div>
+      <div style="font-size:12px;color:#555550;margin-bottom:10px;line-height:1.5">restore from a <code style="font-family:var(--mono);color:var(--accent);font-size:11px">.json</code> backup — choose merge (keeps existing) or replace (overwrites all)</div>
+      <div style="display:flex;gap:8px">
+        <label class="btn btn-sm" style="flex:1;text-align:center;cursor:pointer">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          merge
+          <input type="file" accept=".json" onchange="importJSON(event,'merge')" style="display:none" />
+        </label>
+        <label class="btn btn-sm" style="flex:1;text-align:center;cursor:pointer">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          replace
+          <input type="file" accept=".json" onchange="importJSON(event,'replace')" style="display:none" />
+        </label>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;font-family:var(--mono);color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px">export</div>
+      <div class="export-row">
+        <select id="export-select" onchange="renderExport()">
+          <option value="all">all people</option>
+        </select>
+      </div>
+      <div class="export-md" id="export-md"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" style="flex:1" onclick="downloadBackup()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          backup json
+        </button>
+        <button class="btn btn-sm btn-primary" style="flex:1" onclick="copyExport()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:4px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          copy markdown
+        </button>
+      </div>
+    </div>
+    <p class="helper-txt" style="margin-top:10px">run AI on top in obsidian</p>
+  </div>
+</div>
+
+<!-- ── BOTTOM TAB BAR ── -->
+<nav class="tab-bar" id="tab-bar">
+  <button class="tab-btn active" id="tab-people" onclick="showTab('people')">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    people
+  </button>
+  <button class="tab-btn" id="tab-timeline" onclick="showTab('timeline')">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    timeline
+  </button>
+</nav>
+
+</div><!-- /app-root -->
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// Get these from Supabase Dashboard -> Project Settings -> API.
+// The anon/public key is safe to expose client-side — Row Level Security policies
+// (see supabase/schema.sql) are what actually restrict access to each signed-in user's own rows.
+const SUPABASE_URL = 'https://sjycdaxraklxlnrmgqrb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeWNkYXhyYWtseGxucm1ncXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzUwMTgsImV4cCI6MjEwMTM1MTAxOH0.zNqG47w5lyEbdxV3LeK--hIMKBF7QeXW67OL-ui49NQ';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PALETTES = [
+  {bg:'#1a3d26',color:'#4ade80'},{bg:'#2d1f4a',color:'#a78bfa'},
+  {bg:'#3d2010',color:'#fb923c'},{bg:'#1a2d4a',color:'#60a5fa'},
+  {bg:'#3d1a2a',color:'#f472b6'},{bg:'#2a2d10',color:'#a3e635'},
+];
+
+function palette(name) {
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) % PALETTES.length;
+  return PALETTES[h];
+}
+function initials(name) {
+  return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+function daysSince(ts)    { return ts == null ? null : Math.floor((Date.now()-ts)/86400000); }
+function fmtDate(ts)      { return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDateTime(ts)  { return new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
+
+function relBucket(ts) {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const day = new Date(ts); day.setHours(0,0,0,0);
+  const diffDays = Math.round((now - day) / 86400000);
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays > 1 && diffDays <= 7) return 'This week';
+  return day.toLocaleDateString('en-US', {month:'long', year: day.getFullYear()===now.getFullYear() ? undefined : 'numeric'});
+}
+
+let DB = { contacts:[], logs:[] };
+let activePerson = null, editingId = null, editingLogId = null, currentTab = 'people';
+
+function rowToContact(r) {
+  return {
+    id: r.id,
+    name: r.name,
+    about: r.about || '',
+    cadence: r.cadence_days,
+    lastContact: r.last_contact ? new Date(r.last_contact).getTime() : null,
+    nextContact: r.next_contact ? new Date(r.next_contact).getTime() : null,
+  };
+}
+function rowToLog(r) {
+  return { id: r.id, contactId: r.person_id, note: r.note, ts: new Date(r.ts).getTime() };
+}
+
+async function refreshData() {
+  const [{data: people, error: pErr}, {data: logs, error: lErr}] = await Promise.all([
+    sb.from('people').select('*').order('created_at'),
+    sb.from('touch_logs').select('*').order('ts', {ascending:false}),
+  ]);
+  if (pErr || lErr) { showToast('sync error — check connection'); console.error(pErr||lErr); return; }
+  DB.contacts = people.map(rowToContact);
+  DB.logs     = logs.map(rowToLog);
+}
+
+async function currentUserId() {
+  const { data } = await sb.auth.getUser();
+  return data.user.id;
+}
+
+// One-time: if this browser has an old localStorage backup and the signed-in
+// account has no data yet, offer to bring it over.
+async function migrateLocalData() {
+  let local;
+  try { local = JSON.parse(localStorage.getItem('touchbase_v1') || 'null'); } catch(e) { return; }
+  if (!local || !Array.isArray(local.contacts) || !local.contacts.length) return;
+  if (DB.contacts.length) return;
+  if (!confirm(`Found ${local.contacts.length} people saved locally on this device. Import them into your account?`)) return;
+  await bulkImportRows(local.contacts, local.logs || []);
+  showToast('imported local backup ✓');
+}
+
+async function bulkImportRows(contacts, logs) {
+  const userId = await currentUserId();
+  const idMap = {};
+  for (const c of contacts) {
+    const { data, error } = await sb.from('people').insert({
+      user_id: userId,
+      name: c.name,
+      about: c.about || null,
+      cadence_days: parseInt(c.cadence) || 30,
+      last_contact: c.lastContact ? new Date(c.lastContact).toISOString() : null,
+      next_contact: c.nextContact ? new Date(c.nextContact).toISOString() : null,
+    }).select().single();
+    if (!error) idMap[c.id] = data.id;
+  }
+  const logRows = logs.filter(l => idMap[l.contactId]).map(l => ({
+    person_id: idMap[l.contactId], user_id: userId, note: l.note, ts: new Date(l.ts).toISOString(),
+  }));
+  if (logRows.length) await sb.from('touch_logs').insert(logRows);
+}
+
+function getBadge(c) {
+  const d = daysSince(c.lastContact);
+  const lastStr = d==null ? 'never contacted' : d===0 ? 'today' : d+'d ago';
+
+  if (c.nextContact && (!c.lastContact || c.nextContact > c.lastContact)) {
+    const left = Math.round((c.nextContact - Date.now()) / 86400000);
+    const ds   = new Date(c.nextContact).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    if (left < 0)  return {cls:'b-red',   text:Math.abs(left)+'d over', sub:'planned: '+ds+' · last: '+lastStr};
+    if (left === 0) return {cls:'b-red',  text:'due today',              sub:'planned: '+ds+' · last: '+lastStr};
+    if (left <= 7)  return {cls:'b-amber',text:'in '+left+'d',           sub:'planned: '+ds+' · last: '+lastStr};
+    return                 {cls:'b-green',text:'in '+left+'d',           sub:'planned: '+ds+' · last: '+lastStr};
+  }
+
+  const cad = parseInt(c.cadence)||30;
+  if (d == null) return {cls:'b-gray',  text:'reach out', sub:'no contact logged'};
+  const left = cad - d;
+  if (d === 0)    return {cls:'b-green', text:'today',          sub:'next in '+cad+'d'};
+  if (left > 7)   return {cls:'b-green', text:'in '+left+'d',   sub:'last: '+lastStr};
+  if (left > 0)   return {cls:'b-amber', text:'in '+left+'d',   sub:'last: '+lastStr};
+  if (left === 0) return {cls:'b-red',   text:'due today',      sub:'last: '+lastStr};
+  return                 {cls:'b-red',   text:Math.abs(left)+'d over', sub:'last: '+lastStr};
+}
+
+function urgency(c) {
+  if (c.nextContact && (!c.lastContact || c.nextContact > c.lastContact)) return (c.nextContact - Date.now()) / 86400000;
+  const d = daysSince(c.lastContact);
+  if (d == null) return -9999;
+  return ((parseInt(c.cadence)||30) - d);
+}
+
+function isAttention(c) { return urgency(c) <= 0 || !c.lastContact; }
+
+function renderPeople() {
+  const main = document.getElementById('people-main');
+  if (!DB.contacts.length) {
+    main.innerHTML = `<div class="empty">
+      <div class="empty-glyph">[ ]</div>
+      <div class="empty-title">no people yet</div>
+      <div class="empty-body">tap + to add someone and start tracking your connections.</div>
+    </div>`;
+    document.getElementById('people-count').textContent = '';
+    return;
+  }
+
+  const sorted = [...DB.contacts].sort((a,b) => urgency(a) - urgency(b));
+  const attn   = sorted.filter(isAttention);
+  const good   = sorted.filter(c => !isAttention(c));
+
+  document.getElementById('people-count').textContent = '// '+DB.contacts.length+' people';
+
+  let html = '';
+
+  if (attn.length) {
+    html += `<div class="section-label">
+      <span>needs attention</span>
+      <span class="count-warn">${attn.length} overdue</span>
+    </div>`;
+    html += attn.map(cardHTML).join('');
+  }
+
+  if (attn.length && good.length) html += '<div class="section-divider"></div>';
+
+  if (good.length) {
+    html += `<div class="section-label">
+      <span>all good</span>
+      <span class="count-ok">${good.length} on track</span>
+    </div>`;
+    html += good.map(cardHTML).join('');
+  }
+
+  main.innerHTML = html;
+}
+
+function cardHTML(c) {
+  const b  = getBadge(c);
+  const av = palette(c.name);
+  return `<div class="contact-row" onclick="openPersonSheet('${c.id}')">
+    <div class="avatar" style="background:${av.bg};color:${av.color}">${initials(c.name)}</div>
+    <div class="contact-info">
+      <div class="contact-name">${c.name}</div>
+      <div class="contact-sub">${b.sub}${c.about ? ' · '+c.about : ''}</div>
+    </div>
+    <span class="badge ${b.cls}">${b.text}</span>
+  </div>`;
+}
+
+function openPersonSheet(id) {
+  activePerson = id;
+  const c = DB.contacts.find(x => x.id===id);
+  if (!c) return;
+  document.getElementById('person-name').textContent = c.name;
+  const d = daysSince(c.lastContact);
+  document.getElementById('person-meta').textContent =
+    (c.lastContact ? 'last: '+fmtDate(c.lastContact)+(d?' · '+d+'d ago':'') : 'never contacted') +
+    ' · every '+(c.cadence||30)+'d';
+  document.getElementById('f-note').value = '';
+  document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
+  const nd = document.getElementById('f-next-date');
+  nd.value = c.nextContact ? new Date(c.nextContact).toISOString().slice(0,10) : '';
+  renderHistory();
+  document.getElementById('sheet-person').classList.add('open');
+  syncTabBar();
+  setTimeout(() => document.getElementById('f-note').focus(), 300);
+}
+
+function renderHistory() {
+  const logs = DB.logs.filter(l => l.contactId===activePerson).sort((a,b) => b.ts-a.ts).slice(0,5);
+  const el   = document.getElementById('person-history');
+  if (!logs.length) { el.innerHTML=''; return; }
+  let html = '<div class="history-head">recent notes</div>';
+  let lastBucket = null;
+  for (const l of logs) {
+    const bucket = relBucket(l.ts);
+    if (bucket !== lastBucket) {
+      html += `<div style="font-size:9px;font-family:var(--mono);color:#3a3a36;letter-spacing:0.05em;text-transform:uppercase;margin-top:8px">${bucket}</div>`;
+      lastBucket = bucket;
+    }
+    html += `<div class="log-item">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="log-ts">${fmtDateTime(l.ts)}</div>
+        <button class="log-edit-btn" onclick="openLogEditSheet('${l.id}')" title="edit note">⋯</button>
+      </div>
+      <div class="log-txt">${l.note}</div>
+    </div>`;
+  }
+  if (DB.logs.filter(l => l.contactId===activePerson).length > 5) {
+    html += `<div style="text-align:center;margin-top:8px"><button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person');showTab('timeline')">see all in timeline →</button></div>`;
+  }
+  el.innerHTML = html;
+}
+
+async function logNote() {
+  const note = document.getElementById('f-note').value.trim();
+  if (!note) { showToast('write something first'); return; }
+  const logDate = document.getElementById('f-log-date').value;
+  const ts = logDate ? new Date(logDate+'T12:00:00').getTime() : Date.now();
+  const nd = document.getElementById('f-next-date').value;
+  const nextTs = nd ? new Date(nd+'T12:00:00').getTime() : null;
+
+  // backdating a note shouldn't move last-contact earlier than a more recent one already logged
+  const c = DB.contacts.find(x => x.id===activePerson);
+  const newLastContact = (c && c.lastContact && c.lastContact > ts) ? c.lastContact : ts;
+
+  const userId = await currentUserId();
+  const { error: logErr } = await sb.from('touch_logs').insert({
+    person_id: activePerson, user_id: userId, note, ts: new Date(ts).toISOString(),
+  });
+  const { error: updErr } = await sb.from('people').update({
+    last_contact: new Date(newLastContact).toISOString(),
+    next_contact: (nextTs && nextTs > newLastContact) ? new Date(nextTs).toISOString() : null,
+  }).eq('id', activePerson);
+  if (logErr || updErr) { showToast('could not save — try again'); console.error(logErr||updErr); return; }
+
+  await refreshData();
+  document.getElementById('f-note').value = '';
+  document.getElementById('f-next-date').value = '';
+  document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
+  renderHistory();
+  renderPeople();
+  if (currentTab === 'timeline') renderTimeline();
+  showToast('logged ✓');
+}
+
+// A contact's last_contact is a cached value set when a note is logged, not
+// derived live from touch_logs — so editing or deleting the log that set it
+// has to recompute it from what's left, or the badge goes stale (same class
+// of bug as the v1 next_contact fix).
+async function recomputeLastContact(contactId) {
+  const remaining = DB.logs.filter(l => l.contactId === contactId);
+  const maxTs = remaining.length ? Math.max(...remaining.map(l => l.ts)) : null;
+  const c = DB.contacts.find(x => x.id === contactId);
+  if (!c || c.lastContact === maxTs) return;
+  await sb.from('people').update({
+    last_contact: maxTs ? new Date(maxTs).toISOString() : null,
+  }).eq('id', contactId);
+}
+
+function openLogEditSheet(id) {
+  const log = DB.logs.find(l => l.id === id);
+  if (!log) return;
+  editingLogId = id;
+  document.getElementById('f-log-edit-note').value = log.note;
+  document.getElementById('f-log-edit-date').value = new Date(log.ts).toISOString().slice(0,10);
+  closeMenus();
+  closeSheet('sheet-person');
+  setTimeout(() => { document.getElementById('sheet-log-edit').classList.add('open'); syncTabBar(); }, 200);
+}
+
+async function saveLogEdit() {
+  const note = document.getElementById('f-log-edit-note').value.trim();
+  if (!note) { showToast('write something first'); return; }
+  const dateVal = document.getElementById('f-log-edit-date').value;
+  const ts = dateVal ? new Date(dateVal+'T12:00:00').getTime() : Date.now();
+  const log = DB.logs.find(l => l.id === editingLogId);
+  const contactId = log ? log.contactId : activePerson;
+
+  const { error } = await sb.from('touch_logs').update({
+    note, ts: new Date(ts).toISOString(),
+  }).eq('id', editingLogId);
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+
+  await refreshData();
+  await recomputeLastContact(contactId);
+  await refreshData();
+  closeSheet('sheet-log-edit');
+  renderPeople();
+  if (currentTab === 'timeline') renderTimeline();
+  if (activePerson === contactId) renderHistory();
+  showToast('updated');
+}
+
+async function deleteLog() {
+  if (!editingLogId) return;
+  if (!confirm('Delete this note?')) return;
+  const log = DB.logs.find(l => l.id === editingLogId);
+  const contactId = log ? log.contactId : activePerson;
+
+  const { error } = await sb.from('touch_logs').delete().eq('id', editingLogId);
+  if (error) { showToast('could not delete — try again'); console.error(error); return; }
+
+  await refreshData();
+  await recomputeLastContact(contactId);
+  await refreshData();
+  closeSheet('sheet-log-edit');
+  renderPeople();
+  if (currentTab === 'timeline') renderTimeline();
+  if (activePerson === contactId) renderHistory();
+  showToast('deleted');
+}
+
+function openAddSheet() {
+  editingId = null;
+  document.getElementById('contact-sheet-title').textContent = 'add person';
+  document.getElementById('f-name').value    = '';
+  document.getElementById('f-about').value   = '';
+  document.getElementById('f-cadence').value = '30';
+  document.getElementById('delete-btn').style.display = 'none';
+  document.getElementById('sheet-contact').classList.add('open');
+  syncTabBar();
+  setTimeout(() => document.getElementById('f-name').focus(), 300);
+}
+
+function openEditSheet() {
+  closeSheet('sheet-person');
+  const c = DB.contacts.find(x => x.id===activePerson);
+  if (!c) return;
+  editingId = c.id;
+  document.getElementById('contact-sheet-title').textContent = 'edit person';
+  document.getElementById('f-name').value    = c.name;
+  document.getElementById('f-about').value   = c.about||'';
+  document.getElementById('f-cadence').value = c.cadence||30;
+  document.getElementById('delete-btn').style.display = 'inline-block';
+  setTimeout(() => { document.getElementById('sheet-contact').classList.add('open'); syncTabBar(); }, 200);
+}
+
+async function saveContact() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('name is required'); return; }
+  const about   = document.getElementById('f-about').value.trim();
+  const cadence = parseInt(document.getElementById('f-cadence').value)||30;
+  let error;
+  if (editingId) {
+    ({error} = await sb.from('people').update({ name, about: about||null, cadence_days: cadence }).eq('id', editingId));
+  } else {
+    const userId = await currentUserId();
+    ({error} = await sb.from('people').insert({ user_id: userId, name, about: about||null, cadence_days: cadence }));
+  }
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  await refreshData(); closeSheet('sheet-contact');
+  renderPeople(); populateExportSelect();
+  showToast(editingId ? 'updated' : 'added');
+}
+
+async function deleteContact(id) {
+  const targetId = id || editingId;
+  if (!targetId) return;
+  if (!confirm('Delete this person and all their notes?')) return;
+  const { error } = await sb.from('people').delete().eq('id', targetId);
+  if (error) { showToast('could not delete — try again'); console.error(error); return; }
+  await refreshData();
+  closeSheet('sheet-contact');
+  closeSheet('sheet-person');
+  renderPeople(); populateExportSelect();
+  if (currentTab === 'timeline') renderTimeline();
+  showToast('deleted');
+}
+
+function openExportSheet() {
+  populateExportSelect();
+  renderExport();
+  document.getElementById('sheet-export').classList.add('open');
+  syncTabBar();
+}
+
+function populateExportSelect() {
+  const opts = DB.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('export-select').innerHTML = '<option value="all">all people</option>' + opts;
+}
+
+function renderExport() {
+  const sel      = document.getElementById('export-select').value;
+  const contacts = sel==='all' ? DB.contacts : [DB.contacts.find(c => c.id===sel)].filter(Boolean);
+  if (!contacts.length) { document.getElementById('export-md').textContent='no data.'; return; }
+  const blocks = contacts.map(c => {
+    const logs = DB.logs.filter(l => l.contactId===c.id).sort((a,b) => b.ts-a.ts);
+    const d    = daysSince(c.lastContact);
+    let md = `## ${c.name}\n`;
+    if (c.about) md += `> ${c.about}\n\n`;
+    if (c.nextContact) md += `- **next planned**: ${fmtDate(c.nextContact)}\n`;
+    md += `- **last contact**: ${c.lastContact ? fmtDate(c.lastContact) : 'never'}`;
+    if (d!=null) md += ` (${d} days ago)`;
+    md += `\n- **cadence**: every ${c.cadence||30} days\n`;
+    if (logs.length) {
+      md += `\n### notes\n`;
+      md += logs.map(l => `- **${fmtDate(l.ts)}** — ${l.note}`).join('\n');
+    }
+    return md;
+  });
+  document.getElementById('export-md').textContent = '# touchbase\n\n' + blocks.join('\n\n---\n\n');
+}
+
+function copyExport() {
+  navigator.clipboard.writeText(document.getElementById('export-md').textContent)
+    .then(() => showToast('copied to clipboard'));
+}
+
+function importJSON(event, mode) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data.contacts) || !Array.isArray(data.logs)) {
+        showToast('invalid file format'); return;
+      }
+      if (mode === 'replace') {
+        if (!confirm('Replace ALL existing data with this backup? This cannot be undone.')) {
+          event.target.value = ''; return;
+        }
+        const userId = await currentUserId();
+        const { error } = await sb.from('people').delete().eq('user_id', userId);
+        if (error) { showToast('could not replace — try again'); console.error(error); return; }
+        await bulkImportRows(data.contacts, data.logs);
+        showToast('data restored');
+      } else {
+        // merge: add contacts not already present (matched by name+context), plus their notes
+        const existingKeys = new Set(DB.contacts.map(c => c.name.toLowerCase()+'|'+(c.about||'').toLowerCase()));
+        const newContacts = data.contacts.filter(c => !existingKeys.has(c.name.toLowerCase()+'|'+(c.about||'').toLowerCase()));
+        await bulkImportRows(newContacts, data.logs);
+        showToast(`merged: +${newContacts.length} people`);
+      }
+      await refreshData();
+      renderPeople();
+      populateExportSelect();
+      renderExport();
+      event.target.value = '';
+    } catch(err) {
+      showToast('could not read file');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function downloadBackup() {
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'})),
+    download: 'touchbase-'+new Date().toISOString().slice(0,10)+'.json'
+  });
+  a.click();
+  showToast('backup downloaded');
+}
+
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); syncTabBar(); }
+
+function syncTabBar() {
+  const anyOpen = document.querySelector('.overlay.open');
+  document.getElementById('tab-bar').classList.toggle('hidden', !!anyOpen);
+  syncBodyPadding();
+}
+
+// Measures the actual rendered bottom-bar height (it's fixed, so it clips
+// scrollable content otherwise) instead of guessing a pixel value — stays
+// correct across breakpoints, font rendering, and iOS safe-area insets.
+function syncBodyPadding() {
+  const tb = document.getElementById('tab-bar');
+  const visible = getComputedStyle(tb).display !== 'none' && !tb.classList.contains('hidden');
+  document.body.style.paddingBottom = visible ? (tb.offsetHeight + 16) + 'px' : '24px';
+}
+window.addEventListener('resize', syncBodyPadding);
+
+function showTab(tab) {
+  currentTab = tab;
+  document.getElementById('people-main').style.display = tab==='people' ? '' : 'none';
+  document.getElementById('timeline-main').style.display = tab==='timeline' ? '' : 'none';
+  document.getElementById('people-header-actions').style.display = tab==='people' ? 'flex' : 'none';
+  document.getElementById('tab-people').classList.toggle('active', tab==='people');
+  document.getElementById('tab-timeline').classList.toggle('active', tab==='timeline');
+  document.getElementById('htab-people').classList.toggle('active', tab==='people');
+  document.getElementById('htab-timeline').classList.toggle('active', tab==='timeline');
+  if (tab === 'timeline') renderTimeline();
+}
+
+function toggleMenu(e, id) {
+  e.stopPropagation();
+  const menu = document.getElementById(id);
+  const wasOpen = menu.classList.contains('open');
+  closeMenus();
+  if (!wasOpen) menu.classList.add('open');
+}
+function closeMenus() {
+  document.querySelectorAll('.menu-dropdown.open').forEach(m => m.classList.remove('open'));
+}
+document.addEventListener('click', closeMenus);
+
+function renderTimeline() {
+  const main = document.getElementById('timeline-main');
+  if (!DB.logs.length) {
+    main.innerHTML = `<div class="empty">
+      <div class="empty-glyph">[ ]</div>
+      <div class="empty-title">no notes logged yet</div>
+      <div class="empty-body">log a note from someone's page and it'll show up here.</div>
+    </div>`;
+    return;
+  }
+  const sorted = [...DB.logs].sort((a,b) => b.ts - a.ts);
+  let html = '', lastBucket = null;
+  for (const l of sorted) {
+    const c = DB.contacts.find(x => x.id===l.contactId);
+    if (!c) continue;
+    const bucket = relBucket(l.ts);
+    if (bucket !== lastBucket) { html += `<div class="timeline-group-head">${bucket}</div>`; lastBucket = bucket; }
+    const av = palette(c.name);
+    html += `<div class="timeline-row" onclick="openPersonSheet('${c.id}')">
+      <div class="avatar" style="background:${av.bg};color:${av.color}">${initials(c.name)}</div>
+      <div class="timeline-body">
+        <div class="timeline-name-line">
+          <span class="timeline-name">${c.name}</span>
+          <span style="display:flex;align-items:center;gap:2px">
+            <span class="timeline-ts">${fmtDateTime(l.ts)}</span>
+            <button class="log-edit-btn" onclick="event.stopPropagation();openLogEditSheet('${l.id}')" title="edit note">⋯</button>
+          </span>
+        </div>
+        <div class="timeline-note">${l.note}</div>
+      </div>
+    </div>`;
+  }
+  main.innerHTML = html || `<div class="empty"><div class="empty-body">no notes to show.</div></div>`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+document.querySelectorAll('.overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target===el) { el.classList.remove('open'); syncTabBar(); } });
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open')); syncTabBar(); }
+});
+document.getElementById('f-name').addEventListener('keydown', e => {
+  if (e.key==='Enter') saveContact();
+});
+document.getElementById('auth-email').addEventListener('keydown', e => {
+  if (e.key==='Enter') sendMagicLink();
+});
+
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app-root').style.display = 'none';
+}
+function hideAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-root').style.display = 'block';
+  syncBodyPadding();
+}
+
+async function sendMagicLink() {
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) { showToast('enter your email'); return; }
+  const btn = document.getElementById('auth-send-btn');
+  btn.disabled = true; btn.textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href.split('#')[0] },
+  });
+  btn.disabled = false; btn.textContent = 'send magic link';
+  if (error) console.error(error);
+  document.getElementById('auth-status').textContent = error
+    ? 'error: ' + error.message
+    : 'check your email for the sign-in link ✓';
+}
+
+function signOut() { sb.auth.signOut(); }
+
+async function onSignedIn() {
+  hideAuthScreen();
+  await refreshData();
+  renderPeople();
+  populateExportSelect();
+  await migrateLocalData();
+  await refreshData();
+  renderPeople();
+  populateExportSelect();
+}
+
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  sb.auth.onAuthStateChange((event, s) => {
+    if (event === 'SIGNED_IN')  onSignedIn();
+    if (event === 'SIGNED_OUT') showAuthScreen();
+  });
+  if (session) await onSignedIn();
+  else showAuthScreen();
+}
+
+boot();
+</script>
+</body>
+</html>
