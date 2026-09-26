@@ -1,4 +1,4 @@
-Personal CRM — v4 (draft)
+Personal CRM — v4
 
 A simple personal CRM for staying in touch with friends and family.
 
@@ -118,7 +118,7 @@ Closing the loop:
   4. **Details:** an optional freeform box for anything that doesn't fit a card
   5. **Notes:** their full history, grouped by Today / This week / month, with no cap
 * **Logging:** a sticky **"+ log a note"** button opens a compact composer with the note, a date (defaulting to today), and ticks for any open ask-abouts you covered. Nothing is auto-focused until you tap the note box.
-* **Drafts are never silently lost.** Closing the composer with text in it asks "discard note?", and each person's draft is kept in `localStorage` until you save it.
+* **Drafts are never silently lost.** Each person's draft is kept in `localStorage` until it's logged, so closing the composer (✕, tapping outside, the back gesture) just keeps it. Only the explicit **discard** button throws it away, after asking.
 * **Edit sheet additions:** phone number and birthday (optional). Birthday feeds the nudges.
 
 4. Reorganized navigation and a more playful feel
@@ -175,6 +175,7 @@ create table if not exists ask_abouts (
   id uuid primary key default gen_random_uuid(),
   person_id uuid not null references people(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
+  prompt_id text,                 -- set when it came from "no idea, ask them", so it isn't re-dealt
   text text not null,
   done_at timestamptz,
   created_at timestamptz not null default now()

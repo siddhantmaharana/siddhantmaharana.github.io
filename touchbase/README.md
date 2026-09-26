@@ -6,17 +6,14 @@ See [CHANGELOG.md](CHANGELOG.md) for what changed between versions.
 
 ## what it does
 
-- Tracks contacts and how long since you last spoke
-- Sorts your list by urgency — most overdue floats to the top
-- Two sections: **needs attention** and **all good**
-- Log notes after a call or meetup, with a timestamp
-- Set a specific next contact date that overrides the default cadence
-- **Timeline tab** — every note you've logged, across everyone, newest first and grouped by date, so you can browse without opening each person one at a time
-- Person sheet keeps one primary action (log it); edit/delete live behind a small ⋯ menu instead of crowding the main actions
-- Any logged note can be edited or deleted after the fact, from either the person sheet or the Timeline
-- Export everything as markdown to paste into Obsidian and run AI on top
-- Backup and restore via JSON — your data is always yours
-- Signs in with a magic link and syncs the same contacts to every device
+- **Pop Quiz** (home): deals 3 fun prompts a day about your people ("What's Priya's go-to coffee order?"). Answers become cards on their profile; "no idea, ask them" queues the question for your next chat.
+- **Worth a hello**: at most 3 people it'd be nice to reach out to, with a reason (an open question, an upcoming birthday). No overdue counts, no red. "Not now" snoozes someone for 7 days.
+- **One-tap WhatsApp** with a suggested opener (plus text and call). Come back to the app and it asks whether you talked, so logging is one tap too.
+- **Person page**: ask-about-next-time checklist, Pop Quiz answers, free-form details, and every note, with a sticky "+ log a note". The phone's back gesture works.
+- Notes can be backdated, edited or deleted. Drafts are kept per person, so closing the composer never loses one.
+- **Timeline** of every note across everyone, one level down from People.
+- Export everything as markdown to paste into Obsidian and run AI on top; backup and restore via JSON.
+- Signs in with a magic link and syncs the same data to every device.
 
 ## stack
 
@@ -31,7 +28,7 @@ Live at `https://siddhantmaharana.github.io/touchbase/`
 ## backend setup (one-time)
 
 1. Create a project at [supabase.com](https://supabase.com) (free tier is enough)
-2. SQL Editor → run [supabase/schema.sql](supabase/schema.sql) — creates the `people`/`touch_logs` tables and RLS policies
+2. SQL Editor → run [supabase/schema.sql](supabase/schema.sql) — creates the `people`, `touch_logs`, `cards` and `ask_abouts` tables and RLS policies. Upgrading an existing v2/v3 project? Run [supabase/migrate_v4.sql](supabase/migrate_v4.sql) instead, before deploying v4.
 3. Authentication → URL Configuration → add your deployed URL (and `http://localhost:PORT` if testing locally) to Redirect URLs
 4. Project Settings → API → copy the **Project URL** and **anon public key** into the `SUPABASE_URL` / `SUPABASE_ANON_KEY` constants near the top of `index.html`'s script
 
@@ -47,7 +44,7 @@ Safari → visit the URL → Share → Add to Home Screen
 
 ## data format
 
-Data lives in Supabase (`people` and `touch_logs` tables). You can still export a JSON backup anytime from the data sheet (↓ icon) — same shape as before, useful for offline backups or scripting:
+Data lives in Supabase (`people`, `touch_logs`, `cards` and `ask_abouts` tables). You can export a JSON backup anytime from the data sheet (↓ icon), useful for offline backups or scripting. v4 backups add `rhythm`, `phone`, `birthday` and `details` to each contact, plus `cards` and `asks` arrays; older backups without them still import:
 
 ```json
 {
@@ -56,7 +53,10 @@ Data lives in Supabase (`people` and `touch_logs` tables). You can still export 
       "id": "1234567890",
       "name": "Rohan Sharma",
       "about": "College friend, Pune",
-      "cadence": 30,
+      "rhythm": "regular",
+      "phone": "14155550123",
+      "birthday": "03-14",
+      "details": "Partner: Jordan",
       "lastContact": 1748908800000,
       "nextContact": 1751500800000
     }
@@ -68,6 +68,13 @@ Data lives in Supabase (`people` and `touch_logs` tables). You can still export 
       "note": "Caught up over call. New job next month.",
       "ts": 1748908800000
     }
+  ],
+  "cards": [
+    { "contactId": "1234567890", "promptId": "coffee", "deck": "favorites",
+      "question": "What's Rohan's go-to coffee order?", "answer": "Masala chai", "ts": 1748908800000 }
+  ],
+  "asks": [
+    { "contactId": "1234567890", "promptId": null, "text": "how did the new job start?", "doneAt": null, "ts": 1748908800000 }
   ]
 }
 ```
@@ -88,15 +95,15 @@ index.html            the entire app
 manifest.json         PWA metadata (name, colors, icons)
 icon-192.png          home screen icon
 icon-512.png          splash screen icon
-supabase/schema.sql   tables + RLS policies for the backend
+supabase/schema.sql   tables + RLS policies for a fresh backend
+supabase/migrate_v4.sql  one-time upgrade of a v2/v3 backend to v4
+spec_v4.md            design spec for the current version
 ```
 
 ## roadmap ideas
 
-- [ ] Search / filter contacts
+- [ ] AI-generated Pop Quiz prompts from a person's notes and answers (needs a server-side call; see spec_v4.md)
 - [ ] Tags or groups (family, work, college)
-- [ ] Weekly digest email export
-- [ ] Reminders via browser notifications
 
 ## license
 

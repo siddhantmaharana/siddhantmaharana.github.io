@@ -95,7 +95,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 20px 6px;
+    padding: 18px 20px 8px;
   }
   .section-label span {
     font-size: 10px;
@@ -104,11 +104,16 @@
     text-transform: uppercase;
     color: var(--muted);
   }
-  .section-label .count-warn { color: var(--red); }
-  .section-label .count-ok   { color: var(--green); }
+  .section-label .label-action {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent);
+    background: none; border: none;
+    cursor: pointer;
+    padding: 0;
+  }
 
   /* ── Contact rows ── */
-  .contact-list { display: flex; flex-direction: column; }
   .contact-row {
     display: flex;
     align-items: center;
@@ -118,8 +123,8 @@
     cursor: pointer;
     transition: background 0.1s;
   }
-  .contact-row:hover  { background: #141414; }
-  .contact-row:active { background: #1a1a1a; }
+  .contact-row:hover  { background: var(--surface); }
+  .contact-row:active { background: var(--surface-2); }
 
   .avatar {
     width: 38px; height: 38px;
@@ -129,23 +134,141 @@
     font-family: var(--mono);
     flex-shrink: 0;
   }
+  .avatar.sm { width: 28px; height: 28px; font-size: 10px; }
+  .avatar.lg { width: 56px; height: 56px; font-size: 16px; }
   .contact-info { flex: 1; min-width: 0; }
   .contact-name { font-size: 14px; font-weight: 500; color: var(--text); }
   .contact-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-count   { font-size: 10px; font-family: var(--mono); color: var(--muted); flex-shrink: 0; }
+  .card-count.zero { color: var(--subtle); }
 
-  .badge {
-    font-size: 10px;
-    font-family: var(--mono);
-    padding: 3px 7px;
-    border-radius: 4px;
-    flex-shrink: 0;
+  .people-search { padding: 0 20px 10px; }
+  .list-footer { text-align: center; padding: 18px 20px 8px; }
+  .link-btn {
+    background: none; border: none;
+    color: var(--muted);
+    font-family: var(--mono); font-size: 11px;
+    cursor: pointer;
+    padding: 6px 8px;
   }
-  .b-red    { background: var(--red-dim);    color: var(--red); }
-  .b-amber  { background: var(--amber-dim);  color: var(--amber); }
-  .b-green  { background: var(--green-dim);  color: var(--green); }
-  .b-gray   { background: var(--subtle);     color: var(--muted); }
+  .link-btn:hover { color: var(--accent); }
 
-  .section-divider { height: 6px; background: var(--subtle); }
+  /* ── Worth a hello ── */
+  .hello-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hello-row .contact-info { cursor: pointer; }
+  .hello-reason { font-size: 11px; color: var(--soft); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hello-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+  .hello-empty { font-size: 12px; color: var(--muted); padding: 2px 20px 8px; }
+  .btn.btn-wa { border-color: color-mix(in srgb, var(--green) 35%, transparent); color: var(--green); }
+  .btn.btn-wa:hover { background: var(--green-dim); border-color: var(--green-dim); }
+  .btn.btn-icon { padding: 6px 8px; display: inline-flex; align-items: center; justify-content: center; }
+
+  /* ── Pop Quiz ── */
+  .quiz-card {
+    margin: 4px 20px 0;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-top: 3px solid var(--p-fg, var(--accent));
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .qc-top { display: flex; align-items: center; gap: 8px; }
+  .qc-name { font-size: 13px; font-weight: 500; cursor: pointer; }
+  .qc-name:hover { color: var(--accent); }
+  .qc-deck { margin-left: auto; font-size: 10px; font-family: var(--mono); color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .qc-q { font-size: 19px; font-weight: 500; line-height: 1.35; margin: 14px 0; letter-spacing: -0.01em; }
+  .quiz-card textarea { min-height: 84px; font-size: 15px; }
+  .qc-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .qc-actions .push { margin-left: auto; }
+  .qc-progress { display: flex; justify-content: center; gap: 6px; padding: 12px 0 4px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--subtle); }
+  .dot.done { background: var(--accent); }
+  .dot.now  { background: none; box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .quiz-done { text-align: center; padding: 36px 24px 12px; }
+  .quiz-done .empty-glyph { opacity: 0.8; }
+
+  /* ── Person page ── */
+  .page-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px 0;
+  }
+  .person-hero { display: flex; gap: 14px; align-items: flex-start; padding: 14px 20px 6px; }
+  .person-name { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+  .person-about { font-size: 13px; color: var(--soft); margin-top: 2px; }
+  .person-meta { font-size: 11px; font-family: var(--mono); color: var(--muted); margin-top: 6px; }
+  .reach { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 20px 4px; }
+  a.btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+
+  .ask-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 20px;
+  }
+  .ask-item input[type=checkbox] { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+  .ask-text { flex: 1; font-size: 14px; line-height: 1.45; }
+  .ask-add { padding: 4px 20px 0; }
+  .x-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 13px; cursor: pointer; padding: 2px 6px; border-radius: 5px;
+  }
+  .x-btn:hover { color: var(--text); background: var(--surface-2); }
+
+  .qa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+    padding: 0 20px;
+  }
+  .qa-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--p-fg, var(--accent));
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .qa-card:hover { border-color: var(--border-2); }
+  .qa-q { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .qa-a { font-size: 14px; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
+  .qa-when { font-size: 9px; font-family: var(--mono); color: var(--muted); margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .section-empty { font-size: 12px; color: var(--muted); padding: 0 20px 4px; }
+  .details-box { padding: 0 20px; }
+  .details-box textarea { min-height: 90px; font-size: 14px; }
+
+  .notes-list { padding: 0 20px; }
+  .bucket-head { font-size: 9px; font-family: var(--mono); color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 10px; }
+
+  /* ── Sticky "log a note" + jot-it-down card ── */
+  .fab {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 40px); max-width: 440px;
+    z-index: 50;
+    display: none;
+  }
+  .fab.show { display: block; }
+  .fab .btn { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
+
+  .jot {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 32px); max-width: 448px;
+    background: var(--surface-2);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 14px;
+    z-index: 60;
+    display: none; align-items: center; gap: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+  }
+  .jot.show { display: flex; }
+  .jot-text { flex: 1; font-size: 13px; }
 
   /* ── Bottom tab bar ── */
   .tab-bar {
@@ -177,11 +300,11 @@
   .menu-wrap { position: relative; }
   .menu-dropdown {
     display: none;
-    position: absolute; top: 40px; right: 0;
+    position: absolute; top: 36px; right: 0;
     background: var(--surface-2);
     border: 1px solid var(--border-2);
     border-radius: 8px;
-    min-width: 120px;
+    min-width: 130px;
     overflow: hidden;
     z-index: 20;
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
@@ -193,6 +316,7 @@
     background: none; border: none;
     color: var(--text);
     font-size: 13px; font-family: inherit;
+    text-decoration: none;
     cursor: pointer;
   }
   .menu-item:hover { background: var(--subtle); }
@@ -212,12 +336,13 @@
     cursor: pointer;
     transition: background 0.1s;
   }
-  .timeline-row:hover { background: #141414; }
+  .timeline-row:hover { background: var(--surface); }
   .timeline-body { flex: 1; min-width: 0; }
   .timeline-name-line { display: flex; justify-content: space-between; gap: 8px; }
   .timeline-name { font-size: 13px; font-weight: 500; }
   .timeline-ts { font-size: 10px; font-family: var(--mono); color: var(--muted); white-space: nowrap; }
-  .timeline-note { font-size: 13px; color: #9a9a94; margin-top: 2px; line-height: 1.5; }
+  .timeline-note { font-size: 13px; color: var(--soft); margin-top: 2px; line-height: 1.5; white-space: pre-wrap; }
+  .page-title { font-size: 16px; font-weight: 600; padding: 8px 20px 0; }
 
   /* ── Empty state ── */
   .empty {
@@ -240,6 +365,7 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
+  .form-group label .hint { text-transform: none; letter-spacing: 0; font-size: 10px; color: var(--muted-2); }
   input, textarea, select {
     width: 100%;
     background: var(--bg);
@@ -253,9 +379,10 @@
     transition: border-color 0.15s;
     -webkit-appearance: none;
   }
+  input[type=checkbox] { width: auto; -webkit-appearance: auto; }
   input:focus, textarea:focus, select:focus { border-color: var(--accent); }
   textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
-  #f-note { min-height: 180px; font-size: 15px; }
+  #f-note { min-height: 150px; font-size: 15px; }
   #sheet-log-edit textarea { min-height: 160px; font-size: 15px; }
   select {
     cursor: pointer;
@@ -266,6 +393,9 @@
   }
   ::placeholder { color: var(--muted); opacity: 1; }
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .covered { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 14px; }
+  .covered label.tick { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; padding: 4px 0; text-transform: none; letter-spacing: 0; font-family: inherit; color: var(--text); margin: 0; }
+  .covered label.tick input { margin-top: 3px; accent-color: var(--accent); }
 
   /* ── Buttons ── */
   .btn {
@@ -302,11 +432,12 @@
     background: var(--surface);
     border: 1px solid var(--border-2);
     border-radius: 18px 18px 0 0;
-    padding: 8px 20px 32px;
+    padding: 8px 20px calc(24px + env(safe-area-inset-bottom, 0px));
     width: 100%;
     max-width: 480px;
     max-height: 90vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .sheet-handle {
     width: 36px; height: 4px;
@@ -314,6 +445,7 @@
     border-radius: 2px;
     margin: 8px auto 16px;
   }
+  #sheet-quiz .quiz-card { margin: 0; }
 
   /* ── Wider viewports: sheets become a centered dialog, not a phone-width bottom sheet ── */
   @media (min-width: 700px) {
@@ -325,10 +457,10 @@
       max-height: 85vh;
     }
     .sheet-handle { display: none; }
-    #sheet-person .sheet { max-width: 640px; }
-    #sheet-person #f-note { min-height: 320px; font-size: 16px; }
-    #sheet-log-edit .sheet { max-width: 560px; }
+    #sheet-log .sheet { max-width: 640px; }
+    #sheet-log #f-note { min-height: 260px; font-size: 16px; }
     #sheet-log-edit textarea { min-height: 240px; font-size: 16px; }
+    .fab { max-width: 640px; }
   }
   .sheet-header {
     display: flex;
@@ -340,19 +472,11 @@
   .sheet-meta  { font-size: 11px; font-family: var(--mono); color: var(--muted); margin-top: 3px; }
   .sheet-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
-  /* ── Log history inside person sheet ── */
-  .history-head {
-    font-size: 10px; font-family: var(--mono);
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding-top: 14px; margin-top: 14px;
-    border-top: 1px solid var(--border);
-    margin-bottom: 8px;
-  }
+  /* ── Log history ── */
   .log-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
   .log-item:last-child { border-bottom: none; }
   .log-ts  { font-size: 10px; font-family: var(--mono); color: var(--muted); margin-bottom: 3px; }
-  .log-txt { font-size: 13px; line-height: 1.5; color: #9a9a94; }
+  .log-txt { font-size: 13px; line-height: 1.5; color: var(--soft); white-space: pre-wrap; }
   .log-edit-btn {
     background: none; border: none;
     color: var(--muted);
@@ -400,6 +524,21 @@
     text-align: center; margin-top: 6px;
   }
 
+  /* ── Motion ── */
+  .deal { animation: deal 0.38s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes deal {
+    from { opacity: 0; transform: translateY(16px) rotate(-1.5deg) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+  .slide-in { animation: slide-in 0.22s ease-out both; }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateX(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .deal, .slide-in { animation: none; }
+  }
+
   /* ── Auth screen ── */
   .auth-screen {
     display: none;
@@ -442,11 +581,11 @@
     <span class="app-count" id="people-count"></span>
   </div>
   <div class="header-tabs" id="header-tabs">
-    <button class="seg-btn active" id="htab-people" onclick="showTab('people')">people</button>
-    <button class="seg-btn" id="htab-timeline" onclick="showTab('timeline')">timeline</button>
+    <button class="seg-btn active" id="htab-quiz" onclick="showTab('quiz')">pop quiz</button>
+    <button class="seg-btn" id="htab-people" onclick="showTab('people')">people</button>
   </div>
   <div class="header-actions">
-    <span id="people-header-actions" style="display:flex;gap:8px">
+    <span id="list-header-actions" style="display:flex;gap:8px">
       <button class="icon-btn" onclick="openExportSheet()" title="Export">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       </button>
@@ -460,53 +599,56 @@
   </div>
 </header>
 
-<!-- ── PEOPLE LIST ── -->
-<main id="people-main"></main>
-
-<!-- ── TIMELINE ── -->
+<main id="quiz-main"></main>
+<main id="people-main" style="display:none"></main>
+<main id="person-main" style="display:none"></main>
 <main id="timeline-main" style="display:none"></main>
 
+<!-- ── STICKY LOG BUTTON (person page) ── -->
+<div class="fab" id="fab">
+  <button class="btn btn-primary" onclick="openComposer()">+ log a note</button>
+</div>
+
+<!-- ── "TALKED TO THEM?" CARD ── -->
+<div class="jot" id="jot">
+  <div class="jot-text" id="jot-text"></div>
+  <button class="btn btn-sm btn-ghost" onclick="dismissJot()">not yet</button>
+  <button class="btn btn-sm btn-primary" onclick="jotLog()">log it</button>
+</div>
+
 <!-- ── LOG NOTE SHEET ── -->
-<div class="overlay" id="sheet-person">
+<div class="overlay" id="sheet-log">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
       <div>
-        <div class="sheet-title" id="person-name"></div>
-        <div class="sheet-meta"  id="person-meta"></div>
+        <div class="sheet-title">log a note</div>
+        <div class="sheet-meta" id="log-meta"></div>
       </div>
-      <div style="display:flex;gap:4px;align-items:flex-start">
-        <div class="menu-wrap">
-          <button class="btn btn-sm btn-ghost" onclick="toggleMenu(event, 'person-menu')" title="More">⋯</button>
-          <div class="menu-dropdown" id="person-menu">
-            <button class="menu-item" onclick="closeMenus();openEditSheet()">edit</button>
-            <button class="menu-item danger" onclick="closeMenus();deleteContact(activePerson)">delete</button>
-          </div>
-        </div>
-        <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person')">✕</button>
-      </div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-log')">✕</button>
     </div>
     <div class="form-group">
-      <label>log a note</label>
-      <textarea id="f-note" placeholder="Quick call. Mentioned visiting Atlanta in October…"></textarea>
+      <textarea id="f-note" placeholder="Quick call. Mentioned visiting Atlanta in October…" oninput="saveDraft()"></textarea>
+    </div>
+    <div id="log-covered"></div>
+    <div class="form-group">
+      <label>next time, ask about… <span class="hint">optional</span></label>
+      <input id="f-next-ask" placeholder="how the Atlanta trip went" autocomplete="off" oninput="saveDraft()" />
     </div>
     <div class="two-col">
       <div class="form-group">
-        <label>when <span style="text-transform:none;letter-spacing:0;font-size:9px;color:#333">backdate if late</span></label>
+        <label>when <span class="hint">backdate if late</span></label>
         <input type="date" id="f-log-date" style="color-scheme:dark" />
       </div>
       <div class="form-group">
-        <label>next contact <span style="text-transform:none;letter-spacing:0;font-size:9px;color:#333">optional</span></label>
-        <div style="display:flex;gap:6px">
-          <input type="date" id="f-next-date" style="flex:1;color-scheme:dark" />
-          <button class="btn btn-sm btn-ghost" style="padding:9px 10px" onclick="document.getElementById('f-next-date').value=''" title="clear">✕</button>
-        </div>
+        <label>nudge me on <span class="hint">optional</span></label>
+        <input type="date" id="f-next-date" style="color-scheme:dark" />
       </div>
     </div>
     <div class="sheet-actions">
-      <button class="btn btn-primary" style="width:100%" onclick="logNote()">log it</button>
+      <button class="btn btn-sm btn-ghost" style="margin-right:auto" onclick="discardDraft()">discard</button>
+      <button class="btn btn-primary" onclick="logNote()">log it</button>
     </div>
-    <div id="person-history"></div>
   </div>
 </div>
 
@@ -534,6 +676,42 @@
   </div>
 </div>
 
+<!-- ── EDIT POP QUIZ CARD SHEET ── -->
+<div class="overlay" id="sheet-card">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">edit answer</div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-card')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>question</label>
+      <input id="f-card-q" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label>answer</label>
+      <textarea id="f-card-a" style="min-height:110px"></textarea>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-sm btn-danger" style="margin-right:auto" onclick="deleteCard()">delete</button>
+      <button class="btn btn-sm" onclick="closeSheet('sheet-card')">cancel</button>
+      <button class="btn btn-sm btn-primary" onclick="saveCardEdit()">save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ONE-PERSON POP QUIZ SHEET ── -->
+<div class="overlay" id="sheet-quiz">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">pop quiz</div>
+      <button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-quiz')">✕</button>
+    </div>
+    <div id="solo-quiz"></div>
+  </div>
+</div>
+
 <!-- ── ADD / EDIT CONTACT SHEET ── -->
 <div class="overlay" id="sheet-contact">
   <div class="sheet">
@@ -547,17 +725,32 @@
       <input id="f-name" placeholder="Rohan Sharma" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label>context</label>
+      <label>one line about them</label>
       <input id="f-about" placeholder="College friend, lives in Pune" autocomplete="off" />
     </div>
-    <div class="two-col">
-      <div class="form-group">
-        <label>check in every</label>
-        <input id="f-cadence" type="number" value="30" min="1" />
-      </div>
-      <div class="form-group">
-        <label>&nbsp;</label>
-        <input value="days" disabled style="color:var(--muted)" />
+    <div class="form-group">
+      <label>how close</label>
+      <select id="f-rhythm">
+        <option value="close">close · every couple of weeks</option>
+        <option value="regular">regular · about monthly</option>
+        <option value="occasional">occasional · every few months</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>phone <span class="hint">for WhatsApp · no +code means US</span></label>
+      <input id="f-phone" type="tel" placeholder="+1 415 555 0123" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label>birthday <span class="hint">optional</span></label>
+      <div class="two-col">
+        <select id="f-bday-m">
+          <option value="">month</option>
+          <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+          <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+          <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <input id="f-bday-d" type="number" min="1" max="31" placeholder="day" />
       </div>
     </div>
     <div class="sheet-actions">
@@ -622,13 +815,13 @@
 
 <!-- ── BOTTOM TAB BAR ── -->
 <nav class="tab-bar" id="tab-bar">
-  <button class="tab-btn active" id="tab-people" onclick="showTab('people')">
+  <button class="tab-btn active" id="tab-quiz" onclick="showTab('quiz')">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="13" height="16" rx="2"/><path d="M8 3h11a2 2 0 012 2v13"/><path d="M8 11.5a1.5 1.5 0 113 .3c-.4.7-1.5 1-1.5 2"/><line x1="9.5" y1="17" x2="9.51" y2="17"/></svg>
+    pop quiz
+  </button>
+  <button class="tab-btn" id="tab-people" onclick="showTab('people')">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
     people
-  </button>
-  <button class="tab-btn" id="tab-timeline" onclick="showTab('timeline')">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-    timeline
   </button>
 </nav>
 
@@ -651,6 +844,89 @@ const PALETTES = [
   {bg:'#3d1a2a',color:'#f472b6'},{bg:'#2a2d10',color:'#a3e635'},
 ];
 
+// Rhythm only decides who gets suggested and how often they come up in Pop Quiz.
+// It's never shown as a deadline. `days` is also written to cadence_days so v3 keeps working.
+const RHYTHMS = {
+  close:      { days: 14, weight: 1.5 },
+  regular:    { days: 30, weight: 1   },
+  occasional: { days: 90, weight: 0.7 },
+};
+const HAND_SIZE = 3, SNOOZE_DAYS = 7, STALE_DAYS = 90, BDAY_WINDOW = 5;
+const DAY = 86400000;
+
+// ── Pop Quiz prompt bank ──
+// q: shown to me, {name} is their first name. ask: the same question put to them,
+// used when I tap "no idea, ask them" and as the WhatsApp opener.
+const PROMPTS = [
+  // favorites: easy warm-ups
+  {id:'coffee',        deck:'favorites', q:"What's {name}'s go-to coffee order?",            ask:"what's your go-to coffee order these days?"},
+  {id:'comfort-show',  deck:'favorites', q:"What's {name}'s comfort movie or show?",          ask:"what's your comfort show right now?"},
+  {id:'potluck',       deck:'favorites', q:"What would {name} bring to a potluck?",           ask:"if you had to bring one dish to a potluck, what would it be?"},
+  {id:'hour-topic',    deck:'favorites', q:"What's a topic {name} could talk about for an hour?", ask:"what's something you could talk about for an hour?"},
+  {id:'karaoke',       deck:'favorites', q:"What's {name}'s karaoke song?",                   ask:"what's your karaoke song?"},
+  {id:'snack',         deck:'favorites', q:"What's {name}'s snack of choice?",                ask:"what's your snack of choice lately?"},
+  {id:'book',          deck:'favorites', q:"What's a book or author {name} loves?",           ask:"read anything good lately?"},
+  {id:'music',         deck:'favorites', q:"What music is {name} into?",                      ask:"what have you been listening to lately?"},
+  {id:'saturday',      deck:'favorites', q:"What does {name}'s perfect Saturday look like?",  ask:"what does a perfect Saturday look like for you these days?"},
+  {id:'dream-trip',    deck:'favorites', q:"Where's {name}'s dream trip?",                    ask:"if you could go anywhere next month, where would it be?"},
+  {id:'sport',         deck:'favorites', q:"Does {name} follow a sport or a team?",           ask:"watching any sports these days?"},
+  {id:'food-no',       deck:'favorites', q:"What food does {name} refuse to eat?",            ask:"settle something for me: what food do you refuse to eat?"},
+  {id:'guilty',        deck:'favorites', q:"What's {name}'s guilty pleasure?",                ask:"what's your current guilty pleasure?"},
+  {id:'owl',           deck:'favorites', q:"Is {name} a morning person or a night owl?",      ask:"morning person or night owl these days?"},
+  {id:'fun',           deck:'favorites', q:"What does {name} do for fun?",                    ask:"what are you doing for fun lately?"},
+  {id:'restaurant',    deck:'favorites', q:"What's {name}'s favorite place to eat?",          ask:"found any good places to eat lately?"},
+  // story: how I know them
+  {id:'met',           deck:'story', q:"How did you and {name} meet?",                        ask:"do you remember how we first met?"},
+  {id:'memory',        deck:'story', q:"What's your favorite memory with {name}?",            ask:"what's your favorite memory of us?"},
+  {id:'joke',          deck:'story', q:"What's a running joke you have with {name}?",         ask:"what's the dumbest inside joke you remember from us?"},
+  {id:'first-impr',    deck:'story', q:"What was your first impression of {name}?",           ask:"what was your first impression of me? be honest"},
+  {id:'adventure',     deck:'story', q:"What's a trip or adventure you had with {name}?",     ask:"we should plan another trip. where should we go?"},
+  {id:'grew-up',       deck:'story', q:"Where did {name} grow up?",                           ask:"where did you grow up again? tell me about it"},
+  {id:'studied',       deck:'story', q:"What did {name} study, and where?",                   ask:"what did you study back in school? do you still use any of it?"},
+  {id:'proud',         deck:'story', q:"What's something {name} is proud of?",                ask:"what's something you're proud of from this year?"},
+  {id:'helped',        deck:'story', q:"When did {name} help you out?",                       ask:"is there anything I can help you with these days?"},
+  {id:'as-a-kid',      deck:'story', q:"What was {name} like as a kid?",                      ask:"what were you like as a kid?"},
+  {id:'career-path',   deck:'story', q:"How did {name} end up doing what they do?",           ask:"how did you end up doing what you do?"},
+  {id:'advice',        deck:'story', q:"What's the best advice {name} ever gave you?",        ask:"what's the best advice you've gotten recently?"},
+  {id:'best-story',    deck:'story', q:"What's {name}'s best story?",                         ask:"tell me your best story from the last year"},
+  {id:'learned',       deck:'story', q:"What's something you learned from {name}?",           ask:"what's something you've learned recently?"},
+  // people: their world
+  {id:'important',     deck:'people', q:"Who are the important people in {name}'s life right now?", ask:"who are you spending the most time with these days?"},
+  {id:'partner',       deck:'people', q:"Does {name} have a partner? What's their name?",     ask:"how's everyone at home doing?"},
+  {id:'kids-pets',     deck:'people', q:"Does {name} have kids or pets? Names?",              ask:"how are the kids / pets? any new stories?"},
+  {id:'family-where',  deck:'people', q:"Where does {name}'s family live?",                   ask:"how's your family doing? everyone well?"},
+  {id:'siblings',      deck:'people', q:"Does {name} have siblings?",                         ask:"how are your siblings doing?"},
+  {id:'best-friend',   deck:'people', q:"Who's {name}'s best friend?",                        ask:"who have you been hanging out with lately?"},
+  {id:'mutuals',       deck:'people', q:"Which friends do you and {name} have in common?",    ask:"have you seen any of the old crew lately?"},
+  {id:'lives-with',    deck:'people', q:"Who does {name} live with?",                         ask:"how's home life? same place?"},
+  {id:'coworkers',     deck:'people', q:"Who does {name} talk about from work?",              ask:"how's the team at work?"},
+  {id:'looks-up',      deck:'people', q:"Who does {name} look up to?",                        ask:"who's someone you look up to these days?"},
+  {id:'parents',       deck:'people', q:"What are {name}'s parents like?",                    ask:"how are your parents doing?"},
+  // lately: answers that go stale after STALE_DAYS and get asked again
+  {id:'excited',       deck:'lately', q:"What's {name} excited about these days?",            ask:"what are you excited about these days?"},
+  {id:'busy',          deck:'lately', q:"What's {name} working on or stressed about?",        ask:"what's keeping you busy these days?"},
+  {id:'obsessed',      deck:'lately', q:"What was {name} obsessed with last time you talked?", ask:"what are you obsessed with lately?"},
+  {id:'plans',         deck:'lately', q:"What's {name} planning for the next few months?",    ask:"any big plans coming up?"},
+  {id:'work',          deck:'lately', q:"How's work going for {name}?",                       ask:"how's work treating you?"},
+  {id:'feeling',       deck:'lately', q:"How's {name}'s health and energy lately?",           ask:"how have you been feeling lately? really"},
+  {id:'learning',      deck:'lately', q:"What's {name} learning or trying to get better at?", ask:"learning anything new lately?"},
+  {id:'travel-soon',   deck:'lately', q:"Is {name} traveling anywhere soon?",                 ask:"going anywhere fun soon?"},
+  {id:'watching',      deck:'lately', q:"What's {name} reading or watching right now?",       ask:"watching or reading anything good right now?"},
+  {id:'goal',          deck:'lately', q:"What's a goal {name} is chasing this year?",         ask:"how's the big goal for this year going?"},
+  {id:'living',        deck:'lately', q:"Where is {name} living these days?",                 ask:"still in the same place? how's the neighborhood?"},
+  {id:'win',           deck:'lately', q:"What's a recent win for {name}?",                    ask:"what's a recent win? big or small"},
+  {id:'hard',          deck:'lately', q:"What's been hard for {name} lately?",                ask:"how are you really doing?"},
+  {id:'celebrate',     deck:'lately', q:"Is anything coming up for {name} worth celebrating?", ask:"anything coming up worth celebrating?"},
+];
+const PROMPT_BY_ID = Object.fromEntries(PROMPTS.map(p => [p.id, p]));
+const DECK_ORDER = { lately: 0, favorites: 1, story: 2, people: 3, custom: 4 };
+
+const WA_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 01-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1121 11.5z"/></svg>';
+
+// ── small helpers ──
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
 function palette(name) {
   let h = 0;
   for (let c of name) h = (h * 31 + c.charCodeAt(0)) % PALETTES.length;
@@ -659,29 +935,50 @@ function palette(name) {
 function initials(name) {
   return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0,2);
 }
-function daysSince(ts)    { return ts == null ? null : Math.floor((Date.now()-ts)/86400000); }
+function firstName(c) { return c.name.trim().split(/\s+/)[0]; }
+function avatarHTML(c, size) {
+  const av = palette(c.name);
+  return `<div class="avatar ${size||''}" style="background:${av.bg};color:${av.color}">${esc(initials(c.name))}</div>`;
+}
+function daysSince(ts)    { return ts == null ? null : Math.floor((Date.now()-ts)/DAY); }
 function fmtDate(ts)      { return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function fmtDateTime(ts)  { return new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
+// Local calendar date as YYYY-MM-DD, for <input type=date>. toISOString() is UTC and
+// rolls over to tomorrow in the evening.
+function localDateKey(d = new Date()) {
+  const z = n => String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+}
 
 function relBucket(ts) {
   const now = new Date(); now.setHours(0,0,0,0);
   const day = new Date(ts); day.setHours(0,0,0,0);
-  const diffDays = Math.round((now - day) / 86400000);
+  const diffDays = Math.round((now - day) / DAY);
   if (diffDays === 0) return 'Today';
   if (diffDays === 1) return 'Yesterday';
   if (diffDays > 1 && diffDays <= 7) return 'This week';
   return day.toLocaleDateString('en-US', {month:'long', year: day.getFullYear()===now.getFullYear() ? undefined : 'numeric'});
 }
 
-let DB = { contacts:[], logs:[] };
-let activePerson = null, editingId = null, editingLogId = null, currentTab = 'people';
+let DB = { contacts:[], logs:[], cards:[], asks:[] };
+let view = 'quiz', currentTab = 'quiz';
+let activePerson = null, editingId = null, editingLogId = null, editingCardId = null;
+let hand = null, soloCard = null, lastDealtKey = null, warnedSchema = false;
 
+function rhythmFromCadence(days) {
+  const d = parseInt(days) || 30;
+  return d <= 20 ? 'close' : d <= 60 ? 'regular' : 'occasional';
+}
 function rowToContact(r) {
   return {
     id: r.id,
     name: r.name,
     about: r.about || '',
-    cadence: r.cadence_days,
+    rhythm: RHYTHMS[r.rhythm] ? r.rhythm : rhythmFromCadence(r.cadence_days),
+    phone: r.phone || '',
+    details: r.details || '',
+    birthday: r.birthday || '',
+    snoozedUntil: r.snoozed_until ? new Date(r.snoozed_until).getTime() : null,
     lastContact: r.last_contact ? new Date(r.last_contact).getTime() : null,
     nextContact: r.next_contact ? new Date(r.next_contact).getTime() : null,
   };
@@ -689,16 +986,36 @@ function rowToContact(r) {
 function rowToLog(r) {
   return { id: r.id, contactId: r.person_id, note: r.note, ts: new Date(r.ts).getTime() };
 }
+function rowToCard(r) {
+  return { id: r.id, contactId: r.person_id, promptId: r.prompt_id, deck: r.deck, question: r.question, answer: r.answer, ts: new Date(r.created_at).getTime() };
+}
+function rowToAsk(r) {
+  return { id: r.id, contactId: r.person_id, promptId: r.prompt_id, text: r.text, doneAt: r.done_at ? new Date(r.done_at).getTime() : null, ts: new Date(r.created_at).getTime() };
+}
 
 async function refreshData() {
-  const [{data: people, error: pErr}, {data: logs, error: lErr}] = await Promise.all([
+  const [p, l, k, a] = await Promise.all([
     sb.from('people').select('*').order('created_at'),
     sb.from('touch_logs').select('*').order('ts', {ascending:false}),
+    sb.from('cards').select('*').order('created_at', {ascending:false}),
+    sb.from('ask_abouts').select('*').order('created_at'),
   ]);
-  if (pErr || lErr) { showToast('sync error — check connection'); console.error(pErr||lErr); return; }
-  DB.contacts = people.map(rowToContact);
-  DB.logs     = logs.map(rowToLog);
+  if (p.error || l.error) { showToast('sync error — check connection'); console.error(p.error||l.error); return; }
+  if ((k.error || a.error) && !warnedSchema) {
+    warnedSchema = true;
+    showToast('database needs supabase/migrate_v4.sql');
+    console.error(k.error || a.error);
+  }
+  DB.contacts = p.data.map(rowToContact);
+  DB.logs     = l.data.map(rowToLog);
+  DB.cards    = (k.data || []).map(rowToCard);
+  DB.asks     = (a.data || []).map(rowToAsk);
 }
+
+function contactById(id) { return DB.contacts.find(c => c.id === id); }
+function cardsFor(id)    { return DB.cards.filter(k => k.contactId === id); }
+function openAsks(id)    { return DB.asks.filter(a => a.contactId === id && !a.doneAt); }
+function logsFor(id)     { return DB.logs.filter(l => l.contactId === id).sort((a,b) => b.ts - a.ts); }
 
 async function currentUserId() {
   const { data } = await sb.auth.getUser();
@@ -717,15 +1034,20 @@ async function migrateLocalData() {
   showToast('imported local backup ✓');
 }
 
-async function bulkImportRows(contacts, logs) {
+async function bulkImportRows(contacts, logs, cards = [], asks = []) {
   const userId = await currentUserId();
   const idMap = {};
   for (const c of contacts) {
+    const rhythm = RHYTHMS[c.rhythm] ? c.rhythm : rhythmFromCadence(c.cadence);
     const { data, error } = await sb.from('people').insert({
       user_id: userId,
       name: c.name,
       about: c.about || null,
-      cadence_days: parseInt(c.cadence) || 30,
+      rhythm,
+      cadence_days: RHYTHMS[rhythm].days,
+      phone: c.phone || null,
+      details: c.details || null,
+      birthday: c.birthday || null,
       last_contact: c.lastContact ? new Date(c.lastContact).toISOString() : null,
       next_contact: c.nextContact ? new Date(c.nextContact).toISOString() : null,
     }).select().single();
@@ -735,137 +1057,627 @@ async function bulkImportRows(contacts, logs) {
     person_id: idMap[l.contactId], user_id: userId, note: l.note, ts: new Date(l.ts).toISOString(),
   }));
   if (logRows.length) await sb.from('touch_logs').insert(logRows);
+  const cardRows = cards.filter(k => idMap[k.contactId]).map(k => ({
+    person_id: idMap[k.contactId], user_id: userId, prompt_id: k.promptId || null, deck: k.deck || 'custom',
+    question: k.question, answer: k.answer, created_at: new Date(k.ts || Date.now()).toISOString(),
+  }));
+  if (cardRows.length) await sb.from('cards').insert(cardRows);
+  const askRows = asks.filter(a => idMap[a.contactId]).map(a => ({
+    person_id: idMap[a.contactId], user_id: userId, prompt_id: a.promptId || null, text: a.text,
+    done_at: a.doneAt ? new Date(a.doneAt).toISOString() : null, created_at: new Date(a.ts || Date.now()).toISOString(),
+  }));
+  if (askRows.length) await sb.from('ask_abouts').insert(askRows);
 }
 
-function getBadge(c) {
+// ── birthdays & wording ──
+function parseBirthday(b) {
+  const m = /^(?:(\d{4})-)?(\d{2})-(\d{2})$/.exec(b || '');
+  return m ? { m: +m[2], d: +m[3] } : null;
+}
+function daysUntilBirthday(c) {
+  const b = parseBirthday(c.birthday);
+  if (!b) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let next = new Date(today.getFullYear(), b.m-1, b.d);
+  if (next < today) next = new Date(today.getFullYear()+1, b.m-1, b.d);
+  return Math.round((next - today) / DAY);
+}
+function fmtBirthday(c) {
+  const b = parseBirthday(c.birthday);
+  return b ? new Date(2000, b.m-1, b.d).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+}
+function lastTalked(c) {
   const d = daysSince(c.lastContact);
-  const lastStr = d==null ? 'never contacted' : d===0 ? 'today' : d+'d ago';
+  if (d == null) return 'no chats logged yet';
+  if (d === 0)  return 'talked today';
+  if (d === 1)  return 'talked yesterday';
+  if (d < 7)    return 'talked this week';
+  if (d < 14)   return 'talked last week';
+  if (d < 330)  return 'last talked in ' + new Date(c.lastContact).toLocaleDateString('en-US', {month:'long'});
+  return 'a while now';
+}
 
-  if (c.nextContact && (!c.lastContact || c.nextContact > c.lastContact)) {
-    const left = Math.round((c.nextContact - Date.now()) / 86400000);
-    const ds   = new Date(c.nextContact).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    if (left < 0)  return {cls:'b-red',   text:Math.abs(left)+'d over', sub:'planned: '+ds+' · last: '+lastStr};
-    if (left === 0) return {cls:'b-red',  text:'due today',              sub:'planned: '+ds+' · last: '+lastStr};
-    if (left <= 7)  return {cls:'b-amber',text:'in '+left+'d',           sub:'planned: '+ds+' · last: '+lastStr};
-    return                 {cls:'b-green',text:'in '+left+'d',           sub:'planned: '+ds+' · last: '+lastStr};
+// ── worth a hello: at most 3 people, ranked internally, never shown as "late" ──
+function helloScore(c) {
+  const now = Date.now();
+  if (c.snoozedUntil && c.snoozedUntil > now) return null;
+  const bd = daysUntilBirthday(c);
+  if (bd != null && bd <= BDAY_WINDOW) return 1000 - bd;   // an upcoming birthday always gets a slot
+
+  let s = null;
+  const planned = c.nextContact && (!c.lastContact || c.nextContact > c.lastContact);
+  if (planned) {
+    // a manually chosen day wins over rhythm, same as v3's next_contact rule
+    if (c.nextContact <= now) s = 1.5;
+  } else {
+    const d = daysSince(c.lastContact), rd = RHYTHMS[c.rhythm].days;
+    if (d == null) s = 1.5;
+    else if (d >= rd) s = d / rd;
   }
-
-  const cad = parseInt(c.cadence)||30;
-  if (d == null) return {cls:'b-gray',  text:'reach out', sub:'no contact logged'};
-  const left = cad - d;
-  if (d === 0)    return {cls:'b-green', text:'today',          sub:'next in '+cad+'d'};
-  if (left > 7)   return {cls:'b-green', text:'in '+left+'d',   sub:'last: '+lastStr};
-  if (left > 0)   return {cls:'b-amber', text:'in '+left+'d',   sub:'last: '+lastStr};
-  if (left === 0) return {cls:'b-red',   text:'due today',      sub:'last: '+lastStr};
-  return                 {cls:'b-red',   text:Math.abs(left)+'d over', sub:'last: '+lastStr};
+  if (s == null) return null;
+  return s + Math.min(openAsks(c.id).length, 2) * 0.25;
+}
+function worthAHello() {
+  return DB.contacts
+    .map(c => ({ c, s: helloScore(c) }))
+    .filter(x => x.s != null)
+    .sort((a,b) => b.s - a.s)
+    .slice(0, 3)
+    .map(x => x.c);
+}
+function helloReason(c) {
+  const bd = daysUntilBirthday(c);
+  if (bd != null && bd <= BDAY_WINDOW) return bd === 0 ? 'birthday today 🎂' : bd === 1 ? 'birthday tomorrow 🎂' : `birthday in ${bd} days 🎂`;
+  const ask = openAsks(c.id)[0];
+  if (ask) return 'ask: ' + ask.text;
+  return lastTalked(c);
 }
 
-function urgency(c) {
-  if (c.nextContact && (!c.lastContact || c.nextContact > c.lastContact)) return (c.nextContact - Date.now()) / 86400000;
-  const d = daysSince(c.lastContact);
-  if (d == null) return -9999;
-  return ((parseInt(c.cadence)||30) - d);
+// ── reaching out ──
+function normalizePhone(raw) {
+  const s = (raw || '').trim();
+  if (!s) return '';
+  const digits = s.replace(/\D/g, '');
+  if (!digits) return '';
+  if (s.startsWith('+') || s.startsWith('00')) return digits.replace(/^00/, '');
+  if (digits.length === 10) return '1' + digits;   // no country code: assume US
+  return digits;
+}
+function opener(c) {
+  const first = firstName(c);
+  if (daysUntilBirthday(c) === 0) return `happy birthday ${first}!! 🎉 hope it's a great one`;
+  const ask = openAsks(c.id)[0];
+  if (ask) return ask.promptId ? `hey ${first}! random question: ${ask.text}` : `hey ${first}! ${ask.text}`;
+  const lines = [
+    `hey ${first}! been a while, how are things?`,
+    `hey ${first}, was just thinking of you. what's new?`,
+    `hey ${first}! how's life treating you?`,
+    `hey ${first}! what have you been up to lately?`,
+  ];
+  let h = 0;
+  for (const ch of c.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return lines[(h + Math.floor(Date.now() / (7 * DAY))) % lines.length];
+}
+function waLink(c)  { return `https://wa.me/${c.phone}?text=${encodeURIComponent(opener(c))}`; }
+function smsLink(c) { return `sms:+${c.phone}`; }
+function telLink(c) { return `tel:+${c.phone}`; }
+
+// Remember who I just reached out to, so coming back to the app can ask "talked to them?"
+function markOutreach(id) {
+  try { localStorage.setItem('tb_outreach', JSON.stringify({ id, at: Date.now() })); } catch(e) {}
+}
+function checkOutreach() {
+  let o = null;
+  try { o = JSON.parse(localStorage.getItem('tb_outreach') || 'null'); } catch(e) {}
+  if (!o) return;
+  const age = Date.now() - o.at;
+  if (age < 3000) return;   // still leaving the app
+  try { localStorage.removeItem('tb_outreach'); } catch(e) {}
+  const c = contactById(o.id);
+  if (!c || age > 6 * 3600000) return;
+  document.getElementById('jot').dataset.id = c.id;
+  document.getElementById('jot-text').textContent = `talked to ${firstName(c)}? jot it down`;
+  document.getElementById('jot').classList.add('show');
+}
+function dismissJot() { document.getElementById('jot').classList.remove('show'); }
+function jotLog() {
+  const id = document.getElementById('jot').dataset.id;
+  dismissJot();
+  if (!contactById(id)) return;
+  if (!(view === 'person' && activePerson === id)) openPerson(id);
+  setTimeout(openComposer, 50);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && DB.contacts.length) checkOutreach(); });
+
+function reachButtons(c) {
+  if (!c.phone) return `<button class="btn btn-sm" onclick="openEditSheet('${c.id}', true)">add number</button>`;
+  return `<a class="btn btn-sm btn-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" onclick="markOutreach('${c.id}')">${WA_ICON} whatsapp</a>
+    <a class="btn btn-sm" href="${esc(smsLink(c))}" onclick="markOutreach('${c.id}')">text</a>
+    <a class="btn btn-sm" href="${esc(telLink(c))}" onclick="markOutreach('${c.id}')">call</a>`;
 }
 
-function isAttention(c) { return urgency(c) <= 0 || !c.lastContact; }
+function helloHTML(slot) {
+  if (!DB.contacts.length) return '';
+  const people = worthAHello();
+  let html = `<div class="section-label"><span>worth a hello</span></div>`;
+  if (!people.length) return html + `<div class="hello-empty">nobody's waiting on a hello. enjoy it.</div>`;
+  for (const c of people) {
+    const menuId = `hm-${slot}-${c.id}`;
+    const wa = c.phone
+      ? `<a class="btn btn-sm btn-wa btn-icon" href="${esc(waLink(c))}" target="_blank" rel="noopener" onclick="markOutreach('${c.id}')" title="WhatsApp ${esc(firstName(c))}">${WA_ICON}</a>`
+      : `<button class="btn btn-sm" onclick="openEditSheet('${c.id}', true)" title="add a number for WhatsApp">+ #</button>`;
+    const more = c.phone
+      ? `<a class="menu-item" href="${esc(smsLink(c))}" onclick="markOutreach('${c.id}')">text</a>
+         <a class="menu-item" href="${esc(telLink(c))}" onclick="markOutreach('${c.id}')">call</a>`
+      : '';
+    html += `<div class="hello-row">
+      ${avatarHTML(c)}
+      <div class="contact-info" onclick="openPerson('${c.id}')">
+        <div class="contact-name">${esc(c.name)}</div>
+        <div class="hello-reason">${esc(helloReason(c))}</div>
+      </div>
+      <div class="hello-actions">
+        ${wa}
+        <button class="btn btn-sm btn-ghost" onclick="notNow('${c.id}')">not now</button>
+        <div class="menu-wrap">
+          <button class="btn btn-sm btn-ghost btn-icon" onclick="toggleMenu(event, '${menuId}')" title="More">⋯</button>
+          <div class="menu-dropdown" id="${menuId}">
+            <button class="menu-item" onclick="closeMenus();openPerson('${c.id}');setTimeout(openComposer,50)">log it</button>
+            ${more}
+            <button class="menu-item" onclick="closeMenus();openPerson('${c.id}')">open</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  return html;
+}
 
+async function notNow(id) {
+  const c = contactById(id);
+  const until = new Date(Date.now() + SNOOZE_DAYS * DAY).toISOString();
+  const { error } = await sb.from('people').update({ snoozed_until: until }).eq('id', id);
+  if (error) { showToast('could not snooze — try again'); console.error(error); return; }
+  await refreshData();
+  renderCurrent();
+  if (c) showToast(`${firstName(c)} can wait a week`);
+}
+
+// ── Pop Quiz ──
+function fillName(text, c) { return text.replace(/\{name\}/g, firstName(c)); }
+
+// Prompts this person hasn't answered (or whose "lately" answer went stale), minus ones
+// already queued as an ask. Thin profiles start with the easy decks.
+function promptPool(c) {
+  const newest = {};
+  for (const k of DB.cards) if (k.contactId === c.id && k.promptId) newest[k.promptId] = Math.max(newest[k.promptId] || 0, k.ts);
+  const queued = new Set(openAsks(c.id).filter(a => a.promptId).map(a => a.promptId));
+  const pool = PROMPTS.filter(p => !queued.has(p.id) &&
+    (!(p.id in newest) || (p.deck === 'lately' && Date.now() - newest[p.id] > STALE_DAYS * DAY)));
+  if (cardsFor(c.id).length < 3) {
+    const easy = pool.filter(p => p.deck === 'favorites' || p.deck === 'story');
+    if (easy.length) return easy;
+  }
+  return pool;
+}
+function weightedPick(items, weight) {
+  const total = items.reduce((s, x) => s + weight(x), 0);
+  let r = Math.random() * total;
+  for (const x of items) { r -= weight(x); if (r <= 0) return x; }
+  return items[items.length - 1];
+}
+function dealCard({ onlyPerson = null, excludePeople = new Set(), excludePrompt = null } = {}) {
+  const candidates = DB.contacts
+    .filter(c => (!onlyPerson || c.id === onlyPerson) && !excludePeople.has(c.id))
+    .map(c => ({ c, prompts: promptPool(c).filter(p => p.id !== excludePrompt) }))
+    .filter(x => x.prompts.length);
+  if (!candidates.length) return null;
+  // fewer answers → more likely; closer people come up a bit more often
+  const pick = weightedPick(candidates, x => RHYTHMS[x.c.rhythm].weight / (1 + cardsFor(x.c.id).length));
+  const p = pick.prompts[Math.floor(Math.random() * pick.prompts.length)];
+  return { personId: pick.c.id, promptId: p.id, status: 'open' };
+}
+
+function saveHand() { try { localStorage.setItem('tb_hand', JSON.stringify(hand)); } catch(e) {} }
+function loadHand() {
+  try {
+    const h = JSON.parse(localStorage.getItem('tb_hand') || 'null');
+    if (h && h.date === localDateKey() && Array.isArray(h.cards)) return h;
+  } catch(e) {}
+  return null;
+}
+function newHand() {
+  hand = { date: localDateKey(), cards: [] };
+  const used = new Set();
+  for (let i = 0; i < HAND_SIZE; i++) {
+    const k = dealCard({ excludePeople: used });
+    if (!k) break;
+    hand.cards.push(k);
+    used.add(k.personId);
+  }
+  saveHand();
+}
+function validCard(k) { return k && contactById(k.personId) && PROMPT_BY_ID[k.promptId]; }
+function handCard() {
+  if (!hand || hand.date !== localDateKey()) { hand = loadHand(); if (!hand) newHand(); }
+  return hand.cards.find(k => k.status === 'open' && validCard(k)) || null;
+}
+function slotCard(slot) { return slot === 'solo' ? soloCard : handCard(); }
+
+function quizCardHTML(k, slot) {
+  const c = contactById(k.personId), p = PROMPT_BY_ID[k.promptId], av = palette(c.name);
+  const key = slot + ':' + k.personId + ':' + k.promptId;
+  const animate = key !== lastDealtKey;
+  lastDealtKey = key;
+  return `<div class="quiz-card ${animate ? 'deal' : ''}" style="--p-fg:${av.color}">
+    <div class="qc-top">
+      ${avatarHTML(c, 'sm')}
+      <span class="qc-name" onclick="${slot === 'solo' ? "closeSheet('sheet-quiz')" : `openPerson('${c.id}')`}">${esc(c.name)}</span>
+      <span class="qc-deck">${esc(p.deck)}</span>
+    </div>
+    <div class="qc-q">${esc(fillName(p.q, c))}</div>
+    <textarea id="qc-answer-${slot}" placeholder="type an answer…"
+      onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter')quizSave('${slot}')"></textarea>
+    <div class="qc-actions">
+      <button class="btn btn-sm btn-primary" onclick="quizSave('${slot}')">save</button>
+      <button class="btn btn-sm" onclick="quizAsk('${slot}')">no idea, ask ${esc(firstName(c))}</button>
+      <button class="btn btn-sm btn-ghost push" onclick="quizSkip('${slot}')">skip</button>
+    </div>
+  </div>`;
+}
+
+function quizProgressHTML() {
+  const cur = handCard();
+  return `<div class="qc-progress">${hand.cards.map(k =>
+    `<span class="dot ${k === cur ? 'now' : k.status === 'saved' || k.status === 'asked' ? 'done' : ''}"></span>`).join('')}</div>`;
+}
+
+function renderQuiz() {
+  const main = document.getElementById('quiz-main');
+  if (!DB.contacts.length) {
+    main.innerHTML = `<div class="empty">
+      <div class="empty-glyph">?</div>
+      <div class="empty-title">it's quiet in here.</div>
+      <div class="empty-body">add someone you like, and the pop quiz starts.</div>
+      <button class="btn btn-sm btn-primary" style="margin-top:16px" onclick="openAddSheet()">+ add a person</button>
+    </div>`;
+    return;
+  }
+  let html = helloHTML('quiz');
+  const k = handCard();
+  html += `<div class="section-label"><span>pop quiz</span>${k ? `<span>${hand.cards.indexOf(k) + 1} of ${hand.cards.length}</span>` : ''}</div>`;
+  if (k) {
+    html += quizCardHTML(k, 'hand') + quizProgressHTML();
+  } else if (!hand.cards.length) {
+    html += `<div class="quiz-done">
+      <div class="empty-glyph">✓</div>
+      <div class="empty-title">you know everyone too well.</div>
+      <div class="empty-body">every prompt is answered. add someone new, or come back when "lately" answers go stale.</div>
+    </div>`;
+  } else {
+    lastDealtKey = null;
+    html += `<div class="quiz-done deal">
+      <div class="empty-glyph">✓</div>
+      <div class="empty-title">that's plenty.</div>
+      <div class="empty-body">go text someone.</div>
+      <button class="btn btn-sm" style="margin-top:16px" onclick="dealAgain()">deal again</button>
+    </div>`;
+  }
+  main.innerHTML = html;
+}
+
+function dealAgain() { lastDealtKey = null; newHand(); renderQuiz(); }
+
+async function quizSave(slot) {
+  const k = slotCard(slot);
+  if (!validCard(k)) return;
+  const c = contactById(k.personId), p = PROMPT_BY_ID[k.promptId];
+  const answer = document.getElementById('qc-answer-' + slot).value.trim();
+  if (!answer) { showToast('type an answer, or tap skip'); return; }
+  const { error } = await sb.from('cards').insert({
+    person_id: c.id, user_id: await currentUserId(), prompt_id: p.id, deck: p.deck,
+    question: fillName(p.q, c), answer,
+  });
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  k.status = 'saved';
+  if (slot === 'hand') saveHand();
+  await refreshData();
+  showToast(`added to ${firstName(c)}'s pop quiz ✓`);
+  if (slot === 'solo') closeSheet('sheet-quiz');
+  renderCurrent();
+}
+
+async function quizAsk(slot) {
+  const k = slotCard(slot);
+  if (!validCard(k)) return;
+  const c = contactById(k.personId), p = PROMPT_BY_ID[k.promptId];
+  const { error } = await sb.from('ask_abouts').insert({
+    person_id: c.id, user_id: await currentUserId(), prompt_id: p.id, text: p.ask,
+  });
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  k.status = 'asked';
+  if (slot === 'hand') saveHand();
+  await refreshData();
+  showToast(`saved for your next chat with ${firstName(c)}`);
+  if (slot === 'solo') closeSheet('sheet-quiz');
+  renderCurrent();
+}
+
+function quizSkip(slot) {
+  const k = slotCard(slot);
+  if (!k) return;
+  if (slot === 'solo') {
+    const next = dealCard({ onlyPerson: k.personId, excludePrompt: k.promptId });
+    if (next) soloCard = next;
+    renderSolo();
+    return;
+  }
+  const others = new Set(hand.cards.filter(x => x !== k && x.status === 'open').map(x => x.personId));
+  const next = dealCard({ excludePeople: others, excludePrompt: k.promptId });
+  if (next) Object.assign(k, next); else k.status = 'skipped';
+  saveHand();
+  renderQuiz();
+}
+
+function openSoloQuiz() {
+  const c = contactById(activePerson);
+  if (!c) return;
+  soloCard = dealCard({ onlyPerson: c.id });
+  lastDealtKey = null;
+  renderSolo();
+  document.getElementById('sheet-quiz').classList.add('open');
+  syncChrome();
+}
+function renderSolo() {
+  const el = document.getElementById('solo-quiz');
+  if (!validCard(soloCard)) {
+    const c = contactById(activePerson);
+    el.innerHTML = `<div class="empty" style="padding:24px"><div class="empty-body">that's every prompt for ${esc(c ? firstName(c) : 'them')}. impressive.</div></div>`;
+    return;
+  }
+  el.innerHTML = quizCardHTML(soloCard, 'solo');
+}
+
+// ── People tab ──
 function renderPeople() {
   const main = document.getElementById('people-main');
   if (!DB.contacts.length) {
     main.innerHTML = `<div class="empty">
       <div class="empty-glyph">[ ]</div>
-      <div class="empty-title">no people yet</div>
-      <div class="empty-body">tap + to add someone and start tracking your connections.</div>
+      <div class="empty-title">it's quiet in here.</div>
+      <div class="empty-body">add someone you like.</div>
+      <button class="btn btn-sm btn-primary" style="margin-top:16px" onclick="openAddSheet()">+ add a person</button>
     </div>`;
-    document.getElementById('people-count').textContent = '';
     return;
   }
-
-  const sorted = [...DB.contacts].sort((a,b) => urgency(a) - urgency(b));
-  const attn   = sorted.filter(isAttention);
-  const good   = sorted.filter(c => !isAttention(c));
-
-  document.getElementById('people-count').textContent = '// '+DB.contacts.length+' people';
-
-  let html = '';
-
-  if (attn.length) {
-    html += `<div class="section-label">
-      <span>needs attention</span>
-      <span class="count-warn">${attn.length} overdue</span>
+  const prev = document.getElementById('people-search');
+  const q = prev ? prev.value : '';
+  main.innerHTML = helloHTML('people') +
+    `<div class="section-label"><span>everyone</span><span>${DB.contacts.length}</span></div>
+     <div class="people-search"><input id="people-search" type="search" placeholder="search people" autocomplete="off" value="${esc(q)}" oninput="renderPeopleList()" /></div>
+     <div id="people-list"></div>
+     <div class="list-footer"><button class="link-btn" onclick="openTimeline()">all notes →</button></div>`;
+  renderPeopleList();
+}
+function renderPeopleList() {
+  const q = (document.getElementById('people-search')?.value || '').trim().toLowerCase();
+  const people = DB.contacts
+    .filter(c => !q || c.name.toLowerCase().includes(q) || c.about.toLowerCase().includes(q))
+    .sort((a,b) => a.name.localeCompare(b.name));
+  document.getElementById('people-list').innerHTML = people.map(c => {
+    const n = cardsFor(c.id).length;
+    return `<div class="contact-row" onclick="openPerson('${c.id}')">
+      ${avatarHTML(c)}
+      <div class="contact-info">
+        <div class="contact-name">${esc(c.name)}</div>
+        <div class="contact-sub">${esc(c.about || lastTalked(c))}</div>
+      </div>
+      <span class="card-count ${n ? '' : 'zero'}">${n} card${n === 1 ? '' : 's'}</span>
     </div>`;
-    html += attn.map(cardHTML).join('');
-  }
-
-  if (attn.length && good.length) html += '<div class="section-divider"></div>';
-
-  if (good.length) {
-    html += `<div class="section-label">
-      <span>all good</span>
-      <span class="count-ok">${good.length} on track</span>
-    </div>`;
-    html += good.map(cardHTML).join('');
-  }
-
-  main.innerHTML = html;
+  }).join('') || `<div class="section-empty" style="padding:12px 20px">nobody by that name.</div>`;
 }
 
-function cardHTML(c) {
-  const b  = getBadge(c);
+// ── Person page ──
+function renderPerson() {
+  const main = document.getElementById('person-main');
+  const c = contactById(activePerson);
+  if (!c) { main.innerHTML = ''; return; }
   const av = palette(c.name);
-  return `<div class="contact-row" onclick="openPersonSheet('${c.id}')">
-    <div class="avatar" style="background:${av.bg};color:${av.color}">${initials(c.name)}</div>
-    <div class="contact-info">
-      <div class="contact-name">${c.name}</div>
-      <div class="contact-sub">${b.sub}${c.about ? ' · '+c.about : ''}</div>
-    </div>
-    <span class="badge ${b.cls}">${b.text}</span>
-  </div>`;
-}
+  const meta = [c.rhythm, lastTalked(c), c.birthday ? '🎂 ' + fmtBirthday(c) : ''].filter(Boolean).join(' · ');
 
-function openPersonSheet(id) {
-  activePerson = id;
-  const c = DB.contacts.find(x => x.id===id);
-  if (!c) return;
-  document.getElementById('person-name').textContent = c.name;
-  const d = daysSince(c.lastContact);
-  document.getElementById('person-meta').textContent =
-    (c.lastContact ? 'last: '+fmtDate(c.lastContact)+(d?' · '+d+'d ago':'') : 'never contacted') +
-    ' · every '+(c.cadence||30)+'d';
-  document.getElementById('f-note').value = '';
-  document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
-  const nd = document.getElementById('f-next-date');
-  nd.value = c.nextContact ? new Date(c.nextContact).toISOString().slice(0,10) : '';
-  renderHistory();
-  document.getElementById('sheet-person').classList.add('open');
-  syncTabBar();
-  setTimeout(() => document.getElementById('f-note').focus(), 300);
-}
+  const asks = openAsks(c.id);
+  let askHTML = asks.map(a => `<div class="ask-item">
+      <input type="checkbox" onchange="tickAsk('${a.id}')" title="asked it" />
+      <div class="ask-text">${esc(a.text)}</div>
+      <button class="x-btn" onclick="deleteAsk('${a.id}')" title="remove">✕</button>
+    </div>`).join('');
+  if (!asks.length) askHTML = `<div class="section-empty">nothing queued. add something, or tap "no idea" in a pop quiz.</div>`;
 
-function renderHistory() {
-  const logs = DB.logs.filter(l => l.contactId===activePerson).sort((a,b) => b.ts-a.ts).slice(0,5);
-  const el   = document.getElementById('person-history');
-  if (!logs.length) { el.innerHTML=''; return; }
-  let html = '<div class="history-head">recent notes</div>';
+  // newest answer per prompt; re-answered "lately" prompts keep their history in the table
+  const seen = new Set();
+  const latest = cardsFor(c.id).sort((a,b) => b.ts - a.ts).filter(k => {
+    const key = k.promptId || k.id;
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  }).sort((a,b) => (DECK_ORDER[a.deck] ?? 9) - (DECK_ORDER[b.deck] ?? 9) || b.ts - a.ts);
+  const quizHTML = latest.length
+    ? `<div class="qa-grid">${latest.map(k => `<div class="qa-card" style="--p-fg:${av.color}" onclick="openCardEdit('${k.id}')">
+        <div class="qa-q">${esc(k.question)}</div>
+        <div class="qa-a">${esc(k.answer)}</div>
+        ${k.deck === 'lately' ? `<div class="qa-when">lately · ${new Date(k.ts).toLocaleDateString('en-US',{month:'short',year:'numeric'})}</div>` : ''}
+      </div>`).join('')}</div>`
+    : `<div class="section-empty">no answers yet. <button class="link-btn" style="padding:0" onclick="openSoloQuiz()">quiz yourself on ${esc(firstName(c))} →</button></div>`;
+
+  const logs = logsFor(c.id);
+  let notesHTML = '';
   let lastBucket = null;
   for (const l of logs) {
     const bucket = relBucket(l.ts);
-    if (bucket !== lastBucket) {
-      html += `<div style="font-size:9px;font-family:var(--mono);color:#3a3a36;letter-spacing:0.05em;text-transform:uppercase;margin-top:8px">${bucket}</div>`;
-      lastBucket = bucket;
-    }
-    html += `<div class="log-item">
+    if (bucket !== lastBucket) { notesHTML += `<div class="bucket-head">${bucket}</div>`; lastBucket = bucket; }
+    notesHTML += `<div class="log-item">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div class="log-ts">${fmtDateTime(l.ts)}</div>
         <button class="log-edit-btn" onclick="openLogEditSheet('${l.id}')" title="edit note">⋯</button>
       </div>
-      <div class="log-txt">${l.note}</div>
+      <div class="log-txt">${esc(l.note)}</div>
     </div>`;
   }
-  if (DB.logs.filter(l => l.contactId===activePerson).length > 5) {
-    html += `<div style="text-align:center;margin-top:8px"><button class="btn btn-sm btn-ghost" onclick="closeSheet('sheet-person');showTab('timeline')">see all in timeline →</button></div>`;
-  }
-  el.innerHTML = html;
+  if (!logs.length) notesHTML = `<div class="section-empty" style="padding:0">no notes yet. the button below is for you.</div>`;
+
+  main.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-sm btn-ghost" onclick="goBack()">← back</button>
+      <div class="menu-wrap">
+        <button class="btn btn-sm btn-ghost" onclick="toggleMenu(event, 'person-menu')" title="More">⋯</button>
+        <div class="menu-dropdown" id="person-menu">
+          <button class="menu-item" onclick="closeMenus();openEditSheet('${c.id}')">edit</button>
+          <button class="menu-item danger" onclick="closeMenus();deleteContact('${c.id}')">delete</button>
+        </div>
+      </div>
+    </div>
+    <div class="person-hero">
+      ${avatarHTML(c, 'lg')}
+      <div style="min-width:0">
+        <div class="person-name">${esc(c.name)}</div>
+        ${c.about ? `<div class="person-about">${esc(c.about)}</div>` : ''}
+        <div class="person-meta">${esc(meta)}</div>
+      </div>
+    </div>
+    <div class="reach">${reachButtons(c)}</div>
+
+    <div class="section-label"><span>ask about next time</span></div>
+    ${askHTML}
+    <div class="ask-add"><input id="f-new-ask" placeholder="+ something to ask ${esc(firstName(c))}" autocomplete="off"
+      onkeydown="if(event.key==='Enter')addAsk()" /></div>
+
+    <div class="section-label"><span>pop quiz</span><button class="label-action" onclick="openSoloQuiz()">+ quiz me on ${esc(firstName(c))}</button></div>
+    ${quizHTML}
+
+    <div class="section-label"><span>details</span></div>
+    <div class="details-box"><textarea id="f-details" placeholder="partner's name, how you met, allergies, whatever doesn't fit a card"
+      onblur="saveDetails()">${esc(c.details)}</textarea></div>
+
+    <div class="section-label"><span>notes</span><span>${logs.length || ''}</span></div>
+    <div class="notes-list">${notesHTML}</div>
+    <div class="list-footer"><button class="link-btn" onclick="openTimeline()">see everyone's notes →</button></div>`;
+}
+
+async function addAsk() {
+  const input = document.getElementById('f-new-ask');
+  const text = input.value.trim();
+  if (!text) return;
+  const { error } = await sb.from('ask_abouts').insert({ person_id: activePerson, user_id: await currentUserId(), text });
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  await refreshData();
+  renderPerson();
+  document.getElementById('f-new-ask')?.focus();
+}
+async function tickAsk(id) {
+  const { error } = await sb.from('ask_abouts').update({ done_at: new Date().toISOString() }).eq('id', id);
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  await refreshData();
+  renderPerson();
+  showToast('asked ✓');
+}
+async function deleteAsk(id) {
+  const { error } = await sb.from('ask_abouts').delete().eq('id', id);
+  if (error) { showToast('could not delete — try again'); console.error(error); return; }
+  await refreshData();
+  renderPerson();
+}
+async function saveDetails() {
+  const c = contactById(activePerson);
+  const el = document.getElementById('f-details');
+  if (!c || !el) return;
+  const details = el.value.trim();
+  if (details === c.details) return;
+  const { error } = await sb.from('people').update({ details: details || null }).eq('id', c.id);
+  if (error) { showToast('could not save details'); console.error(error); return; }
+  c.details = details;
+  showToast('details saved');
+}
+
+// ── Pop Quiz card editing ──
+function openCardEdit(id) {
+  const k = DB.cards.find(x => x.id === id);
+  if (!k) return;
+  editingCardId = id;
+  document.getElementById('f-card-q').value = k.question;
+  document.getElementById('f-card-a').value = k.answer;
+  document.getElementById('sheet-card').classList.add('open');
+  syncChrome();
+}
+async function saveCardEdit() {
+  const question = document.getElementById('f-card-q').value.trim();
+  const answer = document.getElementById('f-card-a').value.trim();
+  if (!question || !answer) { showToast('question and answer both needed'); return; }
+  const { error } = await sb.from('cards').update({ question, answer }).eq('id', editingCardId);
+  if (error) { showToast('could not save — try again'); console.error(error); return; }
+  await refreshData();
+  closeSheet('sheet-card');
+  renderCurrent();
+  showToast('updated');
+}
+async function deleteCard() {
+  if (!confirm('Delete this answer?')) return;
+  const { error } = await sb.from('cards').delete().eq('id', editingCardId);
+  if (error) { showToast('could not delete — try again'); console.error(error); return; }
+  await refreshData();
+  closeSheet('sheet-card');
+  renderCurrent();
+  showToast('deleted');
+}
+
+// ── Composer: log a note ──
+// Drafts live in localStorage per person, so closing the sheet (or the app) never loses a note.
+function draftKey(id) { return 'tb_draft_' + id; }
+function saveDraft() {
+  if (!activePerson) return;
+  const d = { note: document.getElementById('f-note').value, ask: document.getElementById('f-next-ask').value };
+  try {
+    if (d.note.trim() || d.ask.trim()) localStorage.setItem(draftKey(activePerson), JSON.stringify(d));
+    else localStorage.removeItem(draftKey(activePerson));
+  } catch(e) {}
+}
+function loadDraft(id) {
+  try { return JSON.parse(localStorage.getItem(draftKey(id)) || 'null') || { note: '', ask: '' }; }
+  catch(e) { return { note: '', ask: '' }; }
+}
+function clearDraft(id) { try { localStorage.removeItem(draftKey(id)); } catch(e) {} }
+
+function openComposer() {
+  const c = contactById(activePerson);
+  if (!c) return;
+  const d = loadDraft(c.id);
+  document.getElementById('log-meta').textContent = c.name;
+  document.getElementById('f-note').value = d.note || '';
+  document.getElementById('f-next-ask').value = d.ask || '';
+  document.getElementById('f-log-date').value = localDateKey();
+  const planned = c.nextContact && (!c.lastContact || c.nextContact > c.lastContact);
+  document.getElementById('f-next-date').value = planned ? localDateKey(new Date(c.nextContact)) : '';
+  const asks = openAsks(c.id);
+  document.getElementById('log-covered').innerHTML = asks.length
+    ? `<div class="covered"><div class="form-group" style="margin:0"><label>covered any of these?</label>
+        ${asks.map(a => `<label class="tick"><input type="checkbox" value="${a.id}" /> ${esc(a.text)}</label>`).join('')}
+      </div></div>`
+    : '';
+  document.getElementById('sheet-log').classList.add('open');
+  syncChrome();
+}
+function closeComposer() {
+  const hasDraft = document.getElementById('f-note').value.trim() || document.getElementById('f-next-ask').value.trim();
+  document.getElementById('sheet-log').classList.remove('open');
+  syncChrome();
+  if (hasDraft) showToast('draft kept');
+}
+function discardDraft() {
+  const hasDraft = document.getElementById('f-note').value.trim() || document.getElementById('f-next-ask').value.trim();
+  if (hasDraft && !confirm('Discard this note?')) return;
+  clearDraft(activePerson);
+  document.getElementById('f-note').value = '';
+  document.getElementById('f-next-ask').value = '';
+  document.getElementById('sheet-log').classList.remove('open');
+  syncChrome();
 }
 
 async function logNote() {
@@ -875,9 +1687,11 @@ async function logNote() {
   const ts = logDate ? new Date(logDate+'T12:00:00').getTime() : Date.now();
   const nd = document.getElementById('f-next-date').value;
   const nextTs = nd ? new Date(nd+'T12:00:00').getTime() : null;
+  const nextAsk = document.getElementById('f-next-ask').value.trim();
+  const covered = [...document.querySelectorAll('#log-covered input:checked')].map(i => i.value);
 
   // backdating a note shouldn't move last-contact earlier than a more recent one already logged
-  const c = DB.contacts.find(x => x.id===activePerson);
+  const c = contactById(activePerson);
   const newLastContact = (c && c.lastContact && c.lastContact > ts) ? c.lastContact : ts;
 
   const userId = await currentUserId();
@@ -887,27 +1701,30 @@ async function logNote() {
   const { error: updErr } = await sb.from('people').update({
     last_contact: new Date(newLastContact).toISOString(),
     next_contact: (nextTs && nextTs > newLastContact) ? new Date(nextTs).toISOString() : null,
+    snoozed_until: null,
   }).eq('id', activePerson);
   if (logErr || updErr) { showToast('could not save — try again'); console.error(logErr||updErr); return; }
+  if (covered.length) await sb.from('ask_abouts').update({ done_at: new Date().toISOString() }).in('id', covered);
+  if (nextAsk) await sb.from('ask_abouts').insert({ person_id: activePerson, user_id: userId, text: nextAsk });
 
-  await refreshData();
+  clearDraft(activePerson);
   document.getElementById('f-note').value = '';
-  document.getElementById('f-next-date').value = '';
-  document.getElementById('f-log-date').value = new Date().toISOString().slice(0,10);
-  renderHistory();
-  renderPeople();
-  if (currentTab === 'timeline') renderTimeline();
+  document.getElementById('f-next-ask').value = '';
+  document.getElementById('sheet-log').classList.remove('open');
+  await refreshData();
+  renderCurrent();
+  syncChrome();
   showToast('logged ✓');
 }
 
 // A contact's last_contact is a cached value set when a note is logged, not
 // derived live from touch_logs — so editing or deleting the log that set it
-// has to recompute it from what's left, or the badge goes stale (same class
+// has to recompute it from what's left, or it goes stale (same class
 // of bug as the v1 next_contact fix).
 async function recomputeLastContact(contactId) {
   const remaining = DB.logs.filter(l => l.contactId === contactId);
   const maxTs = remaining.length ? Math.max(...remaining.map(l => l.ts)) : null;
-  const c = DB.contacts.find(x => x.id === contactId);
+  const c = contactById(contactId);
   if (!c || c.lastContact === maxTs) return;
   await sb.from('people').update({
     last_contact: maxTs ? new Date(maxTs).toISOString() : null,
@@ -919,10 +1736,10 @@ function openLogEditSheet(id) {
   if (!log) return;
   editingLogId = id;
   document.getElementById('f-log-edit-note').value = log.note;
-  document.getElementById('f-log-edit-date').value = new Date(log.ts).toISOString().slice(0,10);
+  document.getElementById('f-log-edit-date').value = localDateKey(new Date(log.ts));
   closeMenus();
-  closeSheet('sheet-person');
-  setTimeout(() => { document.getElementById('sheet-log-edit').classList.add('open'); syncTabBar(); }, 200);
+  document.getElementById('sheet-log-edit').classList.add('open');
+  syncChrome();
 }
 
 async function saveLogEdit() {
@@ -942,9 +1759,7 @@ async function saveLogEdit() {
   await recomputeLastContact(contactId);
   await refreshData();
   closeSheet('sheet-log-edit');
-  renderPeople();
-  if (currentTab === 'timeline') renderTimeline();
-  if (activePerson === contactId) renderHistory();
+  renderCurrent();
   showToast('updated');
 }
 
@@ -961,99 +1776,116 @@ async function deleteLog() {
   await recomputeLastContact(contactId);
   await refreshData();
   closeSheet('sheet-log-edit');
-  renderPeople();
-  if (currentTab === 'timeline') renderTimeline();
-  if (activePerson === contactId) renderHistory();
+  renderCurrent();
   showToast('deleted');
 }
 
+// ── Add / edit person ──
+function fillContactForm(c) {
+  document.getElementById('f-name').value   = c ? c.name : '';
+  document.getElementById('f-about').value  = c ? c.about : '';
+  document.getElementById('f-rhythm').value = c ? c.rhythm : 'regular';
+  document.getElementById('f-phone').value  = c && c.phone ? '+' + c.phone : '';
+  const b = c ? parseBirthday(c.birthday) : null;
+  document.getElementById('f-bday-m').value = b ? String(b.m).padStart(2,'0') : '';
+  document.getElementById('f-bday-d').value = b ? b.d : '';
+}
 function openAddSheet() {
   editingId = null;
   document.getElementById('contact-sheet-title').textContent = 'add person';
-  document.getElementById('f-name').value    = '';
-  document.getElementById('f-about').value   = '';
-  document.getElementById('f-cadence').value = '30';
+  fillContactForm(null);
   document.getElementById('delete-btn').style.display = 'none';
   document.getElementById('sheet-contact').classList.add('open');
-  syncTabBar();
+  syncChrome();
   setTimeout(() => document.getElementById('f-name').focus(), 300);
 }
-
-function openEditSheet() {
-  closeSheet('sheet-person');
-  const c = DB.contacts.find(x => x.id===activePerson);
+function openEditSheet(id, focusPhone) {
+  const c = contactById(id || activePerson);
   if (!c) return;
   editingId = c.id;
-  document.getElementById('contact-sheet-title').textContent = 'edit person';
-  document.getElementById('f-name').value    = c.name;
-  document.getElementById('f-about').value   = c.about||'';
-  document.getElementById('f-cadence').value = c.cadence||30;
+  document.getElementById('contact-sheet-title').textContent = 'edit ' + firstName(c);
+  fillContactForm(c);
   document.getElementById('delete-btn').style.display = 'inline-block';
-  setTimeout(() => { document.getElementById('sheet-contact').classList.add('open'); syncTabBar(); }, 200);
+  document.getElementById('sheet-contact').classList.add('open');
+  syncChrome();
+  if (focusPhone) setTimeout(() => document.getElementById('f-phone').focus(), 300);
 }
 
 async function saveContact() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { showToast('name is required'); return; }
-  const about   = document.getElementById('f-about').value.trim();
-  const cadence = parseInt(document.getElementById('f-cadence').value)||30;
+  const about  = document.getElementById('f-about').value.trim();
+  const rhythm = document.getElementById('f-rhythm').value;
+  const phone  = normalizePhone(document.getElementById('f-phone').value);
+  const bm = document.getElementById('f-bday-m').value;
+  const bd = parseInt(document.getElementById('f-bday-d').value);
+  const birthday = bm && bd >= 1 && bd <= 31 ? `${bm}-${String(bd).padStart(2,'0')}` : null;
+  const fields = { name, about: about||null, rhythm, cadence_days: RHYTHMS[rhythm].days, phone: phone||null, birthday };
   let error;
   if (editingId) {
-    ({error} = await sb.from('people').update({ name, about: about||null, cadence_days: cadence }).eq('id', editingId));
+    ({error} = await sb.from('people').update(fields).eq('id', editingId));
   } else {
     const userId = await currentUserId();
-    ({error} = await sb.from('people').insert({ user_id: userId, name, about: about||null, cadence_days: cadence }));
+    ({error} = await sb.from('people').insert({ user_id: userId, ...fields }));
   }
   if (error) { showToast('could not save — try again'); console.error(error); return; }
   await refreshData(); closeSheet('sheet-contact');
-  renderPeople(); populateExportSelect();
-  showToast(editingId ? 'updated' : 'added');
+  renderCurrent(); populateExportSelect();
+  showToast(editingId ? 'updated' : `added ${firstName({name})}`);
 }
 
 async function deleteContact(id) {
   const targetId = id || editingId;
   if (!targetId) return;
-  if (!confirm('Delete this person and all their notes?')) return;
+  if (!confirm('Delete this person and everything about them?')) return;
   const { error } = await sb.from('people').delete().eq('id', targetId);
   if (error) { showToast('could not delete — try again'); console.error(error); return; }
+  clearDraft(targetId);
   await refreshData();
   closeSheet('sheet-contact');
-  closeSheet('sheet-person');
-  renderPeople(); populateExportSelect();
-  if (currentTab === 'timeline') renderTimeline();
+  populateExportSelect();
+  if (view === 'person' && activePerson === targetId) go(currentTab, false);
+  else renderCurrent();
   showToast('deleted');
 }
 
+// ── Export / import ──
 function openExportSheet() {
   populateExportSelect();
   renderExport();
   document.getElementById('sheet-export').classList.add('open');
-  syncTabBar();
+  syncChrome();
 }
 
 function populateExportSelect() {
-  const opts = DB.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  const opts = [...DB.contacts].sort((a,b) => a.name.localeCompare(b.name))
+    .map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
   document.getElementById('export-select').innerHTML = '<option value="all">all people</option>' + opts;
 }
 
 function renderExport() {
   const sel      = document.getElementById('export-select').value;
-  const contacts = sel==='all' ? DB.contacts : [DB.contacts.find(c => c.id===sel)].filter(Boolean);
+  const contacts = sel==='all' ? DB.contacts : [contactById(sel)].filter(Boolean);
   if (!contacts.length) { document.getElementById('export-md').textContent='no data.'; return; }
   const blocks = contacts.map(c => {
-    const logs = DB.logs.filter(l => l.contactId===c.id).sort((a,b) => b.ts-a.ts);
+    const logs = logsFor(c.id);
     const d    = daysSince(c.lastContact);
     let md = `## ${c.name}\n`;
     if (c.about) md += `> ${c.about}\n\n`;
+    md += `- **rhythm**: ${c.rhythm}\n`;
+    if (c.phone) md += `- **phone**: +${c.phone}\n`;
+    if (c.birthday) md += `- **birthday**: ${fmtBirthday(c)}\n`;
     if (c.nextContact) md += `- **next planned**: ${fmtDate(c.nextContact)}\n`;
     md += `- **last contact**: ${c.lastContact ? fmtDate(c.lastContact) : 'never'}`;
     if (d!=null) md += ` (${d} days ago)`;
-    md += `\n- **cadence**: every ${c.cadence||30} days\n`;
-    if (logs.length) {
-      md += `\n### notes\n`;
-      md += logs.map(l => `- **${fmtDate(l.ts)}** — ${l.note}`).join('\n');
-    }
-    return md;
+    md += '\n';
+    const asks = openAsks(c.id);
+    if (asks.length) md += `\n### ask about next time\n` + asks.map(a => `- [ ] ${a.text}`).join('\n') + '\n';
+    const cards = cardsFor(c.id).sort((a,b) => b.ts - a.ts);
+    if (cards.length) md += `\n### pop quiz\n` + cards.map(k => `- **${k.question}** ${k.answer}` + (k.deck === 'lately' ? ` _(${fmtDate(k.ts)})_` : '')).join('\n') + '\n';
+    if (c.details) md += `\n### details\n${c.details}\n`;
+    if (logs.length) md += `\n### notes\n` + logs.map(l => `- **${fmtDate(l.ts)}** — ${l.note}`).join('\n');
+    return md.trimEnd();
   });
   document.getElementById('export-md').textContent = '# touchbase\n\n' + blocks.join('\n\n---\n\n');
 }
@@ -1073,6 +1905,8 @@ function importJSON(event, mode) {
       if (!Array.isArray(data.contacts) || !Array.isArray(data.logs)) {
         showToast('invalid file format'); return;
       }
+      const cards = Array.isArray(data.cards) ? data.cards : [];
+      const asks  = Array.isArray(data.asks)  ? data.asks  : [];
       if (mode === 'replace') {
         if (!confirm('Replace ALL existing data with this backup? This cannot be undone.')) {
           event.target.value = ''; return;
@@ -1080,17 +1914,17 @@ function importJSON(event, mode) {
         const userId = await currentUserId();
         const { error } = await sb.from('people').delete().eq('user_id', userId);
         if (error) { showToast('could not replace — try again'); console.error(error); return; }
-        await bulkImportRows(data.contacts, data.logs);
+        await bulkImportRows(data.contacts, data.logs, cards, asks);
         showToast('data restored');
       } else {
         // merge: add contacts not already present (matched by name+context), plus their notes
         const existingKeys = new Set(DB.contacts.map(c => c.name.toLowerCase()+'|'+(c.about||'').toLowerCase()));
         const newContacts = data.contacts.filter(c => !existingKeys.has(c.name.toLowerCase()+'|'+(c.about||'').toLowerCase()));
-        await bulkImportRows(newContacts, data.logs);
+        await bulkImportRows(newContacts, data.logs, cards, asks);
         showToast(`merged: +${newContacts.length} people`);
       }
       await refreshData();
-      renderPeople();
+      renderCurrent();
       populateExportSelect();
       renderExport();
       event.target.value = '';
@@ -1104,42 +1938,110 @@ function importJSON(event, mode) {
 
 function downloadBackup() {
   const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'})),
-    download: 'touchbase-'+new Date().toISOString().slice(0,10)+'.json'
+    href: URL.createObjectURL(new Blob([JSON.stringify({ version: 4, ...DB }, null, 2)], {type:'application/json'})),
+    download: 'touchbase-'+localDateKey()+'.json'
   });
   a.click();
   showToast('backup downloaded');
 }
 
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); syncTabBar(); }
+// ── Navigation ──
+// Two tabs (Pop Quiz, People) plus two pages one level down (a person, Timeline).
+// Pages get their own history entry, so the phone's back gesture works. Tabs replace
+// the entry instead, so back from a tab leaves the app as expected.
+function routeFromHash() {
+  const h = location.hash.slice(1);
+  if (h.startsWith('p/'))  return { view: 'person', id: h.slice(2) };
+  if (h === 'timeline')    return { view: 'timeline' };
+  if (h === 'people')      return { view: 'people' };
+  return { view: 'quiz' };
+}
+function go(route, push) {
+  const hash = route === 'quiz' ? '' : '#' + route;
+  const url = location.pathname + location.search + hash;
+  const depth = (history.state && history.state.depth) || 0;
+  if (push) history.pushState({ tb: true, depth: depth + 1 }, '', url);
+  else      history.replaceState({ tb: true, depth: route === 'quiz' || route === 'people' ? 0 : depth }, '', url);
+  applyRoute();
+}
+function goBack() {
+  if (history.state && history.state.depth > 0) history.back();
+  else go(currentTab, false);
+}
+function showTab(tab)     { go(tab, false); }
+function openPerson(id)   { go('p/' + id, true); }
+function openTimeline()   { go('timeline', true); }
 
-function syncTabBar() {
-  const anyOpen = document.querySelector('.overlay.open');
-  document.getElementById('tab-bar').classList.toggle('hidden', !!anyOpen);
+function applyRoute() {
+  // leaving a page closes whatever sheet was open on it (the composer keeps its draft)
+  if (document.getElementById('sheet-log').classList.contains('open')) closeComposer();
+  document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open'));
+  closeMenus();
+
+  let r = routeFromHash();
+  if (r.view === 'person' && !contactById(r.id)) {
+    r = { view: currentTab };
+    history.replaceState({ tb: true, depth: 0 }, '', location.pathname + location.search + (currentTab === 'people' ? '#people' : ''));
+  }
+  const changed = r.view !== view || (r.view === 'person' && r.id !== activePerson);
+  view = r.view;
+  if (view === 'quiz' || view === 'people') currentTab = view;
+  if (view === 'person') activePerson = r.id;
+
+  for (const v of ['quiz', 'people', 'person', 'timeline']) {
+    const el = document.getElementById(v + '-main');
+    el.style.display = v === view ? '' : 'none';
+    if (v === view && changed && (v === 'person' || v === 'timeline')) {
+      el.classList.remove('slide-in'); void el.offsetWidth; el.classList.add('slide-in');
+    }
+  }
+  const onTab = view === 'quiz' || view === 'people';
+  document.getElementById('list-header-actions').style.display = onTab ? 'flex' : 'none';
+  for (const t of ['quiz', 'people']) {
+    document.getElementById('tab-' + t).classList.toggle('active', currentTab === t);
+    document.getElementById('htab-' + t).classList.toggle('active', currentTab === t);
+  }
+  renderCurrent();
+  if (changed) window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', applyRoute);
+
+function renderCurrent() {
+  document.getElementById('people-count').textContent = DB.contacts.length ? '// ' + DB.contacts.length + ' people' : '';
+  if (view === 'quiz')     renderQuiz();
+  if (view === 'people')   renderPeople();
+  if (view === 'person')   renderPerson();
+  if (view === 'timeline') renderTimeline();
+  syncChrome();
+}
+
+function closeSheet(id) {
+  if (id === 'sheet-log') { closeComposer(); return; }
+  document.getElementById(id).classList.remove('open');
+  syncChrome();
+}
+
+// Which fixed bottom thing shows: tab bar on the two tabs, "log a note" on a person
+// page, neither while a sheet is open.
+function syncChrome() {
+  const anyOpen = !!document.querySelector('.overlay.open');
+  const onTab = view === 'quiz' || view === 'people';
+  document.getElementById('tab-bar').classList.toggle('hidden', anyOpen || !onTab);
+  document.getElementById('fab').classList.toggle('show', !anyOpen && view === 'person');
   syncBodyPadding();
 }
 
-// Measures the actual rendered bottom-bar height (it's fixed, so it clips
+// Measures the actual rendered bottom bar height (it's fixed, so it clips
 // scrollable content otherwise) instead of guessing a pixel value — stays
 // correct across breakpoints, font rendering, and iOS safe-area insets.
 function syncBodyPadding() {
-  const tb = document.getElementById('tab-bar');
-  const visible = getComputedStyle(tb).display !== 'none' && !tb.classList.contains('hidden');
-  document.body.style.paddingBottom = visible ? (tb.offsetHeight + 16) + 'px' : '24px';
+  const tb = document.getElementById('tab-bar'), fab = document.getElementById('fab');
+  let h = 0;
+  if (getComputedStyle(tb).display !== 'none' && !tb.classList.contains('hidden')) h = tb.offsetHeight;
+  if (fab.classList.contains('show')) h = Math.max(h, fab.offsetHeight + 14);
+  document.body.style.paddingBottom = (h ? h + 16 : 24) + 'px';
 }
 window.addEventListener('resize', syncBodyPadding);
-
-function showTab(tab) {
-  currentTab = tab;
-  document.getElementById('people-main').style.display = tab==='people' ? '' : 'none';
-  document.getElementById('timeline-main').style.display = tab==='timeline' ? '' : 'none';
-  document.getElementById('people-header-actions').style.display = tab==='people' ? 'flex' : 'none';
-  document.getElementById('tab-people').classList.toggle('active', tab==='people');
-  document.getElementById('tab-timeline').classList.toggle('active', tab==='timeline');
-  document.getElementById('htab-people').classList.toggle('active', tab==='people');
-  document.getElementById('htab-timeline').classList.toggle('active', tab==='timeline');
-  if (tab === 'timeline') renderTimeline();
-}
 
 function toggleMenu(e, id) {
   e.stopPropagation();
@@ -1153,10 +2055,13 @@ function closeMenus() {
 }
 document.addEventListener('click', closeMenus);
 
+// ── Timeline (one level down, linked from People and person pages) ──
 function renderTimeline() {
   const main = document.getElementById('timeline-main');
+  const head = `<div class="page-head"><button class="btn btn-sm btn-ghost" onclick="goBack()">← back</button></div>
+    <div class="page-title">all notes</div>`;
   if (!DB.logs.length) {
-    main.innerHTML = `<div class="empty">
+    main.innerHTML = head + `<div class="empty">
       <div class="empty-glyph">[ ]</div>
       <div class="empty-title">no notes logged yet</div>
       <div class="empty-body">log a note from someone's page and it'll show up here.</div>
@@ -1166,39 +2071,39 @@ function renderTimeline() {
   const sorted = [...DB.logs].sort((a,b) => b.ts - a.ts);
   let html = '', lastBucket = null;
   for (const l of sorted) {
-    const c = DB.contacts.find(x => x.id===l.contactId);
+    const c = contactById(l.contactId);
     if (!c) continue;
     const bucket = relBucket(l.ts);
     if (bucket !== lastBucket) { html += `<div class="timeline-group-head">${bucket}</div>`; lastBucket = bucket; }
-    const av = palette(c.name);
-    html += `<div class="timeline-row" onclick="openPersonSheet('${c.id}')">
-      <div class="avatar" style="background:${av.bg};color:${av.color}">${initials(c.name)}</div>
+    html += `<div class="timeline-row" onclick="openPerson('${c.id}')">
+      ${avatarHTML(c)}
       <div class="timeline-body">
         <div class="timeline-name-line">
-          <span class="timeline-name">${c.name}</span>
+          <span class="timeline-name">${esc(c.name)}</span>
           <span style="display:flex;align-items:center;gap:2px">
             <span class="timeline-ts">${fmtDateTime(l.ts)}</span>
             <button class="log-edit-btn" onclick="event.stopPropagation();openLogEditSheet('${l.id}')" title="edit note">⋯</button>
           </span>
         </div>
-        <div class="timeline-note">${l.note}</div>
+        <div class="timeline-note">${esc(l.note)}</div>
       </div>
     </div>`;
   }
-  main.innerHTML = html || `<div class="empty"><div class="empty-body">no notes to show.</div></div>`;
+  main.innerHTML = head + (html || `<div class="empty"><div class="empty-body">no notes to show.</div></div>`);
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
 document.querySelectorAll('.overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target===el) { el.classList.remove('open'); syncTabBar(); } });
+  el.addEventListener('click', e => { if (e.target===el) closeSheet(el.id); });
 });
 document.addEventListener('keydown', e => {
-  if (e.key==='Escape') { document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open')); syncTabBar(); }
+  if (e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(el => closeSheet(el.id));
 });
 document.getElementById('f-name').addEventListener('keydown', e => {
   if (e.key==='Enter') saveContact();
@@ -1233,24 +2138,29 @@ async function sendMagicLink() {
     : 'check your email for the sign-in link ✓';
 }
 
-function signOut() { sb.auth.signOut(); }
+function signOut() { signedIn = false; sb.auth.signOut(); }
 
+// Supabase can emit SIGNED_IN again when the tab regains focus. Only the first one
+// sets the app up; later ones just refresh data, so an open sheet (say, the composer
+// after coming back from WhatsApp) stays open.
+let signedIn = false;
 async function onSignedIn() {
+  if (signedIn) { await refreshData(); renderCurrent(); return; }
+  signedIn = true;
   hideAuthScreen();
   await refreshData();
-  renderPeople();
-  populateExportSelect();
   await migrateLocalData();
   await refreshData();
-  renderPeople();
   populateExportSelect();
+  applyRoute();
+  checkOutreach();
 }
 
 async function boot() {
   const { data: { session } } = await sb.auth.getSession();
   sb.auth.onAuthStateChange((event, s) => {
     if (event === 'SIGNED_IN')  onSignedIn();
-    if (event === 'SIGNED_OUT') showAuthScreen();
+    if (event === 'SIGNED_OUT') { signedIn = false; showAuthScreen(); }
   });
   if (session) await onSignedIn();
   else showAuthScreen();

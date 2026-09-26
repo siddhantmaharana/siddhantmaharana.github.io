@@ -1,5 +1,21 @@
 # changelog
 
+## v4 — 2026-09-26
+
+Run [supabase/migrate_v4.sql](supabase/migrate_v4.sql) once before deploying this version.
+
+- **Pop Quiz** is the new home screen: 3 fun prompts a day about your people, from a built-in bank of 55 across four decks (favorites, story, people, lately). Saving an answer adds a card to their profile; "no idea, ask them" queues the question for next time; skip swaps the prompt. "Lately" answers go stale after 90 days and get asked again.
+- **Worth a hello** replaces "needs attention": at most 3 people, each with a reason (an open question, a birthday within 5 days, or just how long it's been), shown at the top of Pop Quiz and People. Red badges and overdue day counts are gone. "Not now" snoozes someone for 7 days.
+- **WhatsApp in one tap** with a suggested opener (their open question, a birthday wish, or a casual hello), plus text and call. Coming back to the app afterwards asks "talked to them? jot it down".
+- **Person page** replaces the floating person sheet: full-screen, normal scrolling, and the phone's back gesture returns to the list. Sections: ask about next time, Pop Quiz answers (tap to edit), details, and the full note history. A sticky "+ log a note" opens the composer, which no longer grabs focus and pops the keyboard.
+- The composer lets you tick off questions you covered and queue one for next time. Drafts are saved per person, so closing it never loses a note.
+- People gain a rhythm (close / regular / occasional) in place of an exact cadence, plus phone and birthday. Existing cadences were mapped to a rhythm by the migration.
+- Navigation is two tabs, Pop Quiz and People. Timeline moved one level down (from People, or from a person's notes).
+- The People tab is sorted by name, searchable, and shows how many Pop Quiz cards each person has.
+- Export and backup include Pop Quiz answers, open questions, phone, birthday and details.
+- Fixed: note text was inserted into the page as raw HTML. It's now escaped.
+- Fixed: date fields defaulted to tomorrow's date in the evening (they used UTC instead of local time).
+
 ## v3.2 — 2026-08-31
 
 - Added the ability to edit or delete an individual logged note — a small ⋯ next to any note (in the person sheet's recent notes, or in Timeline) opens it for editing, with delete alongside
