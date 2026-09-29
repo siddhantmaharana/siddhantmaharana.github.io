@@ -2,6 +2,28 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioned as `major.minor.patch`. This app has one user and one deploy target, so versions here track meaningful behavior changes, not a public API contract.
 
+## [3.0.0] — 2026-09-29
+
+### Added
+- **Today**, the new home: the composer (unchanged, still first), a rotating one-line reminder, what you're trying, and a daily hand of 3 cards.
+- **Reflection cards** from a ~45-prompt bank in seven decks (notice, proud, curious, let go; wrong, patterns, ego). At most one heavy card per hand, no deck twice, no prompt repeated within 14 days.
+- **Look-back cards**: an entry from 30+ days ago comes back (anniversaries first) with a question about what's changed. Reply, turn it into a lesson, or let it go.
+- **Lessons**: one-line takeaways, linked to the entry they came from, with an optional area.
+- **Tries**: at most 3 small things you're doing differently, with a gentle 14-day check-in (it stuck / still trying / letting it go). A 4th asks which one is finished.
+- **Let it go**: released entries stay in the database but stop resurfacing and leave the log unless "show released" is on. Undoable.
+- **Weekly look-back**: the eight journal-loop questions, one per screen, with the week's notes alongside; saved as one `#lookback` entry. Offered on Today from Saturday to Monday.
+- **Growth** tab: trying now, lessons, kept, tried, changed my mind (then → now), past look-backs.
+- Log shows replies and lessons threaded under their source entry, plus reflection/lesson/look-back filters.
+- `?demo` mode on localhost: seeded sample data in `localStorage`, no Supabase.
+- `supabase/migrate_v3.sql`: new `entries` columns (`kind`, `prompt_id`, `question`, `parent_id`, `area`, `released_at`, `resurfaced_at`) and the `tries` table.
+
+### Changed
+- Tabs are now today / log / growth. The page scrolls normally instead of inside fixed panes; the look-back and try chooser are pages with their own history entries, so the back gesture works.
+- Desktop Today is two columns above 960px.
+- Delete asks in a sheet that points at "let go" for things that happened and are done.
+
+Full design rationale: [spec_v3.md](spec_v3.md).
+
 ## [2.1.0] — 2026-08-31
 
 ### Changed
@@ -37,6 +59,7 @@ Full design rationale: [spec_v2.md](spec_v2.md).
 
 Initial release: single-file PWA, `localStorage`-backed, inline `#tag` capture with mood buttons, log view, Obsidian markdown export.
 
+[3.0.0]: https://github.com/siddhantmaharana/siddhantmaharana.github.io/tree/main/capture
 [2.1.0]: https://github.com/siddhantmaharana/capture/compare/ce6c93f...HEAD
 [2.0.0]: https://github.com/siddhantmaharana/capture/commit/ce6c93f
 [1.0.0]: https://github.com/siddhantmaharana/capture/commit/7a2b277

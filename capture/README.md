@@ -1,19 +1,20 @@
 # capture
 
-A minimal notes PWA. Log what's on your mind, tag it, read it back, edit it. Synced across your devices via Supabase — the same project [touchbase](../touchbase/) uses, one account for both apps.
+A notes PWA that helps me keep becoming. Log what's on your mind, tag it, and let the app bring it back: a few reflection prompts a day, old entries resurfacing so you can see how you've changed, a short list of lessons and small things you're trying, and a light weekly look-back. Synced across your devices via Supabase — the same project [touchbase](../touchbase/) uses, one account for both apps.
 
-See [spec_v2.1.md](spec_v2.1.md) for the current design, [CHANGELOG.md](CHANGELOG.md) for what changed and when.
+See [spec_v3.md](spec_v3.md) for the current design, [CHANGELOG.md](CHANGELOG.md) for what changed and when.
 
 ## what it does
 
-- Quick capture with inline `#tags` — no mood buttons, tags are the only categorization
-- Tag autocomplete pulls from your tag vocabulary
-- Log view grouped by date, filterable by tag
-- Tap an entry to expand it — `edit` to change the text in place, `delete` to remove it
-- Writes straight to Supabase as you capture — no local draft state to lose
-- Entries persist. There's no export-and-purge step; the database is the record
-- Responsive: a real desktop layout above 720px wide, not a phone screen stretched out
-- Signs in with a magic link and syncs the same entries to every device
+- **Today:** quick capture with inline `#tags` (unchanged, still first on screen), a one-line reminder, your active tries, and a hand of 3 cards
+- **Reflection cards** from a static prompt bank — at most one "heavy" question per hand
+- **Look-back cards:** an entry from a month or more ago comes back; reply, pull out a lesson, or let it go
+- **Lessons** (one-liners) and **tries** (max 3 small experiments, with a 14-day check-in)
+- **Let it go:** released entries stay in the database but stop resurfacing and leave the log
+- **Weekly look-back:** eight journal questions, one per screen, saved as one `#lookback` entry
+- **Growth** tab: trying now, lessons, kept, tried, changed my mind, past look-backs
+- **Log:** grouped by date, replies and lessons threaded under their source, filter by kind or tag, edit in place
+- No streaks, scores or reminders, on purpose
 
 ## stack
 
@@ -29,13 +30,24 @@ Live at `https://siddhantmaharana.github.io/capture/`
 
 Uses the same Supabase project as touchbase — no new project needed if you already have that one running.
 
-1. SQL Editor → run [supabase/schema.sql](supabase/schema.sql) — creates the `entries`/`tag_vocab` tables and RLS policies (no collision with touchbase's `people`/`touch_logs`)
+1. SQL Editor → run [supabase/schema.sql](supabase/schema.sql) — creates the `entries`/`tag_vocab`/`tries` tables and RLS policies (no collision with touchbase's tables)
 2. Authentication → URL Configuration → add this app's deployed URL (and `http://localhost:PORT` if testing locally) to Redirect URLs
 3. `SUPABASE_URL` / `SUPABASE_ANON_KEY` near the top of `index.html`'s script already point at the shared project — no edit needed unless you're pointing this at a different project
 
 The anon key is safe to commit — RLS is what actually restricts each signed-in user to their own rows.
 
-Already running v2? Just run the new `entries_update_own` policy statement in `supabase/schema.sql` — it's additive, no data changes.
+Already running v2.1? Run [supabase/migrate_v3.sql](supabase/migrate_v3.sql) once **before** deploying v3 — it only adds columns and the `tries` table, and is safe to run twice.
+
+## run locally
+
+From the repo root (so `../shared/theme.css` resolves):
+
+```
+python3 -m http.server 8765
+```
+
+- `http://localhost:8765/capture/?demo` — demo mode: seeded sample data in `localStorage`, never touches Supabase. **reset** in the header reseeds it.
+- `http://localhost:8765/capture/` — the real app; needs `http://localhost:8765` in Supabase's Redirect URLs for the magic link.
 
 ## install on mobile
 
@@ -57,7 +69,9 @@ manifest.json          PWA metadata (name, colors, icons)
 icon-192.png           home screen icon
 icon-512.png           splash screen icon
 supabase/schema.sql    tables + RLS policies for the backend
-spec_v2.1.md           current design doc
+supabase/migrate_v3.sql  one-time v2.1 → v3 migration
+spec_v3.md             current design doc
+spec_v2.1.md           v2.1 design doc (superseded, kept for history)
 spec_v2.md             v2 design doc (superseded, kept for history)
 CHANGELOG.md           version history
 ```

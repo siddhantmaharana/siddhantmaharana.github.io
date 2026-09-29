@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,41 +10,33 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0d0d0d">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="../shared/theme.css">
   <style>
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 15px;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      max-width: 480px;
+    [hidden] { display: none !important; }
+    body { font-size: 15px; }
+
+    .app {
+      max-width: 760px;
       margin: 0 auto;
+      padding: 0 16px calc(48px + env(safe-area-inset-bottom, 0px));
     }
 
-    /* ── DESKTOP / WIDE VIEWPORT ── */
-    @media (min-width: 720px) {
-      body { max-width: 760px; font-size: 16px; }
-      .thought-input { font-size: 18px; min-height: 140px; max-height: 420px; }
-      .entry-body { font-size: 15px; }
-      .save-btn { padding: 10px 22px; font-size: 14px; }
-      .auth-screen, .auth-card { max-width: 380px; }
+    /* ── HEADER + TABS (sticky together) ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg);
+      margin: 0 -16px;
+      padding: env(safe-area-inset-top, 0px) 16px 0;
     }
 
-    /* ── HEADER ── */
     .header {
-      padding: 20px 20px 14px;
-      border-bottom: 1px solid var(--border);
+      padding: 18px 2px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-shrink: 0;
     }
 
     .logo {
@@ -55,24 +47,39 @@
       letter-spacing: -0.02em;
     }
 
-    .header-right {
+    .demo-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--amber);
+      border: 1px solid var(--amber-dim);
+      border-radius: 5px;
+      padding: 2px 6px;
+      margin-left: 8px;
+      vertical-align: 2px;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .entry-count { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border-2);
+      color: var(--muted-2);
+      border-radius: 6px;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      font-size: 12px;
+      font-family: var(--mono);
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: center;
     }
+    .icon-btn:hover { border-color: var(--accent); color: var(--text); }
 
-    .entry-count {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    /* ── TABS ── */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
+    .tabs { display: flex; border-bottom: 1px solid var(--border); }
 
     .tab {
       flex: 1;
@@ -86,42 +93,74 @@
       position: relative;
       transition: color 0.15s;
       user-select: none;
+      background: none;
+      border: none;
     }
-
-    .tab.active {
-      color: var(--text);
-    }
-
+    .tab.active { color: var(--text); }
     .tab.active::after {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 25%;
-      right: 25%;
+      bottom: 0; left: 25%; right: 25%;
       height: 2px;
       background: var(--accent);
     }
 
-    /* ── SCREENS ── */
-    .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-    .screen.active { display: flex; }
-
-    /* ── CAPTURE SCREEN ── */
     .section-label {
       font-family: var(--mono);
       font-size: 10px;
       color: var(--muted);
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin: 22px 2px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
     }
+    .section-label .link { text-transform: none; letter-spacing: 0; }
 
-    /* ── INPUT SECTION ── */
-    .input-section {
-      padding: 16px 18px 6px;
-      flex-shrink: 0;
+    .link {
+      background: none;
+      border: none;
+      color: var(--muted-2);
+      font-family: var(--mono);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 0;
+    }
+    .link:hover { color: var(--accent); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      background: none;
+      border: 1px solid var(--border-2);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      padding: 7px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn:hover { background: var(--surface-2); border-color: var(--subtle); }
+    .btn-sm { padding: 5px 11px; font-size: 12px; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+    .btn-primary:hover { background: #6a5aef; border-color: #6a5aef; }
+    .btn-ghost { border-color: transparent; color: var(--muted-2); }
+    .btn-ghost:hover { color: var(--text); background: var(--surface-2); border-color: transparent; }
+    .btn-danger { border-color: var(--red-dim); color: var(--red); }
+    .btn-danger:hover { background: var(--red-dim); }
+
+    /* ── COMPOSER ── */
+    .composer {
+      margin-top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
       position: relative;
     }
+    .composer:focus-within { border-color: color-mix(in srgb, var(--accent) 45%, var(--border-2)); }
+
+    .input-section { padding: 14px 16px 6px; }
 
     .thought-input {
       width: 100%;
@@ -135,82 +174,43 @@
       line-height: 1.6;
       resize: none;
       min-height: 72px;
-      max-height: 160px;
+      max-height: 200px;
       overflow-y: auto;
     }
-
     .thought-input::placeholder { color: var(--muted); }
 
-    /* ── AUTOCOMPLETE ── */
-    .autocomplete-wrap {
-      padding: 0 18px 6px;
-      display: none;
-      flex-shrink: 0;
-    }
-
+    .autocomplete-wrap { padding: 0 16px 6px; display: none; }
     .autocomplete-wrap.visible { display: block; }
-
     .ac-inner {
       background: var(--surface-2);
       border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
       border-radius: 8px;
       padding: 6px 10px;
     }
-
-    .ac-hint {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      letter-spacing: 0.04em;
-    }
-
-    .ac-chips {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
+    .ac-hint { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.04em; }
+    .ac-chips { display: flex; gap: 5px; flex-wrap: wrap; }
     .ac-chip {
       font-family: var(--mono);
       font-size: 11px;
       padding: 3px 9px;
       border-radius: 6px;
       cursor: pointer;
-      transition: opacity 0.1s;
       border: 1px solid transparent;
     }
-
     .ac-chip:active { opacity: 0.6; }
-
     .ac-chip.match {
       background: color-mix(in srgb, var(--accent) 15%, transparent);
       color: var(--accent);
       border-color: color-mix(in srgb, var(--accent) 35%, transparent);
     }
-
-    .ac-chip.dim {
-      background: var(--surface);
-      color: var(--muted-2);
-      border-color: var(--border-2);
-    }
-
+    .ac-chip.dim { background: var(--surface); color: var(--muted-2); border-color: var(--border-2); }
     .ac-chip.new-tag {
       background: color-mix(in srgb, #1D9E75 12%, transparent);
       color: #1D9E75;
       border-color: color-mix(in srgb, #1D9E75 30%, transparent);
     }
 
-    /* ── DETECTED TAGS ── */
-    .detected-tags {
-      padding: 0 18px 6px;
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-      min-height: 0;
-    }
-
+    .detected-tags { padding: 0 16px 6px; display: flex; gap: 5px; flex-wrap: wrap; }
     .dtag {
       font-family: var(--mono);
       font-size: 11px;
@@ -221,51 +221,138 @@
       color: var(--muted);
     }
 
-    /* ── SAVE ROW ── */
     .save-row {
-      padding: 8px 18px 12px;
+      padding: 8px 12px 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid var(--border);
-      flex-shrink: 0;
     }
+    .save-hint { font-family: var(--mono); font-size: 9px; color: var(--muted); }
 
-    .save-hint {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    .save-btn {
-      background: var(--accent);
-      border: 1px solid var(--accent);
-      color: #fff;
-      border-radius: 7px;
-      padding: 8px 18px;
-      font-family: inherit;
+    /* ── TODAY ── */
+    .reminder {
+      font-style: italic;
       font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      color: var(--soft);
+      line-height: 1.5;
+      margin: 16px 4px 0;
     }
 
-    .save-btn:hover { background: #6a5aef; border-color: #6a5aef; }
-    .save-btn:active { opacity: 0.85; }
+    .sunday {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--border-2));
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--soft);
+    }
 
-    /* ── LOG SCREEN ── */
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .try-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 12.5px;
+      line-height: 1.35;
+      color: var(--soft);
+      cursor: pointer;
+    }
+    .try-chip:hover { border-color: var(--accent); color: var(--text); }
+    .try-chip.add { border-style: dashed; color: var(--muted-2); background: none; }
+    .try-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .card-deck {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--purple);
+    }
+    .card-when { font-family: var(--mono); font-size: 10px; color: var(--muted-2); letter-spacing: 0.02em; }
+    .card-q { font-size: 16px; font-weight: 500; line-height: 1.4; margin: 6px 0 12px; }
+    .card-quote {
+      border-left: 2px solid var(--accent);
+      padding: 2px 0 2px 11px;
+      margin: 10px 0 12px;
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .card-hint { font-size: 12px; color: var(--muted-2); font-style: italic; margin-top: 4px; }
+    .card textarea, .field {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 11px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.55;
+      outline: none;
+      resize: none;
+    }
+    .card textarea { min-height: 64px; }
+    .card textarea:focus, .field:focus { border-color: var(--accent); }
+    .card textarea::placeholder, .field::placeholder { color: var(--muted); }
+    .card-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+    .card-actions .spacer { flex: 1; }
+
+    .card.done {
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      background: none;
+      border-style: dashed;
+      border-color: var(--border);
+      font-size: 12.5px;
+      color: var(--muted-2);
+    }
+    .card.done .check { color: var(--green); font-family: var(--mono); font-size: 11px; white-space: nowrap; }
+    .card.done .q { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .hand-end {
+      text-align: center;
+      padding: 22px 12px 8px;
+      color: var(--soft);
+      font-size: 14px;
+    }
+    .hand-end .btn { margin-top: 12px; }
+
+    .today-foot { margin-top: 18px; text-align: center; }
+
+    /* ── LOG ── */
     .log-filters {
-      padding: 8px 18px;
+      padding: 10px 0;
       display: flex;
       gap: 5px;
       overflow-x: auto;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
       scrollbar-width: none;
     }
-
     .log-filters::-webkit-scrollbar { display: none; }
-
     .filter-chip {
       font-family: var(--mono);
       font-size: 11px;
@@ -276,98 +363,50 @@
       cursor: pointer;
       white-space: nowrap;
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      background: none;
       user-select: none;
     }
-
     .filter-chip.active {
       border-color: var(--accent);
       color: var(--accent);
       background: color-mix(in srgb, var(--accent) 10%, transparent);
     }
 
-    .filter-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-
-    .log-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 4px 0 8px;
-    }
-
     .date-group-label {
       font-family: var(--mono);
       font-size: 10px;
       color: var(--muted);
-      padding: 12px 18px 5px;
+      padding: 12px 2px 5px;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
     .log-entry {
-      padding: 10px 18px;
+      padding: 10px 14px;
       border-left: 2px solid var(--border-2);
-      margin: 0 18px 6px;
+      margin: 0 0 6px;
       border-radius: 0 6px 6px 0;
       cursor: pointer;
-      transition: background 0.15s;
-      position: relative;
+      transition: background 0.15s, opacity 0.25s;
     }
-
     .log-entry:hover { background: var(--surface); }
+    .log-entry.kind-reflection, .log-entry.kind-lookback { border-left-color: color-mix(in srgb, var(--accent) 55%, var(--border-2)); }
+    .log-entry.kind-lesson { border-left-color: var(--green); }
+    .log-entry.released { opacity: 0.45; }
+    .log-entry.fading { opacity: 0; }
+    .log-entry.flash { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 
-    .entry-meta {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-      flex-wrap: wrap;
-    }
+    .entry-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+    .entry-time { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+    .kind-badge { font-family: var(--mono); font-size: 10px; color: var(--purple); }
+    .kind-lesson > .entry-meta .kind-badge { color: var(--green); }
+    .entry-tag-list { display: flex; gap: 6px; flex-wrap: wrap; }
+    .entry-tag { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+    .entry-q { font-size: 12px; color: var(--muted-2); margin-bottom: 3px; }
+    .entry-body { font-size: 14px; font-weight: 500; line-height: 1.5; word-break: break-word; }
 
-    .entry-time {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .entry-tag-list {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
-
-    .entry-tag {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .entry-body {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    .entry-expanded {
-      display: none;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      font-weight: 300;
-      color: var(--muted-2);
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
-    .log-entry.open .entry-expanded { display: block; }
+    .entry-expanded { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .log-entry.open > .entry-expanded { display: block; }
 
     .entry-edit-input {
       display: none;
@@ -384,17 +423,10 @@
       min-height: 64px;
       margin-bottom: 8px;
     }
+    .log-entry.editing > .entry-body { display: none; }
+    .log-entry.editing > .entry-edit-input { display: block; }
 
-    .log-entry.editing .entry-body { display: none; }
-    .log-entry.editing .entry-edit-input { display: block; }
-
-    .entry-actions {
-      display: flex;
-      gap: 6px;
-      justify-content: flex-end;
-      margin-top: 8px;
-    }
-
+    .entry-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
     .entry-action-btn {
       font-family: var(--mono);
       font-size: 10px;
@@ -406,28 +438,155 @@
       padding: 4px 9px;
       cursor: pointer;
     }
-
     .entry-action-btn:hover { color: var(--text); border-color: var(--accent); }
     .entry-action-btn.danger { color: var(--danger); }
     .entry-action-btn.danger:hover { border-color: var(--danger); }
-
     .btn-save-only, .btn-cancel-only { display: none; }
-    .log-entry.editing .btn-edit-only { display: none; }
-    .log-entry.editing .btn-save-only,
-    .log-entry.editing .btn-cancel-only { display: inline-block; }
+    .log-entry.editing > .entry-expanded .btn-edit-only { display: none; }
+    .log-entry.editing > .entry-expanded .btn-save-only,
+    .log-entry.editing > .entry-expanded .btn-cancel-only { display: inline-block; }
 
-    .empty-log {
-      text-align: center;
-      padding: 64px 24px;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
+    .thread { margin-top: 8px; }
+    .log-entry.child {
+      margin: 6px 0 0;
+      padding: 8px 10px;
+      background: var(--surface);
+      border-left-color: var(--accent);
+    }
+    .log-entry.child.kind-lesson { border-left-color: var(--green); }
+    .log-entry.child .entry-body { font-size: 13px; font-weight: 400; }
+
+    .empty-log { text-align: center; padding: 56px 24px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .log-foot { text-align: center; padding: 18px 0 4px; }
+
+    /* ── GROWTH ── */
+    .g-intro { font-size: 13px; color: var(--muted-2); line-height: 1.55; margin: 18px 2px 0; }
+    .g-item {
+      padding: 11px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .g-item.tap { cursor: pointer; }
+    .g-item.tap:hover { border-color: var(--border-2); }
+    .g-text { font-size: 14px; line-height: 1.5; word-break: break-word; }
+    .g-meta { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 5px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .g-meta .link { font-size: 10px; }
+    .g-note { font-size: 12.5px; color: var(--soft); margin-top: 6px; font-style: italic; }
+    .g-empty { font-size: 12.5px; color: var(--muted); padding: 2px 2px 4px; }
+    .then-now { display: grid; gap: 8px; }
+    .then-now .lbl { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .then-now .then { color: var(--muted-2); font-size: 13px; line-height: 1.5; }
+    .then-now .now { font-size: 14px; line-height: 1.5; }
+    .area-filter { margin-bottom: 10px; }
+
+    /* ── PAGES (look-back, tries chooser) ── */
+    .page-head { display: flex; align-items: center; gap: 12px; padding: 18px 0 8px; }
+    .back-btn {
+      background: none;
+      border: 1px solid var(--border-2);
+      color: var(--text);
+      border-radius: 8px;
+      width: 34px; height: 34px;
+      font-size: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { border-color: var(--accent); }
+    .page-title { font-size: 17px; font-weight: 600; }
+    .page-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    details.week {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin: 10px 0 18px;
+    }
+    details.week summary { cursor: pointer; font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+    details.week ul { list-style: none; margin-top: 10px; display: grid; gap: 8px; max-height: 40vh; overflow-y: auto; }
+    details.week li { font-size: 13px; color: var(--soft); line-height: 1.45; white-space: pre-wrap; }
+    details.week li span { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-right: 6px; }
+
+    .lb-progress { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+    .lb-q { font-size: 20px; font-weight: 500; line-height: 1.35; margin: 8px 0 14px; }
+    #lbInput { min-height: 140px; font-size: 15px; }
+    .tick {
+      display: flex; gap: 8px; align-items: center;
+      font-size: 13px; color: var(--soft);
+      margin-top: 10px; cursor: pointer;
+    }
+    .tick input { accent-color: var(--accent); }
+    .lb-closing { text-align: center; padding: 40px 12px; }
+    .lb-closing .quote { font-size: 17px; line-height: 1.55; font-style: italic; color: var(--text); max-width: 520px; margin: 0 auto 22px; }
+
+    /* ── SHEETS ── */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .sheet {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 18px 18px 0 0;
+      padding: 8px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .sheet-handle { width: 36px; height: 4px; background: var(--subtle); border-radius: 2px; margin: 8px auto 16px; }
+    .sheet-title { font-size: 16px; font-weight: 600; line-height: 1.4; }
+    .sheet-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .sheet-context {
+      font-size: 13px; color: var(--muted-2); line-height: 1.5;
+      border-left: 2px solid var(--border-2); padding-left: 10px;
+      margin: 12px 0 4px;
+      white-space: pre-wrap; word-break: break-word;
+      max-height: 120px; overflow-y: auto;
+    }
+    .sheet-context:empty { display: none; }
+    .sheet .field { margin-top: 12px; }
+    .field-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin: 14px 0 7px; }
+    .field-label span { text-transform: none; letter-spacing: 0; }
+    .sheet-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+    .sheet-q { font-size: 14px; color: var(--soft); margin-top: 16px; }
+    .checkin-btns { display: grid; gap: 8px; margin-top: 14px; }
+    .checkin-btns .btn { text-align: left; padding: 10px 14px; }
+    .checkin-btns .btn small { display: block; color: var(--muted-2); font-size: 11.5px; margin-top: 2px; }
+
+    .area-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-2);
+      background: none;
+      color: var(--muted-2);
+      cursor: pointer;
+    }
+    .area-chip.on {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    @media (min-width: 700px) {
+      .overlay { align-items: center; padding: 24px; }
+      .sheet { border-radius: 16px; max-height: 85vh; }
+      .sheet-handle { display: none; }
     }
 
     /* ── TOAST ── */
     .toast {
       position: fixed;
-      bottom: 28px;
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
       left: 50%;
       transform: translateX(-50%) translateY(12px);
       background: var(--surface-2);
@@ -440,109 +599,24 @@
       opacity: 0;
       pointer-events: none;
       transition: all 0.2s ease;
-      white-space: nowrap;
-      z-index: 100;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+      z-index: 300;
     }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* ── DELETE CONFIRM ── */
-    .delete-confirm {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-
-    .delete-confirm.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .delete-sheet {
-      background: var(--surface-2);
-      border: 1px solid var(--border-2);
-      border-radius: 18px 18px 0 0;
-      padding: 18px;
-      width: 100%;
-      max-width: 420px;
-    }
-
-    .delete-sheet p {
-      font-size: 13px;
-      color: var(--muted-2);
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
-
-    .delete-sheet-btns {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-cancel {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border-2);
-      border-radius: 7px;
-      padding: 10px;
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .btn-delete {
-      flex: 1;
-      background: color-mix(in srgb, var(--danger) 15%, transparent);
-      border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent);
-      border-radius: 7px;
-      padding: 10px;
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--danger);
-      cursor: pointer;
-    }
-
-    /* ── AUTH SCREEN ── */
+    /* ── AUTH ── */
     .auth-screen {
-      height: 100dvh;
-      display: flex;
+      min-height: 100dvh;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
-      max-width: 480px;
-      margin: 0 auto;
     }
-
-    .auth-logo {
-      font-family: var(--mono);
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
-    }
-
-    .auth-tagline {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-
+    .auth-logo { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; margin-bottom: 6px; }
+    .auth-tagline { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 28px; }
     .auth-card { width: 100%; max-width: 320px; }
-
     .auth-input {
       width: 100%;
       background: var(--surface-2);
@@ -555,9 +629,7 @@
       outline: none;
       margin-bottom: 10px;
     }
-
     .auth-input:focus { border-color: var(--accent); }
-
     .auth-btn {
       width: 100%;
       background: var(--accent);
@@ -570,33 +642,42 @@
       font-weight: 500;
       cursor: pointer;
     }
-
     .auth-btn:disabled { opacity: 0.6; cursor: default; }
+    .auth-status { font-size: 11px; color: var(--accent); font-family: var(--mono); margin-top: 12px; min-height: 14px; line-height: 1.5; }
 
-    .auth-status {
-      font-size: 11px;
-      color: var(--accent);
-      font-family: var(--mono);
-      margin-top: 12px;
-      min-height: 14px;
-      line-height: 1.5;
+    /* ── MOTION ── */
+    .deal { animation: deal 0.38s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes deal {
+      from { opacity: 0; transform: translateY(16px) rotate(-1.5deg) scale(0.98); }
+      to   { opacity: 1; transform: none; }
+    }
+    .slide-in { animation: slide-in 0.22s ease-out both; }
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(18px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .deal, .slide-in { animation: none; }
+      .log-entry { transition: none; }
     }
 
-    .icon-btn {
-      background: transparent;
-      border: 1px solid var(--border-2);
-      color: var(--muted-2);
-      border-radius: 6px;
-      width: 24px;
-      height: 24px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* ── WIDE VIEWPORTS ── */
+    @media (min-width: 720px) {
+      body { font-size: 16px; }
+      .thought-input { font-size: 17px; min-height: 120px; max-height: 420px; }
+      .entry-body { font-size: 15px; }
     }
-
-    .icon-btn:hover { border-color: var(--accent); color: var(--text); }
+    @media (min-width: 960px) {
+      .app.wide { max-width: 1080px; }
+      .app.wide .narrow { max-width: 760px; margin: 0 auto; }
+      #screen-today {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 32px;
+        align-items: start;
+      }
+      .today-right > .section-label:first-child { margin-top: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -613,77 +694,145 @@
   </div>
 
   <!-- ── APP ROOT ── -->
-  <div id="appRoot" style="display:none">
+  <div class="app" id="appRoot" hidden>
 
-  <div class="header">
-    <span class="logo">capture</span>
-    <div class="header-right">
-      <span class="entry-count" id="entryCount">0 entries</span>
-      <button class="icon-btn" onclick="manualRefresh()" title="Refresh">↻</button>
-      <button class="icon-btn" onclick="signOut()" title="Sign out">⏻</button>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" data-tab="capture" onclick="switchTab('capture')">capture</div>
-    <div class="tab" data-tab="log" onclick="switchTab('log')">log</div>
-  </div>
-
-  <!-- ── CAPTURE SCREEN ── -->
-  <div class="screen active" id="screen-capture">
-
-    <div class="input-section">
-      <textarea
-        id="thoughtInput"
-        class="thought-input"
-        placeholder="what's on your mind… use #tags inline"
-        rows="4"
-      ></textarea>
+    <div class="topbar" id="topbar">
+      <div class="header">
+        <span class="logo">capture<span class="demo-badge" id="demoBadge" hidden>demo</span></span>
+        <div class="header-right">
+          <span class="entry-count" id="entryCount"></span>
+          <button class="icon-btn" id="demoReset" onclick="resetDemo()" title="Reset demo data" hidden>reset</button>
+          <button class="icon-btn" onclick="manualRefresh()" title="Refresh">↻</button>
+          <button class="icon-btn" id="signOutBtn" onclick="signOut()" title="Sign out">⏻</button>
+        </div>
+      </div>
+      <nav class="tabs" id="tabs">
+        <button class="tab" data-tab="today" onclick="showTab('today')">today</button>
+        <button class="tab" data-tab="log" onclick="showTab('log')">log</button>
+        <button class="tab" data-tab="growth" onclick="showTab('growth')">growth</button>
+      </nav>
     </div>
 
-    <div class="autocomplete-wrap" id="autocompleteWrap">
-      <div class="ac-inner">
-        <div class="ac-hint">your tags — tap to insert</div>
-        <div class="ac-chips" id="acChips"></div>
+    <!-- ── TODAY ── -->
+    <div class="screen" id="screen-today">
+      <div class="today-left">
+        <div class="composer">
+          <div class="input-section">
+            <textarea id="thoughtInput" class="thought-input" placeholder="what's on your mind… use #tags inline" rows="3"></textarea>
+          </div>
+          <div class="autocomplete-wrap" id="autocompleteWrap">
+            <div class="ac-inner">
+              <div class="ac-hint">your tags — tap to insert</div>
+              <div class="ac-chips" id="acChips"></div>
+            </div>
+          </div>
+          <div class="detected-tags" id="detectedTags"></div>
+          <div class="save-row">
+            <span class="save-hint" id="saveHint"></span>
+            <button class="btn btn-primary" onclick="saveEntry()">save</button>
+          </div>
+        </div>
+
+        <p class="reminder" id="reminder"></p>
+        <div id="sundaySlot"></div>
+
+        <div class="section-label">trying</div>
+        <div class="chips" id="tryingChips"></div>
+      </div>
+
+      <div class="today-right">
+        <div class="section-label">today's hand</div>
+        <div id="hand"></div>
+        <div class="today-foot"><button class="link" onclick="openLookback()">look back on this week →</button></div>
       </div>
     </div>
 
-    <div class="detected-tags" id="detectedTags"></div>
-
-    <div style="flex:1"></div>
-
-    <div class="save-row">
-      <span class="save-hint" id="saveHint">enter to save · shift+enter for newline</span>
-      <button class="save-btn" onclick="saveEntry()">save</button>
+    <!-- ── LOG ── -->
+    <div class="screen narrow" id="screen-log" hidden>
+      <div class="log-filters" id="logFilters"></div>
+      <div id="logList"></div>
+      <div class="log-foot" id="logFoot"></div>
     </div>
 
-  </div>
+    <!-- ── GROWTH ── -->
+    <div class="screen narrow" id="screen-growth" hidden></div>
 
-  <!-- ── LOG SCREEN ── -->
-  <div class="screen" id="screen-log">
+    <!-- ── PAGE: WEEKLY LOOK-BACK ── -->
+    <div class="screen narrow" id="page-lookback" hidden></div>
 
-    <div class="log-filters" id="logFilters">
-      <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">all</div>
+    <!-- ── PAGE: WHICH TRY IS FINISHED? ── -->
+    <div class="screen narrow" id="page-tries" hidden></div>
+
+  </div><!-- /appRoot -->
+
+  <!-- ── SHEET: LESSON ── -->
+  <div class="overlay" id="sheet-lesson" onclick="backdropClose(event, this)">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">so the lesson is…</div>
+      <div class="sheet-context" id="lessonContext"></div>
+      <textarea class="field" id="lessonText" rows="3" placeholder="one line is plenty"></textarea>
+      <div class="field-label">area <span>(optional)</span></div>
+      <div class="chips" id="lessonAreas"></div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" onclick="closeSheet('sheet-lesson')">cancel</button>
+        <button class="btn btn-primary" onclick="saveLesson()">keep this lesson</button>
+      </div>
     </div>
-
-    <div class="log-list" id="logList"></div>
-
   </div>
 
-  <!-- ── DELETE CONFIRM SHEET ── -->
-  <div class="delete-confirm" id="deleteConfirm">
-    <div class="delete-sheet">
-      <p id="deletePreview">delete this entry?</p>
-      <div class="delete-sheet-btns">
-        <button class="btn-cancel" onclick="closeDelete()">cancel</button>
-        <button class="btn-delete" onclick="confirmDelete()">delete</button>
+  <!-- ── SHEET: NEW TRY ── -->
+  <div class="overlay" id="sheet-try" onclick="backdropClose(event, this)">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">one small thing to do differently</div>
+      <div class="sheet-context" id="tryContext"></div>
+      <textarea class="field" id="tryText" rows="2" placeholder="e.g. pause for one breath before replying in a disagreement"></textarea>
+      <div class="field-label">area <span>(optional)</span></div>
+      <div class="chips" id="tryAreas"></div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" onclick="closeSheet('sheet-try')">cancel</button>
+        <button class="btn btn-primary" onclick="saveTry()">start trying</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHEET: TRY CHECK-IN ── -->
+  <div class="overlay" id="sheet-checkin" onclick="backdropClose(event, this)">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="checkinTitle"></div>
+      <div class="sheet-meta" id="checkinMeta"></div>
+      <div class="sheet-q">how's it going?</div>
+      <textarea class="field" id="checkinNote" rows="2" placeholder="anything you learned? (optional)"></textarea>
+      <div class="checkin-btns">
+        <button class="btn" onclick="endCheckin('kept')">it stuck<small>moves to "kept" on the growth page</small></button>
+        <button class="btn" onclick="endCheckin('again')">still trying<small>check in again in two weeks</small></button>
+        <button class="btn" onclick="endCheckin('dropped')">letting it go<small>moves to "tried". that counts too.</small></button>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost btn-sm" onclick="deleteTry()">delete</button>
+        <span style="flex:1"></span>
+        <button class="btn btn-ghost" onclick="closeSheet('sheet-checkin')">close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHEET: DELETE CONFIRM ── -->
+  <div class="overlay" id="sheet-delete" onclick="backdropClose(event, this)">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">delete this entry?</div>
+      <div class="sheet-context" id="deletePreview"></div>
+      <div class="sheet-meta" style="margin-top:10px">if it happened and it's done, "let go" keeps it without showing it. delete is for things that shouldn't be in the record at all.</div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" onclick="closeSheet('sheet-delete')">cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">delete</button>
       </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
-
-  </div><!-- /appRoot -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -692,80 +841,515 @@
   // actually restricts access to each signed-in user's own rows.
   const SUPABASE_URL = 'https://sjycdaxraklxlnrmgqrb.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeWNkYXhyYWtseGxucm1ncXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzUwMTgsImV4cCI6MjEwMTM1MTAxOH0.zNqG47w5lyEbdxV3LeK--hIMKBF7QeXW67OL-ui49NQ';
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Demo mode: `?demo` on localhost runs against seeded sample data kept in this browser's
+  // localStorage. It never talks to Supabase, so the whole app can be tried without signing in
+  // or touching real entries.
+  const DEMO = new URLSearchParams(location.search).has('demo')
+    && ['localhost', '127.0.0.1'].includes(location.hostname);
+  const LS = DEMO ? 'capture-demo:' : 'capture:';
+
+  // Used for the "{future_age}-year-old you" prompt (the 36 → 46 principle).
+  const BIRTH_YEAR = 1990;
+  const DAY = 86400000;
+
+  // ── CONTENT ──
+  const AREAS = ['communication', 'relationships', 'judgment', 'emotional regulation',
+                 'health', 'time', 'values', 'changing my mind'];
+
+  const HEAVY = new Set(['wrong', 'patterns', 'ego']);
+  const DECK_LABEL = { letgo: 'let go' };
+  const DECK_WEIGHT = { light: 3, heavy: 1 };
+
+  const PROMPTS = [
+    // light
+    { id: 'notice-1', deck: 'notice', text: 'What did you notice today?' },
+    { id: 'notice-2', deck: 'notice', text: 'What surprised you this week?' },
+    { id: 'notice-3', deck: 'notice', text: 'What went better than expected lately?' },
+    { id: 'notice-4', deck: 'notice', text: 'What are you learning about yourself lately?' },
+    { id: 'notice-5', deck: 'notice', text: "What's something small you'd like to remember from this week?" },
+    { id: 'notice-6', deck: 'notice', text: 'What gave you energy this week, and what drained it?' },
+    { id: 'notice-7', deck: 'notice', text: 'What did someone do this week that you admired?' },
+    { id: 'proud-1', deck: 'proud', text: 'What are you proud of this week?' },
+    { id: 'proud-2', deck: 'proud', text: 'What would {future_age}-year-old you thank you for this week?' },
+    { id: 'proud-3', deck: 'proud', text: 'What meaningful risk did you take lately, even a small one?' },
+    { id: 'proud-4', deck: 'proud', text: 'Where did what you did match what you value this week?' },
+    { id: 'proud-5', deck: 'proud', text: 'What did you do this week that past-you would have found hard?' },
+    { id: 'proud-6', deck: 'proud', text: 'What did you build, learn, or fix recently?' },
+    { id: 'curious-1', deck: 'curious', text: 'Who sees something differently from you, and what might they know?' },
+    { id: 'curious-2', deck: 'curious', text: 'What did you change your mind about recently?' },
+    { id: 'curious-3', deck: 'curious', text: 'What are you curious about right now?' },
+    { id: 'curious-4', deck: 'curious', text: 'What question have you been carrying around lately?' },
+    { id: 'curious-5', deck: 'curious', text: 'What will you think about this week five years from now?' },
+    { id: 'curious-6', deck: 'curious', text: "Whose advice have you been ignoring, and is it any good?" },
+    { id: 'letgo-1', deck: 'letgo', text: 'What should you simply let go of?' },
+    { id: 'letgo-2', deck: 'letgo', text: "What would you tell a friend who did the thing you're stuck on?" },
+    { id: 'letgo-3', deck: 'letgo', text: 'What deserves forgiveness, from you or for you?' },
+    { id: 'letgo-4', deck: 'letgo', text: 'What are you still carrying from a while back?' },
+    { id: 'letgo-5', deck: 'letgo', text: "What's something you're taking too seriously?" },
+    { id: 'letgo-6', deck: 'letgo', text: 'What would it look like to be a bit kinder to yourself this week?' },
+    // heavy: at most one of these per hand
+    { id: 'wrong-1', deck: 'wrong', text: 'What might you be wrong about right now?' },
+    { id: 'wrong-2', deck: 'wrong', text: 'What did you believe strongly five years ago that looks naive now?' },
+    { id: 'wrong-3', deck: 'wrong', text: 'Where might you be confusing knowing a lot with being wise?' },
+    { id: 'wrong-4', deck: 'wrong', text: "What's a blind spot someone has pointed out to you?" },
+    { id: 'wrong-5', deck: 'wrong', text: "What's a strong opinion you hold that you've never really tested?" },
+    { id: 'wrong-6', deck: 'wrong', text: 'Where were you wrong recently, and how did you find out?' },
+    { id: 'patterns-1', deck: 'patterns', text: 'What pattern keeps repeating?' },
+    { id: 'patterns-2', deck: 'patterns', text: 'Where did you react this week instead of choosing?' },
+    { id: 'patterns-3', deck: 'patterns', text: 'What are you avoiding?' },
+    { id: 'patterns-4', deck: 'patterns', text: "What situation reliably brings out a version of you that you don't like?" },
+    { id: 'patterns-5', deck: 'patterns', text: "What do you keep saying you'll do, but don't?" },
+    { id: 'patterns-6', deck: 'patterns', text: "What's a habit that's quietly working against you?" },
+    { id: 'ego-1', deck: 'ego', text: 'Where did ego show up this week?' },
+    { id: 'ego-2', deck: 'ego', text: 'Where were you acting for validation?' },
+    { id: 'ego-3', deck: 'ego', text: 'Was a recent choice about your values, or your impulses?' },
+    { id: 'ego-4', deck: 'ego', text: 'Where did fear or insecurity make a decision for you?' },
+    { id: 'ego-5', deck: 'ego', text: 'When did you need to be right more than you needed to understand?' },
+    { id: 'ego-6', deck: 'ego', text: 'Where are you getting a little too impressed with yourself?' },
+  ];
+
+  // Look-back questions follow "learning from the past": what changed, what's the lesson.
+  // Never "why did you do that?".
+  const LOOK_QS = [
+    "What's changed since then?",
+    'What would you say to the person who wrote this?',
+    "What do you understand now that you didn't then?",
+    'Is this still true?',
+  ];
+
+  const JOURNAL_QS = [
+    'What did I notice?',
+    'What did I learn?',
+    'Where was I wrong?',
+    'What am I proud of?',
+    'Where did ego show up?',
+    'What deserves forgiveness?',
+    "What's one thing I want to do differently?",
+    'What should I simply let go of?',
+  ];
+  const TRY_STEP = 6;
+
+  const ONE_LINER = 'Be ambitious about becoming better, humble about how much I know, honest about my mistakes, and forgiving about the person who made them.';
+  const REMINDERS = [
+    "Improve, don't perfect.",
+    "Future-me will probably cringe at current-me too. That's okay.",
+    "Don't confuse being knowledgeable with being wise.",
+    "Don't take yourself too seriously.",
+    'My past self is evidence of growth, not evidence against my worth.',
+    'I have been wrong before. I will be wrong again.',
+    'Stay curious about people who see things differently.',
+    'Keep the improvement button on. Leave the self-criticism button off.',
+    'Keep becoming.',
+    ONE_LINER,
+  ];
 
   // ── STATE ──
-  let entries = [];       // [{id, text, tags, ts}], newest first — mirrors the `entries` table
-  let tagVocab = [];      // sorted tag strings — mirrors the `tag_vocab` table
+  let entries = [];   // newest first; mirrors `entries`, timestamps as ms
+  let tries = [];     // mirrors `tries`
+  let tagVocab = [];
+  let currentUser = null;
   let activeFilter = 'all';
+  let showReleased = false;
+  let areaFilter = null;
   let pendingDeleteId = null;
+  let pendingTry = null;      // a 4th try waiting on the "which one's finished?" page
+  let lessonCtx = null, tryCtx = null, checkinId = null;
+  let lessonArea = null, tryArea = null;
+  let hand = null;
+  let freshDeal = false;
+  let view = 'today', currentTab = 'today';
   const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
-
-  function getTagVocab() {
-    return [...tagVocab].sort();
-  }
-
-  function rowToEntry(r) {
-    return { id: r.id, text: r.text, tags: r.tags || [], ts: new Date(r.ts).getTime() };
-  }
+  const $ = id => document.getElementById(id);
 
   // ── HELPERS ──
   function pad(n) { return String(n).padStart(2, '0'); }
-
-  function fmtTime(ts) {
-    const d = new Date(ts);
-    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-
+  const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  function fmtTime(ts) { const d = new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
   function fmtDate(ts) {
     const d = new Date(ts);
     const days = ['sun','mon','tue','wed','thu','fri','sat'];
-    const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    return `${days[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
   }
-
-  function fmtDateKey(ts) {
+  function fmtShort(ts) {
     const d = new Date(ts);
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const yr = d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : '';
+    return `${d.getDate()} ${MONTHS[d.getMonth()]}${yr}`;
+  }
+  function fmtMonth(ts) { const d = new Date(ts); return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`; }
+  function fmtDateKey(ts) { const d = new Date(ts); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+  function isToday(dk) { return dk === fmtDateKey(Date.now()); }
+  function isYesterday(dk) { return dk === fmtDateKey(Date.now() - DAY); }
+  function ago(ts) {
+    const days = (Date.now() - ts) / DAY;
+    if (days < 45) return 'a month ago';
+    if (days < 350) return `${Math.round(days / 30.4)} months ago`;
+    const years = Math.round(days / 365);
+    return years <= 1 ? 'a year ago' : `${years} years ago`;
+  }
+  function lastSaturday() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() + 1) % 7));
+    return d.getTime();
   }
 
   function parseTags(text) {
     const matches = text.match(/#[\w\-]+/g) || [];
     return [...new Set(matches.map(t => t.toLowerCase()))];
   }
-
   function esc(str) {
-    return String(str)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/\n/g,'<br>');
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
   }
-
   // same as esc() but keeps newlines literal — for textarea contents, not display html
   function escText(str) {
-    return String(str)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;');
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function snippet(text, n = 90) { const t = String(text).replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n) + '…' : t; }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function pickWeighted(items, weightOf) {
+    const total = items.reduce((s, x) => s + weightOf(x), 0);
+    let r = Math.random() * total;
+    for (const x of items) { r -= weightOf(x); if (r <= 0) return x; }
+    return items[items.length - 1];
+  }
+  function futureAge() { return new Date().getFullYear() - BIRTH_YEAR + 10; }
+  function promptById(id) { return PROMPTS.find(p => p.id === id); }
+  function promptText(p) { return p.text.replace('{future_age}', futureAge()); }
+  function entryById(id) { return entries.find(e => String(e.id) === String(id)); }
+  function tryById(id) { return tries.find(t => String(t.id) === String(id)); }
+  function activeTries() { return tries.filter(t => t.status === 'active'); }
 
+  function lsGet(k, fallback) {
+    try { const v = localStorage.getItem(LS + k); return v == null ? fallback : JSON.parse(v); } catch { return fallback; }
+  }
+  function lsSet(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch {} }
+
+  let toastTimer = null;
   function showToast(msg, duration = 1800) {
-    const t = document.getElementById('toast');
+    const t = $('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), duration);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), duration);
   }
 
-  // ── TABS ──
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
-    document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id === `screen-${tab}`));
-    if (tab === 'log') renderLog();
+  function autoResize(el, max = 320) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight + 2, max) + 'px';
   }
 
-  // ── AUTOCOMPLETE ──
-  const input = document.getElementById('thoughtInput');
+  // ── ROWS <-> MEMORY ──
+  const toMs = v => v == null ? null : new Date(v).getTime();
+  const toIso = v => v == null ? null : new Date(v).toISOString();
+  const TIME_FIELDS = ['ts', 'released_at', 'resurfaced_at', 'checkin_at', 'created_at', 'ended_at'];
+
+  function fromRow(r) {
+    const o = { ...r };
+    TIME_FIELDS.forEach(k => { if (k in o) o[k] = toMs(o[k]); });
+    if ('tags' in o) o.tags = o.tags || [];
+    if ('tags' in o) o.kind = o.kind || 'note';  // entries rows from before the v3 migration
+    return o;
+  }
+  function toRow(patch) {
+    const o = { ...patch };
+    TIME_FIELDS.forEach(k => { if (k in o) o[k] = toIso(o[k]); });
+    return o;
+  }
+
+  // ── STORE: Supabase, or the local demo ──
+  function supabaseStore() {
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const check = ({ data, error }) => { if (error) throw error; return data; };
+    return {
+      async session() { return (await sb.auth.getSession()).data.session; },
+      onAuth(cb) { sb.auth.onAuthStateChange(cb); },
+      async user() { return (await sb.auth.getUser()).data.user; },
+      signIn(email) {
+        return sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href.split('#')[0] } });
+      },
+      signOut() { return sb.auth.signOut(); },
+      async load() {
+        const [e, v, t] = await Promise.all([
+          sb.from('entries').select('*').order('ts', { ascending: false }),
+          sb.from('tag_vocab').select('tag').order('last_used_at', { ascending: false }),
+          sb.from('tries').select('*').order('created_at', { ascending: false }),
+        ]);
+        return { entries: check(e), tags: check(v).map(r => r.tag), tries: check(t) };
+      },
+      async insert(table, row) { return check(await sb.from(table).insert(row).select().single()); },
+      async update(table, id, patch) { check(await sb.from(table).update(patch).eq('id', id)); },
+      async remove(table, id) { check(await sb.from(table).delete().eq('id', id)); },
+      async upsertTags(tags) {
+        const rows = tags.map(t => ({ user_id: currentUser.id, tag: t, last_used_at: new Date().toISOString() }));
+        check(await sb.from('tag_vocab').upsert(rows, { onConflict: 'user_id,tag' }));
+      },
+    };
+  }
+
+  function demoStore() {
+    const KEY = LS + 'db';
+    let db;
+    try { db = JSON.parse(localStorage.getItem(KEY)); } catch {}
+    if (!db) db = demoSeed();
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {} };
+    save();
+    const clone = x => JSON.parse(JSON.stringify(x));
+    return {
+      async session() { return { user: { id: 'demo' } }; },
+      onAuth() {},
+      async user() { return { id: 'demo', email: 'demo@localhost' }; },
+      async signIn() { return {}; },
+      async signOut() {},
+      async load() {
+        return {
+          entries: clone(db.entries).sort((a, b) => new Date(b.ts) - new Date(a.ts)),
+          tags: [...db.tags],
+          tries: clone(db.tries).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
+        };
+      },
+      async insert(table, row) {
+        const r = { id: crypto.randomUUID(), created_at: new Date().toISOString(), ...clone(row) };
+        if (table === 'tries') {
+          r.status = r.status || 'active';
+          r.checkin_at = r.checkin_at || new Date(Date.now() + 14 * DAY).toISOString();
+        }
+        db[table].push(r); save();
+        return clone(r);
+      },
+      async update(table, id, patch) {
+        const r = db[table].find(x => x.id === id);
+        if (r) Object.assign(r, clone(patch));
+        save();
+      },
+      async remove(table, id) {
+        db[table] = db[table].filter(x => x.id !== id);
+        if (table === 'entries') {
+          db.entries.forEach(e => { if (e.parent_id === id) e.parent_id = null; });
+          db.tries.forEach(t => { if (t.lesson_id === id) t.lesson_id = null; });
+        }
+        save();
+      },
+      async upsertTags(tags) {
+        tags.forEach(t => { if (!db.tags.includes(t)) db.tags.push(t); });
+        save();
+      },
+    };
+  }
+
+  // A little over a year of made-up entries, arranged so every v3 feature has something to show:
+  // look-back anniversaries (30/91/182/365 days), a released entry, a reply old enough for
+  // "changed my mind", lessons, a try due for check-in, and one kept and one dropped try.
+  function demoSeed() {
+    const at = (daysAgo, hour = 9) => {
+      const d = new Date(Date.now() - daysAgo * DAY);
+      d.setHours(hour, 17, 0, 0);
+      return d.toISOString();
+    };
+    const E = [];
+    const add = (daysAgo, text, extra = {}) => {
+      const e = { id: crypto.randomUUID(), text, tags: parseTags(text), ts: at(daysAgo, extra.hour || 9),
+                  kind: 'note', prompt_id: null, question: null, parent_id: null, area: null,
+                  released_at: null, resurfaced_at: null, created_at: at(daysAgo), ...extra };
+      delete e.hour;
+      E.push(e);
+      return e;
+    };
+    add(0, "coffee with R. she said I interrupt when I'm excited. she's not wrong. #friends", { hour: 8 });
+    add(1, 'shipped the migration. quietly proud of how calm that week was. #work', { hour: 18 });
+    add(2, 'how much better I felt after a walk at lunch. should not be news to me by now. #health',
+        { kind: 'reflection', prompt_id: 'notice-2', question: 'What surprised you this week?' });
+    add(3, 'the planning meeting. same trigger as always: feeling unheard, then talking louder.',
+        { kind: 'reflection', prompt_id: 'patterns-2', question: 'Where did you react this week instead of choosing?', hour: 21 });
+    add(4, "snapped at A. in planning again. felt justified at the time. it wasn't really about the roadmap. #work", { hour: 14 });
+    add(6, '#groceries eggs, oat milk');
+    add(9, "What did I notice?\nI'm calmer when the week has fewer meetings.\n\nWhat am I proud of?\nCalled mom twice without being reminded.\n\nWhat should I simply let go of?\nThe email thing from Tuesday.\n\n#lookback",
+        { kind: 'lookback', hour: 20 });
+    add(30, "I think I'm just bad at small talk. dreading the offsite mixer on thursday. #work");
+    add(92, 'argued with dad about the house again. I keep trying to win instead of trying to understand. #family', { hour: 22 });
+    add(183, 'convinced that switching teams is the only way to grow. everyone who stays is settling. #career');
+    add(200, 'sent a pretty embarrassing reply-all to the whole org. want to disappear for a week. #work',
+        { released_at: at(150), resurfaced_at: at(150) });
+    const stoic = add(240, 'started reading about stoicism. finally everything makes sense. #reading', { resurfaced_at: at(20) });
+    add(366, "36 feels old. everyone my age seems to have it figured out. #self", { hour: 23 });
+    const race = add(420, 'said yes to the half marathon without thinking. terrified. #health', { resurfaced_at: at(60) });
+    add(20, "not everything. it's useful, but for a while I used it to avoid feeling things.",
+        { kind: 'reply', parent_id: stoic.id, question: 'Is this still true?', hour: 21 });
+    add(60, 'saying yes before I feel ready is how most of the good things started.',
+        { kind: 'lesson', parent_id: race.id, area: 'judgment' });
+    const hungry = add(45, "I get short with people when I'm hungry and behind.",
+        { kind: 'lesson', area: 'emotional regulation' });
+
+    const T = [
+      { text: 'pause for one breath before replying in a disagreement', area: 'communication', lesson_id: hungry.id,
+        status: 'active', created_at: at(16), checkin_at: at(2), note: null, ended_at: null },
+      { text: 'walk at lunch, even ten minutes', area: 'health', lesson_id: null,
+        status: 'active', created_at: at(5), checkin_at: at(-9), note: null, ended_at: null },
+      { text: 'phone stays out of the bedroom', area: 'health', lesson_id: null,
+        status: 'kept', created_at: at(120), checkin_at: at(80), ended_at: at(80),
+        note: "sleep is better, and I don't miss it. didn't expect that." },
+      { text: 'journal every morning', area: 'time', lesson_id: null,
+        status: 'dropped', created_at: at(100), checkin_at: at(70), ended_at: at(70),
+        note: "mornings aren't my time. once a week works better, hence the sunday thing." },
+    ].map(t => ({ id: crypto.randomUUID(), user_id: 'demo', ...t }));
+
+    const tags = [...new Set(E.flatMap(e => e.tags))];
+    return { entries: E.map(e => ({ user_id: 'demo', ...e })), tries: T, tags };
+  }
+
+  const store = DEMO ? demoStore() : supabaseStore();
+
+  function resetDemo() {
+    Object.keys(localStorage).filter(k => k.startsWith('capture-demo:')).forEach(k => localStorage.removeItem(k));
+    location.reload();
+  }
+
+  // ── WRITES (optimistic, rolled back on error) ──
+  function learnTags(tags) {
+    tags.forEach(t => { if (!tagVocab.includes(t)) tagVocab.push(t); });
+    if (tags.length) store.upsertTags(tags).catch(console.error);
+  }
+
+  async function addEntry(fields) {
+    const text = fields.text;
+    const e = { id: 'tmp-' + Math.random().toString(36).slice(2), tags: parseTags(text), ts: Date.now(),
+                kind: 'note', prompt_id: null, question: null, parent_id: null, area: null,
+                released_at: null, resurfaced_at: null, ...fields };
+    entries.unshift(e);
+    renderCurrent();
+    try {
+      const { id, tags, ...rest } = e;
+      const row = await store.insert('entries', toRow({ ...rest, tags, user_id: currentUser.id }));
+      e.id = row.id;
+      learnTags(e.tags);
+      renderCurrent();
+      return e;
+    } catch (err) {
+      console.error(err);
+      entries = entries.filter(x => x !== e);
+      renderCurrent();
+      showToast(err && err.code === 'PGRST204' ? 'database needs the v3 migration' : 'save failed — check connection', 2600);
+      return null;
+    }
+  }
+
+  async function patchEntry(e, patch, { quiet = false } = {}) {
+    const prev = {};
+    Object.keys(patch).forEach(k => { prev[k] = e[k]; });
+    Object.assign(e, patch);
+    if (!quiet) renderCurrent();
+    try {
+      await store.update('entries', e.id, toRow(patch));
+      return true;
+    } catch (err) {
+      console.error(err);
+      Object.assign(e, prev);
+      renderCurrent();
+      showToast('update failed — check connection');
+      return false;
+    }
+  }
+
+  async function addTry(fields) {
+    const t = { id: 'tmp-' + Math.random().toString(36).slice(2), status: 'active', created_at: Date.now(),
+                checkin_at: Date.now() + 14 * DAY, area: null, lesson_id: null, note: null, ended_at: null, ...fields };
+    tries.unshift(t);
+    renderCurrent();
+    try {
+      const { id, ...rest } = t;
+      const row = await store.insert('tries', toRow({ ...rest, user_id: currentUser.id }));
+      t.id = row.id;
+      return t;
+    } catch (err) {
+      console.error(err);
+      tries = tries.filter(x => x !== t);
+      renderCurrent();
+      showToast('save failed — check connection');
+      return null;
+    }
+  }
+
+  async function patchTry(t, patch) {
+    const prev = {};
+    Object.keys(patch).forEach(k => { prev[k] = t[k]; });
+    Object.assign(t, patch);
+    renderCurrent();
+    try {
+      await store.update('tries', t.id, toRow(patch));
+      return true;
+    } catch (err) {
+      console.error(err);
+      Object.assign(t, prev);
+      renderCurrent();
+      showToast('update failed — check connection');
+      return false;
+    }
+  }
+
+  // ── NAVIGATION ──
+  // Three tabs (today, log, growth) plus two pages (the weekly look-back, and the
+  // "which try is finished?" chooser). Pages get their own history entry so the phone's
+  // back gesture works; tabs replace the entry instead.
+  const TABS = ['today', 'log', 'growth'];
+  const PAGES = ['lookback', 'tries'];
+
+  function routeFromHash() {
+    const h = location.hash.slice(1);
+    return TABS.includes(h) || PAGES.includes(h) ? h : 'today';
+  }
+  function go(route, push) {
+    const url = location.pathname + location.search + (route === 'today' ? '' : '#' + route);
+    const depth = (history.state && history.state.depth) || 0;
+    if (push) history.pushState({ cap: true, depth: depth + 1 }, '', url);
+    else history.replaceState({ cap: true, depth: TABS.includes(route) ? 0 : depth }, '', url);
+    applyRoute();
+  }
+  function goBack() {
+    if (history.state && history.state.depth > 0) history.back();
+    else go(currentTab, false);
+  }
+  function showTab(tab) { go(tab, false); }
+  function openLookback() { go('lookback', true); }
+
+  function applyRoute() {
+    document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open'));
+    let r = routeFromHash();
+    if (r === 'tries' && !pendingTry) {
+      r = currentTab;
+      history.replaceState({ cap: true, depth: 0 }, '', location.pathname + location.search + (r === 'today' ? '' : '#' + r));
+    }
+    const changed = r !== view;
+    view = r;
+    if (TABS.includes(r)) currentTab = r;
+
+    const ids = { today: 'screen-today', log: 'screen-log', growth: 'screen-growth', lookback: 'page-lookback', tries: 'page-tries' };
+    Object.entries(ids).forEach(([v, id]) => {
+      const el = $(id);
+      el.hidden = v !== view;
+      if (v === view && changed && PAGES.includes(v)) {
+        el.classList.remove('slide-in'); void el.offsetWidth; el.classList.add('slide-in');
+      }
+    });
+    $('tabs').hidden = PAGES.includes(view);
+    document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === currentTab));
+    $('appRoot').classList.toggle('wide', view === 'today');
+    renderCurrent();
+    if (changed) window.scrollTo(0, 0);
+  }
+  window.addEventListener('popstate', applyRoute);
+
+  function renderCurrent() {
+    $('entryCount').textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+    if (!currentUser) return;
+    if (view === 'today') renderToday();
+    if (view === 'log') renderLog();
+    if (view === 'growth') renderGrowth();
+    if (view === 'lookback') renderLookback();
+    if (view === 'tries') renderTriesPage();
+  }
+
+  // ── COMPOSER ──
+  const input = $('thoughtInput');
 
   input.addEventListener('input', handleInput);
   input.addEventListener('keydown', function(e) {
@@ -774,55 +1358,33 @@
     if (isTouchDevice) return;
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEntry(); }
   });
-
-  document.getElementById('saveHint').textContent = isTouchDevice
-    ? 'tap save to post'
-    : 'enter to save · shift+enter for newline';
+  $('saveHint').textContent = isTouchDevice ? 'tap save to post' : 'enter to save · shift+enter for newline';
 
   function handleInput() {
-    autoResizeInput();
+    autoResize(input, window.innerWidth >= 720 ? 420 : 200);
     renderDetectedTags();
     handleAutocomplete();
   }
 
-  function autoResizeInput() {
-    const maxHeight = window.innerWidth >= 720 ? 420 : 160;
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, maxHeight) + 'px';
-  }
-
   function handleAutocomplete() {
     const text = input.value;
-    const cursor = input.selectionStart;
-    const before = text.slice(0, cursor);
+    const before = text.slice(0, input.selectionStart);
     const hashMatch = before.match(/#([\w\-]*)$/);
-
-    const wrap = document.getElementById('autocompleteWrap');
-    const chips = document.getElementById('acChips');
-
-    if (!hashMatch) {
-      wrap.classList.remove('visible');
-      return;
-    }
+    const wrap = $('autocompleteWrap');
+    const chips = $('acChips');
+    if (!hashMatch) { wrap.classList.remove('visible'); return; }
 
     const query = hashMatch[1].toLowerCase();
-    const vocab = getTagVocab();
+    const vocab = [...tagVocab].sort();
     const existing = parseTags(text);
-
-    const matches = vocab
-      .filter(t => t.startsWith('#' + query) && !existing.includes(t))
-      .slice(0, 4);
+    const matches = vocab.filter(t => t.startsWith('#' + query) && !existing.includes(t)).slice(0, 4);
 
     chips.innerHTML = '';
-
     if (matches.length === 0 && query.length === 0) {
-      // show all tags when just # typed
-      const all = vocab.filter(t => !existing.includes(t)).slice(0, 5);
-      all.forEach(tag => chips.appendChild(makeAcChip(tag, 'dim', query)));
+      vocab.filter(t => !existing.includes(t)).slice(0, 5).forEach(tag => chips.appendChild(makeAcChip(tag, 'dim')));
     } else {
-      matches.forEach((tag, i) => chips.appendChild(makeAcChip(tag, i < 2 ? 'match' : 'dim', query)));
+      matches.forEach((tag, i) => chips.appendChild(makeAcChip(tag, i < 2 ? 'match' : 'dim')));
     }
-
     if (query.length > 0 && !vocab.includes('#' + query)) {
       const newChip = document.createElement('div');
       newChip.className = 'ac-chip new-tag';
@@ -830,11 +1392,10 @@
       newChip.onclick = () => insertTag('#' + query);
       chips.appendChild(newChip);
     }
-
     wrap.classList.toggle('visible', chips.children.length > 0);
   }
 
-  function makeAcChip(tag, cls, query) {
+  function makeAcChip(tag, cls) {
     const chip = document.createElement('div');
     chip.className = `ac-chip ${cls}`;
     chip.textContent = tag;
@@ -845,143 +1406,530 @@
   function insertTag(tag) {
     const text = input.value;
     const cursor = input.selectionStart;
-    const before = text.slice(0, cursor);
-    const after = text.slice(cursor);
-    const replaced = before.replace(/#[\w\-]*$/, tag + ' ');
-    input.value = replaced + after;
+    const replaced = text.slice(0, cursor).replace(/#[\w\-]*$/, tag + ' ');
+    input.value = replaced + text.slice(cursor);
     input.focus();
-    const newPos = replaced.length;
-    input.setSelectionRange(newPos, newPos);
+    input.setSelectionRange(replaced.length, replaced.length);
     handleInput();
   }
 
   function renderDetectedTags() {
-    const tags = parseTags(input.value);
-    const container = document.getElementById('detectedTags');
-    container.innerHTML = tags.map(t => `<div class="dtag">${esc(t)}</div>`).join('');
+    $('detectedTags').innerHTML = parseTags(input.value).map(t => `<div class="dtag">${esc(t)}</div>`).join('');
   }
 
-  // ── SAVE ──
   async function saveEntry() {
     const text = input.value.trim();
     if (!text) return;
-
-    const tags = parseTags(text);
-    const now = Date.now();
-    const tempId = 'tmp-' + now;
-    const entry = { id: tempId, text, tags, ts: now };
-
-    // optimistic: clear the input and show the entry right away — speed is the point.
-    // reconciled with the real row (or rolled back) once the write comes back.
-    entries.unshift(entry);
-    tags.forEach(t => { if (!tagVocab.includes(t)) tagVocab.push(t); });
-
+    // optimistic: clear the input right away — speed is the point. restored if the write fails.
     input.value = '';
     input.style.height = 'auto';
-    document.getElementById('detectedTags').innerHTML = '';
-    document.getElementById('autocompleteWrap').classList.remove('visible');
-    updateCount();
-    if (document.getElementById('screen-log').classList.contains('active')) renderLog();
+    $('detectedTags').innerHTML = '';
+    $('autocompleteWrap').classList.remove('visible');
     input.focus();
-
-    const { data, error } = await sb.from('entries').insert({
-      user_id: currentUser.id,
-      text,
-      tags,
-      ts: new Date(now).toISOString(),
-    }).select().single();
-
-    if (error) {
-      console.error(error);
-      entries = entries.filter(e => e.id !== tempId);
-      updateCount();
-      if (document.getElementById('screen-log').classList.contains('active')) renderLog();
-      input.value = text;
-      autoResizeInput();
-      showToast('save failed — check connection');
-      return;
-    }
-
-    entry.id = data.id;
-    upsertTagVocab(tags);
+    const e = await addEntry({ text });
+    if (!e) { input.value = text; handleInput(); return; }
     showToast('saved ✓');
   }
 
-  async function upsertTagVocab(tags) {
-    if (!tags.length) return;
-    const rows = tags.map(t => ({ user_id: currentUser.id, tag: t, last_used_at: new Date().toISOString() }));
-    const { error } = await sb.from('tag_vocab').upsert(rows, { onConflict: 'user_id,tag' });
-    if (error) console.error(error);
+  // ── TODAY ──
+  function renderToday() {
+    const dayIndex = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / DAY);
+    $('reminder').textContent = REMINDERS[dayIndex % REMINDERS.length];
+    renderSunday();
+    renderTrying();
+    renderHand();
   }
 
-  function updateCount() {
-    document.getElementById('entryCount').textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+  function lookbackDoneThisWeek() {
+    const since = lastSaturday();
+    return entries.some(e => e.kind === 'lookback' && e.ts >= since);
+  }
+  function weekEntries() {
+    const since = Date.now() - 7 * DAY;
+    return entries.filter(e => e.ts >= since && e.kind !== 'lookback').sort((a, b) => a.ts - b.ts);
   }
 
-  // ── LOG RENDER ──
-  function setFilter(f) {
-    activeFilter = f;
-    document.querySelectorAll('.filter-chip').forEach(el => {
-      el.classList.toggle('active', el.dataset.filter === f);
+  function renderSunday() {
+    const dow = new Date().getDay();
+    const show = [6, 0, 1].includes(dow) && !lookbackDoneThisWeek();
+    const n = weekEntries().length;
+    $('sundaySlot').innerHTML = show ? `
+      <div class="sunday">
+        <span>${n ? `${n} ${n === 1 ? 'note' : 'notes'} this week. look back?` : 'quiet week. look back anyway?'}</span>
+        <button class="btn btn-sm" onclick="openLookback()">look back</button>
+      </div>` : '';
+  }
+
+  function renderTrying() {
+    const now = Date.now();
+    const active = activeTries();
+    const chips = active.map(t => `
+      <button class="try-chip" onclick="openCheckin('${t.id}')" title="${t.checkin_at <= now ? 'time for a check-in' : 'since ' + fmtShort(t.created_at)}">
+        ${t.checkin_at <= now ? '<span class="dot"></span>' : ''}${esc(t.text)}
+      </button>`);
+    if (active.length < 3) chips.push(`<button class="try-chip add" onclick="openTrySheet({})">+ ${active.length ? 'try something' : "nothing on the go. try something?"}</button>`);
+    $('tryingChips').innerHTML = chips.join('');
+  }
+
+  // A hand is dealt once per day and kept in localStorage, so a reload doesn't redeal it.
+  // Card: { k: 'prompt', pid } or { k: 'look', eid, q }, plus draft text and a `done` state.
+  function ensureHand() {
+    if (hand && hand.date === fmtDateKey(Date.now())) return;
+    hand = lsGet('hand', null);
+    if (!hand || hand.date !== fmtDateKey(Date.now())) {
+      hand = { date: fmtDateKey(Date.now()), cards: [], seenPrompts: [], seenLooks: [] };
+      dealHand();
+    }
+    // an entry deleted since the deal can't be looked back on
+    hand.cards.forEach((c, i) => { if (c.k === 'look' && !c.done && !entryById(c.eid)) replaceCard(i); });
+  }
+  function saveHand() { lsSet('hand', hand); }
+
+  function recentPromptIds() {
+    const since = Date.now() - 14 * DAY;
+    const ids = new Set(entries.filter(e => e.prompt_id && e.ts >= since).map(e => e.prompt_id));
+    const skipped = lsGet('skipped', {});
+    Object.entries(skipped).forEach(([id, ts]) => { if (ts >= since) ids.add(id); });
+    (hand ? hand.seenPrompts : []).forEach(id => ids.add(id));
+    return ids;
+  }
+
+  // Never two cards from one deck, and at most one heavy card per hand.
+  function pickPrompt(otherCards) {
+    const decks = new Set(otherCards.filter(c => c.k === 'prompt').map(c => promptById(c.pid).deck));
+    const heavyUsed = [...decks].some(d => HEAVY.has(d));
+    const recent = recentPromptIds();
+    const allowed = p => !decks.has(p.deck) && !(heavyUsed && HEAVY.has(p.deck));
+    let pool = PROMPTS.filter(p => allowed(p) && !recent.has(p.id));
+    if (!pool.length) pool = PROMPTS.filter(allowed);
+    if (!pool.length) return null;
+    return pickWeighted(pool, p => HEAVY.has(p.deck) ? DECK_WEIGHT.heavy : DECK_WEIGHT.light);
+  }
+
+  // Old enough (30+ days), not released, not resurfaced in 90 days, long enough to be worth it.
+  // Anniversaries (about 1, 3, 6, 12, 24 months ago) come first; otherwise older is likelier.
+  function pickLookback(exclude) {
+    const now = Date.now();
+    const pool = entries.filter(e =>
+      (e.kind === 'note' || e.kind === 'reflection') &&
+      !e.released_at &&
+      now - e.ts >= 30 * DAY &&
+      (!e.resurfaced_at || now - e.resurfaced_at >= 90 * DAY) &&
+      e.text.replace(/#[\w\-]+/g, '').trim().length >= 20 &&
+      !exclude.has(String(e.id)));
+    if (!pool.length) return null;
+    const anniversaries = pool.filter(e => {
+      const days = (now - e.ts) / DAY;
+      return [30, 91, 182, 365, 730].some(a => Math.abs(days - a) <= 7);
     });
-    // add tag filters dynamically
-    renderLog();
+    if (anniversaries.length) return pick(anniversaries);
+    return pickWeighted(pool, e => (now - e.ts) / DAY);
+  }
+
+  function dealHand() {
+    const cards = [];
+    const look = pickLookback(new Set(hand.seenLooks));
+    const nPrompts = look ? 2 : 3;
+    for (let i = 0; i < nPrompts; i++) {
+      const p = pickPrompt(cards);
+      if (!p) break;
+      cards.push({ k: 'prompt', pid: p.id });
+      hand.seenPrompts.push(p.id);
+    }
+    if (look) {
+      cards.splice(1, 0, { k: 'look', eid: String(look.id), q: pick(LOOK_QS) });
+      hand.seenLooks.push(String(look.id));
+    }
+    hand.cards = cards;
+    freshDeal = true;
+    saveHand();
+  }
+
+  function dealAgain() { dealHand(); renderHand(); }
+
+  function replaceCard(i) {
+    const c = hand.cards[i];
+    const others = hand.cards.filter((_, j) => j !== i);
+    let next = null;
+    if (c.k === 'look') {
+      const look = pickLookback(new Set(hand.seenLooks));
+      if (look) { next = { k: 'look', eid: String(look.id), q: pick(LOOK_QS) }; hand.seenLooks.push(String(look.id)); }
+    }
+    if (!next) {
+      const p = pickPrompt(others);
+      if (p) { next = { k: 'prompt', pid: p.id }; hand.seenPrompts.push(p.id); }
+    }
+    if (next) { next.fresh = true; hand.cards[i] = next; }
+    else hand.cards.splice(i, 1);
+    saveHand();
+  }
+
+  function renderHand() {
+    ensureHand();
+    const el = $('hand');
+    const firstLook = !entries.some(e => e.kind === 'reply');
+    let delay = 0;
+    const html = hand.cards.map((c, i) => {
+      const anim = (freshDeal || c.fresh) && !c.done ? ` deal" style="animation-delay:${(delay++) * 70}ms` : '';
+      delete c.fresh;
+      if (c.done) return renderDoneCard(c);
+      if (c.k === 'prompt') {
+        const p = promptById(c.pid);
+        return `
+          <div class="card${anim}">
+            <div class="card-deck">${esc(DECK_LABEL[p.deck] || p.deck)}</div>
+            <div class="card-q">${esc(promptText(p))}</div>
+            <textarea data-card="${i}" rows="2" placeholder="type an answer…">${escText(c.draft || '')}</textarea>
+            <div class="card-actions">
+              <button class="btn btn-primary btn-sm" onclick="cardSave(${i})">save</button>
+              <button class="btn btn-sm" onclick="cardLesson(${i})">→ lesson</button>
+              <span class="spacer"></span>
+              <button class="btn btn-ghost btn-sm" onclick="cardSkip(${i})">skip</button>
+            </div>
+          </div>`;
+      }
+      const e = entryById(c.eid);
+      return `
+        <div class="card${anim}">
+          <div class="card-when">you, ${ago(e.ts)} · ${fmtShort(e.ts)}</div>
+          <div class="card-quote">${esc(e.text)}</div>
+          <div class="card-q">${esc(c.q)}</div>
+          <textarea data-card="${i}" rows="2" placeholder="reply…">${escText(c.draft || '')}</textarea>
+          ${firstLook ? `<div class="card-hint">this is you, ${ago(e.ts)}. be nice to them.</div>` : ''}
+          <div class="card-actions">
+            <button class="btn btn-primary btn-sm" onclick="cardSave(${i})">reply</button>
+            <button class="btn btn-sm" onclick="cardLesson(${i})">→ lesson</button>
+            <button class="btn btn-sm" onclick="cardRelease(${i})">let it go</button>
+            <span class="spacer"></span>
+            <button class="btn btn-ghost btn-sm" onclick="cardSkip(${i})">skip</button>
+          </div>
+        </div>`;
+    }).join('');
+    freshDeal = false;
+    const allDone = hand.cards.every(c => c.done);
+    el.innerHTML = html + (allDone ? `
+      <div class="hand-end">
+        that's plenty. go live a little.<br>
+        <button class="btn btn-sm btn-ghost" onclick="dealAgain()">deal again</button>
+      </div>` : '');
+    el.querySelectorAll('textarea[data-card]').forEach(ta => { if (ta.value) autoResize(ta); });
+  }
+
+  function renderDoneCard(c) {
+    const label = { saved: 'saved', replied: 'replied', lesson: 'lesson kept', released: 'let go' }[c.done] || 'done';
+    const q = c.k === 'prompt' ? promptText(promptById(c.pid)) : (entryById(c.eid) ? snippet(entryById(c.eid).text, 70) : c.q);
+    return `<div class="card done"><span class="check">✓ ${label}</span><span class="q">${esc(q)}</span></div>`;
+  }
+
+  $('hand').addEventListener('input', e => {
+    const ta = e.target.closest('textarea[data-card]');
+    if (!ta) return;
+    hand.cards[+ta.dataset.card].draft = ta.value;
+    autoResize(ta);
+    saveHand();
+  });
+  $('hand').addEventListener('keydown', e => {
+    const ta = e.target.closest('textarea[data-card]');
+    if (ta && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); cardSave(+ta.dataset.card); }
+  });
+
+  function markResurfaced(e) { if (e) patchEntry(e, { resurfaced_at: Date.now() }, { quiet: true }); }
+
+  async function cardSave(i) {
+    const c = hand.cards[i];
+    const text = (c.draft || '').trim();
+    if (!text) { showToast('write something, or skip it'); return; }
+    if (c.k === 'prompt') {
+      const p = promptById(c.pid);
+      c.done = 'saved';  // set before the write so the re-render doesn't flash the card
+      const e = await addEntry({ text, kind: 'reflection', prompt_id: p.id, question: promptText(p) });
+      if (!e) { c.done = null; renderHand(); return; }
+    } else {
+      c.done = 'replied';
+      const e = await addEntry({ text, kind: 'reply', parent_id: c.eid, question: c.q });
+      if (!e) { c.done = null; renderHand(); return; }
+      markResurfaced(entryById(c.eid));
+    }
+    c.draft = '';
+    saveHand();
+    renderHand();
+    showToast('saved ✓');
+  }
+
+  async function cardLesson(i) {
+    const c = hand.cards[i];
+    const text = (c.draft || '').trim();
+    let sourceId = null, context = '';
+    if (c.k === 'prompt') {
+      const p = promptById(c.pid);
+      context = promptText(p) + (text ? '\n' + text : '');
+      if (text) {
+        c.done = 'saved';
+        const e = await addEntry({ text, kind: 'reflection', prompt_id: p.id, question: promptText(p) });
+        if (!e) { c.done = null; renderHand(); return; }
+        sourceId = e.id;
+      }
+    } else {
+      const src = entryById(c.eid);
+      sourceId = c.eid;
+      context = src.text + (text ? '\n→ ' + text : '');
+      if (text) {
+        c.done = 'replied';
+        const e = await addEntry({ text, kind: 'reply', parent_id: c.eid, question: c.q });
+        if (!e) { c.done = null; renderHand(); return; }
+      }
+      markResurfaced(src);
+    }
+    c.draft = '';
+    saveHand();
+    renderHand();
+    openLessonSheet({ sourceId, context, onSaved: () => { c.done = 'lesson'; saveHand(); renderHand(); } });
+  }
+
+  async function cardRelease(i) {
+    const c = hand.cards[i];
+    const e = entryById(c.eid);
+    c.done = 'released';
+    c.draft = '';
+    saveHand();
+    const now = Date.now();
+    const ok = await patchEntry(e, { released_at: now, resurfaced_at: now });
+    if (!ok) { c.done = null; saveHand(); renderHand(); return; }
+    showToast('released. you were doing your best with what you had.', 3200);
+  }
+
+  function cardSkip(i) {
+    const c = hand.cards[i];
+    if (c.k === 'prompt') {
+      const skipped = lsGet('skipped', {});
+      skipped[c.pid] = Date.now();
+      lsSet('skipped', skipped);
+    }
+    replaceCard(i);
+    renderHand();
+  }
+
+  // ── LESSONS ──
+  function renderAreaChips(containerId, selected, fn) {
+    $(containerId).innerHTML = AREAS.map(a =>
+      `<button class="area-chip${a === selected ? ' on' : ''}" onclick="${fn}('${a}')">${a}</button>`).join('');
+  }
+  function pickLessonArea(a) { lessonArea = lessonArea === a ? null : a; renderAreaChips('lessonAreas', lessonArea, 'pickLessonArea'); }
+  function pickTryArea(a) { tryArea = tryArea === a ? null : a; renderAreaChips('tryAreas', tryArea, 'pickTryArea'); }
+
+  function openLessonSheet({ sourceId = null, context = '', onSaved = null } = {}) {
+    lessonCtx = { sourceId, onSaved };
+    lessonArea = null;
+    $('lessonContext').textContent = context;
+    $('lessonText').value = '';
+    renderAreaChips('lessonAreas', null, 'pickLessonArea');
+    $('sheet-lesson').classList.add('open');
+    if (!isTouchDevice) $('lessonText').focus();
+  }
+
+  function lessonFromEntry(id) {
+    const e = entryById(id);
+    if (e) openLessonSheet({ sourceId: e.id, context: e.text });
+  }
+
+  async function saveLesson() {
+    const text = $('lessonText').value.trim();
+    if (!text) { showToast('one line is plenty, but not zero'); return; }
+    const { sourceId, onSaved } = lessonCtx || {};
+    closeSheet('sheet-lesson');
+    const e = await addEntry({ text, kind: 'lesson', parent_id: sourceId, area: lessonArea });
+    if (!e) return;
+    if (onSaved) onSaved(e);
+    showToast('lesson kept ✓');
+  }
+
+  // ── TRIES ──
+  function openTrySheet({ lessonId = null, context = '', prefill = '' } = {}) {
+    tryCtx = { lessonId };
+    const lesson = lessonId ? entryById(lessonId) : null;
+    tryArea = lesson ? lesson.area : null;
+    $('tryContext').textContent = lesson ? 'from the lesson: ' + lesson.text : context;
+    $('tryText').value = prefill;
+    renderAreaChips('tryAreas', tryArea, 'pickTryArea');
+    $('sheet-try').classList.add('open');
+    if (!isTouchDevice) $('tryText').focus();
+  }
+
+  function saveTry() {
+    const text = $('tryText').value.trim();
+    if (!text) { showToast('what will you try?'); return; }
+    closeSheet('sheet-try');
+    startTry({ text, area: tryArea, lesson_id: tryCtx ? tryCtx.lessonId : null });
+  }
+
+  // At most 3 at once. A 4th waits on a page that asks which one is finished.
+  async function startTry(fields) {
+    if (activeTries().length >= 3) {
+      pendingTry = fields;
+      go('tries', true);
+      return;
+    }
+    const t = await addTry(fields);
+    if (t) showToast('trying ✓ check-in in two weeks');
+  }
+
+  function renderTriesPage() {
+    if (!pendingTry) return;
+    $('page-tries').innerHTML = `
+      <div class="page-head">
+        <button class="back-btn" onclick="cancelPendingTry()" aria-label="back">←</button>
+        <div><div class="page-title">three's plenty</div><div class="page-sub">which one is finished?</div></div>
+      </div>
+      <div class="g-item" style="border-style:dashed"><div class="g-meta">new</div><div class="g-text">${esc(pendingTry.text)}</div></div>
+      <div class="section-label">trying now</div>
+      ${activeTries().map(t => `
+        <div class="g-item">
+          <div class="g-text">${esc(t.text)}</div>
+          <div class="g-meta">since ${fmtShort(t.created_at)}${t.area ? ' · ' + esc(t.area) : ''}</div>
+          <div class="card-actions">
+            <button class="btn btn-sm" onclick="finishForPending('${t.id}','kept')">it stuck</button>
+            <button class="btn btn-sm" onclick="finishForPending('${t.id}','dropped')">let it go</button>
+          </div>
+        </div>`).join('')}
+      <div class="log-foot"><button class="link" onclick="cancelPendingTry()">never mind, keep these three</button></div>`;
+  }
+
+  async function finishForPending(id, status) {
+    const t = tryById(id);
+    const fields = pendingTry;
+    if (!t || !fields) return;
+    const ok = await patchTry(t, { status, ended_at: Date.now() });
+    if (!ok) return;
+    pendingTry = null;
+    goBack();
+    const added = await addTry(fields);
+    if (added) showToast('swapped ✓');
+  }
+
+  function cancelPendingTry() { pendingTry = null; goBack(); }
+
+  function openCheckin(id) {
+    const t = tryById(id);
+    if (!t) return;
+    checkinId = id;
+    $('checkinTitle').textContent = t.text;
+    const due = t.checkin_at <= Date.now();
+    $('checkinMeta').textContent = `since ${fmtShort(t.created_at)}${t.area ? ' · ' + t.area : ''}${due ? ' · check-in time' : ''}`;
+    $('checkinNote').value = t.note || '';
+    $('sheet-checkin').classList.add('open');
+  }
+
+  async function endCheckin(outcome) {
+    const t = tryById(checkinId);
+    if (!t) return;
+    const note = $('checkinNote').value.trim() || null;
+    closeSheet('sheet-checkin');
+    if (outcome === 'again') {
+      if (await patchTry(t, { checkin_at: Date.now() + 14 * DAY, note })) showToast('check back in two weeks');
+      return;
+    }
+    if (await patchTry(t, { status: outcome, ended_at: Date.now(), note })) {
+      showToast(outcome === 'kept' ? 'kept. nice.' : 'tried. that counts.');
+    }
+  }
+
+  async function deleteTry() {
+    const t = tryById(checkinId);
+    if (!t) return;
+    closeSheet('sheet-checkin');
+    tries = tries.filter(x => x !== t);
+    renderCurrent();
+    try { await store.remove('tries', t.id); showToast('deleted'); }
+    catch (err) { console.error(err); tries.unshift(t); renderCurrent(); showToast('delete failed — check connection'); }
+  }
+
+  // ── SHEETS ──
+  function closeSheet(id) { $(id).classList.remove('open'); if (id === 'sheet-delete') pendingDeleteId = null; }
+  // Tapping outside a sheet never throws away something half-written.
+  function backdropClose(ev, overlay) {
+    if (ev.target !== overlay) return;
+    const typed = [...overlay.querySelectorAll('textarea')].some(t => t.value.trim());
+    if (typed && overlay.id !== 'sheet-checkin') { showToast('tap cancel to discard'); return; }
+    closeSheet(overlay.id);
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    const open = document.querySelector('.overlay.open');
+    if (open) closeSheet(open.id);
+  });
+
+  // ── LOG ──
+  const KIND_BADGE = { reflection: 'reflection', reply: 'later', lesson: 'lesson', lookback: 'look-back' };
+  const KIND_FILTERS = [
+    ['all', 'all'], ['reflections', 'reflections'], ['lessons', 'lessons'], ['lookbacks', 'look-backs'],
+  ];
+
+  function setFilter(f) { activeFilter = f; renderLog(); }
+  function filterByTag(tag) { activeFilter = 'tag:' + tag; showTab('log'); }
+
+  function isVisible(e) { return showReleased || !e.released_at; }
+  function childrenOf(id) {
+    return entries.filter(c => c.parent_id && String(c.parent_id) === String(id) && isVisible(c)).sort((a, b) => a.ts - b.ts);
   }
 
   function filteredEntries() {
-    if (activeFilter === 'all') return entries;
-    if (activeFilter.startsWith('tag:')) {
-      const tag = activeFilter.slice(4);
-      return entries.filter(e => (e.tags || []).includes(tag));
-    }
-    return entries;
+    const f = activeFilter;
+    const list = entries.filter(isVisible);
+    // "all" shows threads: replies and lessons sit under the entry they came from
+    if (f === 'all') return list.filter(e => !(e.parent_id && entryById(e.parent_id)));
+    if (f === 'reflections') return list.filter(e => e.kind === 'reflection' || e.kind === 'reply');
+    if (f === 'lessons') return list.filter(e => e.kind === 'lesson');
+    if (f === 'lookbacks') return list.filter(e => e.kind === 'lookback');
+    if (f.startsWith('tag:')) return list.filter(e => e.tags.includes(f.slice(4)));
+    return list;
+  }
+
+  function renderLogFilters() {
+    const tags = [...tagVocab].filter(t => t !== '#lookback').slice(0, 6);
+    if (activeFilter.startsWith('tag:') && !tags.includes(activeFilter.slice(4))) tags.unshift(activeFilter.slice(4));
+    $('logFilters').innerHTML =
+      KIND_FILTERS.map(([f, label]) => `<button class="filter-chip${activeFilter === f ? ' active' : ''}" onclick="setFilter('${f}')">${label}</button>`).join('') +
+      tags.map(t => `<button class="filter-chip${activeFilter === 'tag:' + t ? ' active' : ''}" onclick="setFilter('tag:${t}')">${esc(t)}</button>`).join('');
   }
 
   function renderLog() {
-    const list = document.getElementById('logList');
+    renderLogFilters();
+    const list = $('logList');
     const filtered = filteredEntries();
+    const nReleased = entries.filter(e => e.released_at).length;
+    $('logFoot').innerHTML = nReleased
+      ? `<button class="link" onclick="toggleReleased()">${showReleased ? 'hide released' : `show released (${nReleased})`}</button>`
+      : '';
 
-    // build tag filter chips dynamically
-    buildTagFilters();
-
-    if (filtered.length === 0) {
-      list.innerHTML = `<div class="empty-log">— nothing here yet —<br>start capturing above</div>`;
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-log">${activeFilter === 'all' ? "nothing yet. that's allowed." : 'nothing here yet.'}</div>`;
       return;
     }
-
-    // group by date
+    const threads = activeFilter === 'all';
     const groups = {};
-    filtered.forEach(e => {
-      const dk = fmtDateKey(e.ts);
-      if (!groups[dk]) groups[dk] = [];
-      groups[dk].push(e);
-    });
-
-    list.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(dk => {
-      const dayEntries = groups[dk];
-      const label = isToday(dk) ? `today — ${fmtDate(dayEntries[0].ts)}` :
-                    isYesterday(dk) ? `yesterday — ${fmtDate(dayEntries[0].ts)}` :
-                    fmtDate(dayEntries[0].ts);
-      return `
-        <div class="date-group-label">${label}</div>
-        ${dayEntries.map(e => renderEntry(e)).join('')}
-      `;
+    filtered.forEach(e => { const dk = fmtDateKey(e.ts); (groups[dk] = groups[dk] || []).push(e); });
+    list.innerHTML = Object.keys(groups).sort((a, b) => b.localeCompare(a)).map(dk => {
+      const day = groups[dk];
+      const label = isToday(dk) ? `today — ${fmtDate(day[0].ts)}` : isYesterday(dk) ? `yesterday — ${fmtDate(day[0].ts)}` : fmtDate(day[0].ts);
+      return `<div class="date-group-label">${label}</div>${day.map(e => renderEntry(e, { threads })).join('')}`;
     }).join('');
-
-    list.querySelectorAll('.log-entry').forEach(el => {
-      el.addEventListener('click', () => toggleExpand(el));
-    });
   }
 
-  function renderEntry(e) {
-    const tagHtml = (e.tags || []).map(t => `<span class="entry-tag" onclick="event.stopPropagation(); filterByTag('${t}')">${esc(t)}</span>`).join('');
-
+  function renderEntry(e, { threads = false, child = false } = {}) {
+    const tagHtml = e.tags.filter(t => t !== '#lookback')
+      .map(t => `<span class="entry-tag" onclick="event.stopPropagation(); filterByTag('${t}')">${esc(t)}</span>`).join('');
+    const badge = child ? (e.kind === 'lesson' ? 'lesson' : 'later') : KIND_BADGE[e.kind];
+    const when = child ? fmtShort(e.ts) : fmtTime(e.ts);
+    const kids = threads ? childrenOf(e.id) : [];
+    const canLesson = e.kind !== 'lesson';
     return `
-      <div class="log-entry" data-id="${e.id}">
+      <div class="log-entry kind-${e.kind}${child ? ' child' : ''}${e.released_at ? ' released' : ''}" data-id="${e.id}">
         <div class="entry-meta">
-          <span class="entry-time">${fmtTime(e.ts)}</span>
+          ${badge ? `<span class="kind-badge">${badge}</span>` : ''}
+          <span class="entry-time">${when}</span>
           <div class="entry-tag-list">${tagHtml}</div>
         </div>
+        ${e.question && e.kind !== 'lookback' ? `<div class="entry-q">${esc(e.question)}</div>` : ''}
         <div class="entry-body">${esc(e.text)}</div>
         <textarea class="entry-edit-input">${escText(e.text)}</textarea>
         <div class="entry-expanded">
@@ -989,185 +1937,342 @@
             <button class="entry-action-btn btn-edit-only" onclick="event.stopPropagation(); startEdit(this)">edit</button>
             <button class="entry-action-btn btn-save-only" onclick="event.stopPropagation(); saveEdit(this)">save</button>
             <button class="entry-action-btn btn-cancel-only" onclick="event.stopPropagation(); cancelEdit(this)">cancel</button>
-            <button class="entry-action-btn danger" onclick="event.stopPropagation(); requestDelete('${e.id}')">delete</button>
+            ${canLesson ? `<button class="entry-action-btn btn-edit-only" onclick="event.stopPropagation(); lessonFromEntry('${e.id}')">→ lesson</button>` : ''}
+            ${e.released_at
+              ? `<button class="entry-action-btn btn-edit-only" onclick="event.stopPropagation(); unrelease('${e.id}')">un-release</button>`
+              : `<button class="entry-action-btn btn-edit-only" onclick="event.stopPropagation(); releaseEntry(this, '${e.id}')">let go</button>`}
+            <button class="entry-action-btn danger btn-edit-only" onclick="event.stopPropagation(); requestDelete('${e.id}')">delete</button>
           </div>
         </div>
-      </div>
-    `;
+        ${kids.length ? `<div class="thread">${kids.map(k => renderEntry(k, { child: true })).join('')}</div>` : ''}
+      </div>`;
   }
 
-  function toggleExpand(el) {
-    el.classList.toggle('open');
+  // one click handler for the whole list: toggle only the entry that was tapped, not its parent
+  $('logList').addEventListener('click', ev => {
+    if (ev.target.closest('button, textarea')) return;
+    const el = ev.target.closest('.log-entry');
+    if (el && !el.classList.contains('editing')) el.classList.toggle('open');
+  });
+
+  function toggleReleased() { showReleased = !showReleased; renderLog(); }
+
+  function releaseEntry(btn, id) {
+    const e = entryById(id);
+    if (!e) return;
+    const el = btn.closest('.log-entry');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!showReleased && !reduced) el.classList.add('fading');
+    setTimeout(async () => {
+      if (await patchEntry(e, { released_at: Date.now() })) showToast('released. still in the record, just not in your way.', 2600);
+    }, showReleased || reduced ? 0 : 250);
   }
 
-  // ── EDIT ──
+  async function unrelease(id) {
+    const e = entryById(id);
+    if (e && await patchEntry(e, { released_at: null })) showToast('back in the log');
+  }
+
   function startEdit(btn) {
     const el = btn.closest('.log-entry');
     el.classList.add('open', 'editing');
-    const ta = el.querySelector('.entry-edit-input');
+    const ta = el.querySelector(':scope > .entry-edit-input');
     ta.focus();
     ta.setSelectionRange(ta.value.length, ta.value.length);
   }
 
   function cancelEdit(btn) {
     const el = btn.closest('.log-entry');
-    const entry = entries.find(e => String(e.id) === String(el.dataset.id));
-    el.querySelector('.entry-edit-input').value = entry ? entry.text : '';
+    const entry = entryById(el.dataset.id);
+    el.querySelector(':scope > .entry-edit-input').value = entry ? entry.text : '';
     el.classList.remove('editing');
   }
 
   async function saveEdit(btn) {
     const el = btn.closest('.log-entry');
-    const id = el.dataset.id;
-    const text = el.querySelector('.entry-edit-input').value.trim();
+    const text = el.querySelector(':scope > .entry-edit-input').value.trim();
     if (!text) { showToast("entry can't be empty"); return; }
-
-    const entry = entries.find(e => String(e.id) === String(id));
+    const entry = entryById(el.dataset.id);
     if (!entry) return;
-    const prevText = entry.text, prevTags = entry.tags;
     const tags = parseTags(text);
-
-    entry.text = text;
-    entry.tags = tags;
-    renderLog();
-
-    const { error } = await sb.from('entries').update({ text, tags }).eq('id', id);
-    if (error) {
-      console.error(error);
-      entry.text = prevText;
-      entry.tags = prevTags;
-      renderLog();
-      showToast('update failed — check connection');
-      return;
+    if (await patchEntry(entry, { text, tags })) {
+      learnTags(tags);
+      showToast('updated ✓');
     }
-    tags.forEach(t => { if (!tagVocab.includes(t)) tagVocab.push(t); });
-    upsertTagVocab(tags);
-    showToast('updated ✓');
   }
 
-  function buildTagFilters() {
-    const vocab = getTagVocab();
-    const container = document.getElementById('logFilters');
-    // remove old tag chips
-    container.querySelectorAll('[data-filter^="tag:"]').forEach(el => el.remove());
-
-    vocab.slice(0, 6).forEach(tag => {
-      if (container.querySelector(`[data-filter="tag:${tag}"]`)) return;
-      const chip = document.createElement('div');
-      chip.className = 'filter-chip';
-      if (activeFilter === `tag:${tag}`) chip.classList.add('active');
-      chip.dataset.filter = `tag:${tag}`;
-      chip.textContent = tag;
-      chip.onclick = () => setFilter(`tag:${tag}`);
-      container.appendChild(chip);
-    });
-  }
-
-  function filterByTag(tag) {
-    switchTab('log');
-    setFilter(`tag:${tag}`);
-  }
-
-  function isToday(dk) {
-    return dk === fmtDateKey(Date.now());
-  }
-
-  function isYesterday(dk) {
-    return dk === fmtDateKey(Date.now() - 86400000);
-  }
-
-  // ── DELETE ──
   function requestDelete(id) {
     pendingDeleteId = id;
-    const entry = entries.find(e => String(e.id) === String(id));
-    if (entry) {
-      const preview = entry.text.length > 60 ? entry.text.slice(0,60) + '…' : entry.text;
-      document.getElementById('deletePreview').textContent = `delete: "${preview}"?`;
-    }
-    document.getElementById('deleteConfirm').classList.add('show');
-  }
-
-  function closeDelete() {
-    pendingDeleteId = null;
-    document.getElementById('deleteConfirm').classList.remove('show');
+    const entry = entryById(id);
+    $('deletePreview').textContent = entry ? snippet(entry.text, 140) : '';
+    $('sheet-delete').classList.add('open');
   }
 
   async function confirmDelete() {
-    if (!pendingDeleteId) return;
     const id = pendingDeleteId;
-    closeDelete();
-    const { error } = await sb.from('entries').delete().eq('id', id);
-    if (error) { console.error(error); showToast('delete failed — check connection'); return; }
+    if (!id) return;
+    closeSheet('sheet-delete');
+    try { await store.remove('entries', id); }
+    catch (err) { console.error(err); showToast('delete failed — check connection'); return; }
     entries = entries.filter(e => String(e.id) !== String(id));
-    updateCount();
-    renderLog();
+    entries.forEach(e => { if (String(e.parent_id) === String(id)) e.parent_id = null; });
+    tries.forEach(t => { if (String(t.lesson_id) === String(id)) t.lesson_id = null; });
+    renderCurrent();
     showToast('deleted');
   }
 
-  // ── AUTH ──
-  document.getElementById('authEmail').addEventListener('keydown', e => {
-    if (e.key === 'Enter') sendMagicLink();
-  });
-
-  function showAuthScreen() {
-    document.getElementById('authScreen').style.display = 'flex';
-    document.getElementById('appRoot').style.display = 'none';
+  // Jump from the growth page to an entry in the log, opened and highlighted.
+  function openInLog(id) {
+    const e = entryById(id);
+    if (!e) return;
+    if (e.released_at) showReleased = true;
+    activeFilter = 'all';
+    showTab('log');
+    const el = document.querySelector(`#logList .log-entry[data-id="${id}"]`);
+    if (!el) return;
+    el.classList.add('open', 'flash');
+    el.scrollIntoView({ block: 'center' });
+    setTimeout(() => el.classList.remove('flash'), 1200);
   }
 
-  function hideAuthScreen() {
-    document.getElementById('authScreen').style.display = 'none';
-    document.getElementById('appRoot').style.display = 'block';
+  // ── GROWTH ──
+  function renderGrowth() {
+    const active = activeTries();
+    const lessons = entries.filter(e => e.kind === 'lesson');
+    const areasUsed = [...new Set(lessons.map(l => l.area).filter(Boolean))];
+    if (areaFilter && !areasUsed.includes(areaFilter)) areaFilter = null;
+    const shownLessons = areaFilter ? lessons.filter(l => l.area === areaFilter) : lessons;
+    const kept = tries.filter(t => t.status === 'kept').sort((a, b) => b.ended_at - a.ended_at);
+    const tried = tries.filter(t => t.status === 'dropped').sort((a, b) => b.ended_at - a.ended_at);
+    const changed = entries.filter(e => {
+      if (e.kind !== 'reply') return false;
+      const p = entryById(e.parent_id);
+      return p && e.ts - p.ts >= 182 * DAY;
+    });
+    const lookbacks = entries.filter(e => e.kind === 'lookback');
+
+    const lessonHtml = shownLessons.map(l => {
+      const src = l.parent_id ? entryById(l.parent_id) : null;
+      return `
+        <div class="g-item">
+          <div class="g-text">${esc(l.text)}</div>
+          <div class="g-meta">
+            <span>${fmtShort(l.ts)}</span>${l.area ? `<span>${esc(l.area)}</span>` : ''}
+            ${src ? `<button class="link" onclick="openInLog('${src.id}')">from “${esc(snippet(src.text, 36))}”</button>` : ''}
+            <button class="link" onclick="openTrySheet({ lessonId: '${l.id}' })">try something →</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    $('screen-growth').innerHTML = `
+      <p class="g-intro">the evidence that you're evolving. not a report card.</p>
+
+      <div class="section-label">trying now <button class="link" onclick="openTrySheet({})">+ try</button></div>
+      ${active.length ? active.map(t => `
+        <div class="g-item tap" onclick="openCheckin('${t.id}')">
+          <div class="g-text">${esc(t.text)}</div>
+          <div class="g-meta"><span>since ${fmtShort(t.created_at)}</span>${t.area ? `<span>${esc(t.area)}</span>` : ''}${t.checkin_at <= Date.now() ? '<span style="color:var(--accent)">check-in time</span>' : ''}</div>
+        </div>`).join('') : `<div class="g-empty">nothing on the go. small upgrades, one at a time.</div>`}
+
+      <div class="section-label">lessons <button class="link" onclick="openLessonSheet({})">+ lesson</button></div>
+      ${areasUsed.length > 1 ? `<div class="chips area-filter">${areasUsed.map(a =>
+        `<button class="area-chip${areaFilter === a ? ' on' : ''}" onclick="setAreaFilter('${a}')">${esc(a)}</button>`).join('')}</div>` : ''}
+      ${lessonHtml || `<div class="g-empty">none yet. they tend to show up after a few look-backs.</div>`}
+
+      ${kept.length ? `<div class="section-label">kept</div>${kept.map(t => `
+        <div class="g-item">
+          <div class="g-text">${esc(t.text)}</div>
+          <div class="g-meta"><span>since ${fmtMonth(t.created_at)}</span>${t.area ? `<span>${esc(t.area)}</span>` : ''}</div>
+          ${t.note ? `<div class="g-note">${esc(t.note)}</div>` : ''}
+        </div>`).join('')}` : ''}
+
+      ${tried.length ? `<div class="section-label">tried <span style="text-transform:none;letter-spacing:0">still counts</span></div>${tried.map(t => `
+        <div class="g-item">
+          <div class="g-text">${esc(t.text)}</div>
+          <div class="g-meta"><span>${fmtMonth(t.created_at)} → ${fmtMonth(t.ended_at)}</span>${t.area ? `<span>${esc(t.area)}</span>` : ''}</div>
+          ${t.note ? `<div class="g-note">${esc(t.note)}</div>` : ''}
+        </div>`).join('')}` : ''}
+
+      <div class="section-label">changed my mind</div>
+      ${changed.length ? changed.map(r => {
+        const p = entryById(r.parent_id);
+        return `
+          <div class="g-item tap then-now" onclick="openInLog('${p.id}')">
+            <div><div class="lbl">then · ${fmtMonth(p.ts)}</div><div class="then">${esc(p.text)}</div></div>
+            <div><div class="lbl">now · ${fmtMonth(r.ts)}</div><div class="now">${esc(r.text)}</div></div>
+          </div>`;
+      }).join('') : `<div class="g-empty">reply to an entry from six months or more ago and it shows up here. expect some cringing.</div>`}
+
+      ${lookbacks.length ? `<div class="section-label">look-backs</div>${lookbacks.map(e => `
+        <div class="g-item tap" onclick="openInLog('${e.id}')">
+          <div class="g-meta" style="margin-top:0">week of ${fmtShort(e.ts - 6 * DAY)}</div>
+          <div class="g-text">${esc(snippet(e.text.split('\n').filter(l => l && !JOURNAL_QS.includes(l) && l !== '#lookback')[0] || '', 110))}</div>
+        </div>`).join('')}` : ''}
+    `;
   }
+
+  function setAreaFilter(a) { areaFilter = areaFilter === a ? null : a; renderGrowth(); }
+
+  // ── WEEKLY LOOK-BACK ──
+  // One question per screen; the draft lives in localStorage so leaving halfway loses nothing.
+  function lbDraft() {
+    const week = fmtDateKey(lastSaturday());
+    let d = lsGet('lookback-draft', null);
+    if (!d || d.week !== week) d = { week, step: 0, answers: [], makeTry: false, finished: false, savedNothing: false };
+    return d;
+  }
+  function lbSave(d) { lsSet('lookback-draft', d); }
+
+  function renderLookback() {
+    const d = lbDraft();
+    const week = weekEntries();
+    const head = `
+      <div class="page-head">
+        <button class="back-btn" onclick="goBack()" aria-label="back">←</button>
+        <div><div class="page-title">look back</div><div class="page-sub">the last seven days</div></div>
+      </div>`;
+
+    if (d.finished) {
+      $('page-lookback').innerHTML = head + `
+        <div class="lb-closing">
+          <div class="quote">${d.savedNothing ? "nothing to save. that's allowed too." : esc(ONE_LINER)}</div>
+          <button class="btn btn-primary" onclick="finishLookbackPage()">done</button>
+        </div>`;
+      return;
+    }
+
+    const q = JOURNAL_QS[d.step];
+    const last = d.step === JOURNAL_QS.length - 1;
+    $('page-lookback').innerHTML = head + `
+      <details class="week">
+        <summary>${week.length ? `${week.length} ${week.length === 1 ? 'note' : 'notes'} this week` : 'no notes this week'}</summary>
+        <ul>${week.map(e => `<li><span>${fmtShort(e.ts)}</span>${esc(e.question ? e.question + ' → ' + e.text : e.text)}</li>`).join('')}</ul>
+      </details>
+      <div class="card">
+        <div class="lb-progress">${d.step + 1} of ${JOURNAL_QS.length}</div>
+        <div class="lb-q">${esc(q)}</div>
+        <textarea id="lbInput" placeholder="skip it if nothing comes">${escText(d.answers[d.step] || '')}</textarea>
+        ${d.step === TRY_STEP ? `<label class="tick"><input type="checkbox" id="lbMakeTry" ${d.makeTry ? 'checked' : ''}> make it a try</label>` : ''}
+        <div class="card-actions">
+          ${d.step > 0 ? `<button class="btn btn-ghost btn-sm" onclick="lbMove(-1)">← back</button>` : ''}
+          <span class="spacer"></span>
+          <button class="btn btn-ghost btn-sm" onclick="lbSkip()">skip</button>
+          <button class="btn btn-primary btn-sm" onclick="lbMove(1)">${last ? 'finish' : 'next'}</button>
+        </div>
+      </div>`;
+    const ta = $('lbInput');
+    ta.addEventListener('input', () => { const dd = lbDraft(); dd.answers[dd.step] = ta.value; lbSave(dd); });
+    if (!isTouchDevice) ta.focus();
+  }
+
+  function lbCapture(d) {
+    const ta = $('lbInput');
+    if (ta) d.answers[d.step] = ta.value;
+    const cb = $('lbMakeTry');
+    if (cb) d.makeTry = cb.checked;
+  }
+
+  function lbMove(dir) {
+    const d = lbDraft();
+    lbCapture(d);
+    if (dir > 0 && d.step === JOURNAL_QS.length - 1) { lbSave(d); finishLookback(); return; }
+    d.step = Math.max(0, Math.min(JOURNAL_QS.length - 1, d.step + dir));
+    lbSave(d);
+    renderLookback();
+    window.scrollTo(0, 0);
+  }
+
+  function lbSkip() {
+    const d = lbDraft();
+    d.answers[d.step] = '';
+    if (d.step === TRY_STEP) d.makeTry = false;
+    lbSave(d);
+    if (d.step === JOURNAL_QS.length - 1) { finishLookback(); return; }
+    d.step++;
+    lbSave(d);
+    renderLookback();
+  }
+
+  async function finishLookback() {
+    const d = lbDraft();
+    const parts = JOURNAL_QS.map((q, i) => (d.answers[i] || '').trim() ? `${q}\n${d.answers[i].trim()}` : null).filter(Boolean);
+    if (!parts.length) {
+      d.finished = true; d.savedNothing = true; lbSave(d); renderLookback();
+      return;
+    }
+    const e = await addEntry({ text: parts.join('\n\n') + '\n\n#lookback', kind: 'lookback' });
+    if (!e) return;
+    const tryText = (d.answers[TRY_STEP] || '').trim();
+    d.finished = true; d.savedNothing = false;
+    lbSave(d);
+    renderLookback();
+    if (d.makeTry && tryText) startTry({ text: tryText });
+  }
+
+  function finishLookbackPage() {
+    lsSet('lookback-draft', null);
+    goBack();
+  }
+
+  // ── AUTH + BOOT ──
+  $('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') sendMagicLink(); });
+
+  function showAuthScreen() { $('authScreen').style.display = 'flex'; $('appRoot').hidden = true; }
+  function hideAuthScreen() { $('authScreen').style.display = 'none'; $('appRoot').hidden = false; }
 
   async function sendMagicLink() {
-    const email = document.getElementById('authEmail').value.trim();
+    const email = $('authEmail').value.trim();
     if (!email) { showToast('enter your email'); return; }
-    const btn = document.getElementById('authSendBtn');
+    const btn = $('authSendBtn');
     btn.disabled = true; btn.textContent = 'sending…';
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.href.split('#')[0] },
-    });
+    const { error } = await store.signIn(email);
     btn.disabled = false; btn.textContent = 'send magic link';
     if (error) console.error(error);
-    document.getElementById('authStatus').textContent = error
-      ? 'error: ' + error.message
-      : 'check your email for the sign-in link ✓';
+    $('authStatus').textContent = error ? 'error: ' + error.message : 'check your email for the sign-in link ✓';
   }
 
-  function signOut() { sb.auth.signOut(); }
-
-  let currentUser = null;
+  function signOut() { store.signOut(); }
 
   async function refreshData() {
-    const [{ data: entryRows, error: eErr }, { data: vocabRows, error: vErr }] = await Promise.all([
-      sb.from('entries').select('*').order('ts', { ascending: false }),
-      sb.from('tag_vocab').select('tag').order('last_used_at', { ascending: false }),
-    ]);
-    if (eErr || vErr) { showToast('sync error — check connection'); console.error(eErr || vErr); return; }
-    entries = entryRows.map(rowToEntry);
-    tagVocab = vocabRows.map(r => r.tag);
+    try {
+      const data = await store.load();
+      entries = data.entries.map(fromRow);
+      tries = data.tries.map(fromRow);
+      tagVocab = data.tags;
+      return true;
+    } catch (err) {
+      console.error(err);
+      const needsMigration = err && (err.code === '42P01' || err.code === 'PGRST205' || /tries/.test(err.message || ''));
+      showToast(needsMigration ? 'database needs the v3 migration' : 'sync error — check connection', 3000);
+      return false;
+    }
   }
 
   async function manualRefresh() {
-    await refreshData();
-    updateCount();
-    if (document.getElementById('screen-log').classList.contains('active')) renderLog();
-    showToast('refreshed ✓');
+    if (await refreshData()) { renderCurrent(); showToast('refreshed ✓'); }
   }
 
+  let signingIn = false;
   async function onSignedIn() {
-    const { data } = await sb.auth.getUser();
-    currentUser = data.user;
+    // getSession() on boot and the auth listener can both report the same sign-in
+    if (signingIn || currentUser) return;
+    signingIn = true;
+    currentUser = await store.user();
+    signingIn = false;
     hideAuthScreen();
     await refreshData();
-    updateCount();
-    input.focus();
+    applyRoute();
+    if (!isTouchDevice && view === 'today') input.focus();
   }
 
   async function boot() {
-    const { data: { session } } = await sb.auth.getSession();
-    sb.auth.onAuthStateChange((event, s) => {
+    if (DEMO) {
+      $('demoBadge').hidden = false;
+      $('demoReset').hidden = false;
+      $('signOutBtn').hidden = true;
+    }
+    const session = await store.session();
+    store.onAuth(event => {
       if (event === 'SIGNED_IN') onSignedIn();
       if (event === 'SIGNED_OUT') { currentUser = null; showAuthScreen(); }
     });
