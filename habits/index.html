@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Habits">
+<title>Habits</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  :root { --accent: #4ade80; --yes: #3f8f6b; --auto: #1f3a2d; --partial: #b58a2c; }
+  html { height: 100%; }
+  body { min-height: 100%; font-size: 15px; line-height: 1.45; }
+  main { max-width: 760px; margin: 0 auto; padding: 18px 16px 80px; }
+  a { color: var(--accent); }
+  header.top { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+  header.top h1 { font-size: 20px; font-weight: 650; flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  header.top h1 span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  h2 { font-size: 12px; margin: 28px 0 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .muted { color: var(--soft); font-size: 13px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 13px; border: 1px solid var(--border-2);
+         border-radius: 9px; background: var(--surface-2); color: var(--text); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #0d0d0d; font-weight: 600; }
+  .btn.danger { color: var(--red); }
+  .btn.icon { width: 36px; padding: 7px 0; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+
+  /* home grid */
+  table.grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .grid th { font-weight: 500; font-size: 11px; color: var(--muted-2); padding: 4px 0; line-height: 1.3; }
+  .grid th.today-col { color: var(--text); }
+  .grid td { padding: 8px 0; border-top: 1px solid var(--border); text-align: center; }
+  .grid col.name { width: auto; } .grid col.day { width: 42px; }
+  .grid td.name { text-align: left; padding-right: 8px; }
+  .grid td.name a { color: inherit; text-decoration: none; font-weight: 550; display: flex; align-items: center; gap: 7px; }
+  .grid td.name a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .grid .sub { margin-top: 1px; font-size: 12px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar { height: 3px; background: var(--border-2); border-radius: 2px; margin-top: 5px; max-width: 160px; }
+  .bar > span { display: block; height: 100%; border-radius: 2px; }
+  @media (max-width: 480px) { .grid col.day { width: 36px; } }
+
+  .cell { position: relative; width: 32px; height: 32px; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border-2);
+          font: 600 12px/30px var(--sans); color: var(--text); cursor: pointer; user-select: none; }
+  .cell.yes { background: var(--yes); border-color: var(--yes); color: #fff; }
+  .cell.auto { background: var(--auto); border-color: var(--auto); color: var(--soft); }
+  .cell.no { color: var(--red); }
+  .cell.skip { color: var(--muted-2); }
+  .cell.partial { background: var(--partial); border-color: var(--partial); color: #fff; }
+  .cell.today { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--soft); }
+  .note-dot { position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .75; }
+  .day[role=button] { cursor: pointer; }
+  .day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* detail */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .stats b { display: block; font-size: 24px; font-weight: 650; margin-top: 2px; }
+  svg.line { width: 100%; height: 150px; display: block; }
+  .heat { display: flex; gap: 3px; overflow-x: auto; scrollbar-width: thin; }
+  .heat .col { display: flex; flex-direction: column; gap: 3px; }
+  .heat .sq { width: 13px; height: 13px; border-radius: 3px; background: var(--subtle); flex: none; }
+  .heat .sq.yes { background: var(--yes); } .heat .sq.auto { background: var(--auto); }
+  .heat .sq.no { background: var(--red-dim); } .heat .sq.skip { background: var(--border-2); }
+  .heat .sq.partial { background: var(--partial); } .heat .sq.future { background: transparent; }
+  .heat .sq.noted { box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
+  .cal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .cal-head b { flex: 1; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-grid .wd { text-align: center; font-size: 11px; color: var(--muted-2); padding-bottom: 2px; }
+  .cd { position: relative; aspect-ratio: 1; max-height: 62px; border-radius: 8px; border: 1px solid var(--border);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; }
+  .cd .v { font-size: 11px; font-weight: 650; }
+  .cd.yes { background: var(--yes); border-color: var(--yes); color: #fff; }
+  .cd.auto { background: var(--auto); border-color: var(--auto); }
+  .cd.partial { background: var(--partial); border-color: var(--partial); color: #fff; }
+  .cd.no { color: var(--red); border-color: var(--red-dim); }
+  .cd.skip { color: var(--muted-2); background: var(--surface-2); }
+  .cd.future { opacity: .3; }
+  .cd.today { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--soft); }
+  .cd .note-dot { top: 5px; right: 5px; width: 6px; height: 6px; }
+  .list > div { padding: 3px 0; }
+  .list .muted { margin-right: 6px; font-variant-numeric: tabular-nums; }
+  .manage { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* forms */
+  form.stack label { display: block; margin: 14px 0 5px; font-size: 13px; color: var(--soft); }
+  input, select, textarea { width: 100%; padding: 9px 10px; border: 1px solid var(--border-2); border-radius: 9px;
+         background: var(--surface-2); color: var(--text); font: inherit; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; gap: 10px; } .row > * { flex: 1; min-width: 0; }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatches label { margin: 0 !important; }
+  .swatches input { display: none; }
+  .swatches span { display: block; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+  .swatches input:checked + span { border-color: var(--text); }
+  .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* dialog */
+  dialog { margin: auto; border: 1px solid var(--border-2); border-radius: 14px; background: var(--surface); color: var(--text);
+           width: min(380px, calc(100% - 32px)); padding: 18px; }
+  dialog::backdrop { background: rgba(0,0,0,.6); }
+  .dlg-head { display: flex; align-items: center; gap: 8px; font-size: 17px; }
+  .tick { display: flex; gap: 12px; margin: 16px 0 6px; }
+  .big { flex: 1; height: 64px; border-radius: 12px; border: 2px solid var(--border-2); background: transparent; font: 600 28px var(--sans); cursor: pointer; }
+  .big.yes { color: var(--green); } .big.no { color: var(--red); }
+  .big.yes[aria-pressed=true] { background: var(--yes); border-color: var(--yes); color: #fff; }
+  .big.no[aria-pressed=true] { background: var(--red); border-color: var(--red); color: #0d0d0d; }
+  .skip { border: 0; background: none; color: var(--soft); font: inherit; font-size: 13px; padding: 4px 0; cursor: pointer; }
+  .skip[aria-pressed=true] { color: var(--text); font-weight: 600; }
+  .num { display: flex; align-items: center; gap: 10px; margin: 16px 0 6px; }
+  .num input { font-size: 26px; font-weight: 600; padding: 10px 12px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .menu button { display: block; width: 100%; text-align: left; margin-top: 8px; }
+  [hidden] { display: none !important; }
+
+  /* auth */
+  .auth { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+  .auth .card { width: min(340px, 100%); }
+  .auth h1 { font-size: 22px; margin-bottom: 4px; }
+  .auth input { margin: 14px 0 10px; }
+  .auth .btn { width: 100%; }
+  .auth-status { margin-top: 10px; font-size: 13px; color: var(--soft); min-height: 1em; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border-2);
+           padding: 9px 14px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; }
+  .toast.show { opacity: 1; }
+  .empty { text-align: center; padding: 30px 14px; }
+</style>
+</head>
+<body>
+<main id="app"><p class="muted">loading…</p></main>
+
+<dialog id="day-dialog">
+  <form method="dialog">
+    <div class="dlg-head"><span class="dot" id="day-dot"></span><b id="day-habit"></b></div>
+    <div class="muted" id="day-date"></div>
+    <div id="day-yesno">
+      <div class="tick">
+        <button type="button" class="big yes" data-v="yes" aria-label="Done">✓</button>
+        <button type="button" class="big no" data-v="no" aria-label="Missed">✗</button>
+      </div>
+      <button type="button" class="skip" data-v="skip">» Skip this day</button>
+    </div>
+    <div id="day-num" class="num">
+      <input id="day-value" type="number" step="any" inputmode="decimal" placeholder="0" aria-label="Value">
+      <span id="day-unit" class="muted"></span>
+    </div>
+    <label class="muted" for="day-notes" style="display:block;margin:12px 0 5px">Note</label>
+    <textarea id="day-notes" rows="3" placeholder="How did it go?"></textarea>
+    <div class="actions"><button type="button" class="btn" id="day-cancel">Cancel</button>
+      <button class="btn primary" value="save">Save</button></div>
+  </form>
+</dialog>
+
+<dialog id="menu-dialog">
+  <div class="dlg-head"><b>Data</b></div>
+  <div class="muted" id="menu-who"></div>
+  <div class="menu">
+    <button class="btn" id="menu-import">Import backup (.json)…</button>
+    <button class="btn" id="menu-export">Export backup (.json)</button>
+    <button class="btn" id="menu-csv">Export CSV</button>
+    <button class="btn danger" id="menu-signout">Sign out</button>
+  </div>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <div class="actions"><button class="btn" onclick="this.closest('dialog').close()">Close</button></div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="engine.js"></script>
+<script>
+'use strict';
+// The publishable key is meant to be public. Row-level security policies (supabase/schema.sql)
+// are what restrict each signed-in user to their own rows.
+const SUPABASE_URL = 'https://sjycdaxraklxlnrmgqrb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_gpJ7aoxecKwhPrHRDdzddA_rdMsRlPN';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const E = window.HabitEngine, V = E.V;
+
+const COLORS = ['#3f8f6b', '#5b7fbf', '#c0703a', '#8a5a9e', '#b5793a', '#c4553f', '#4f8a8b', '#a0a03a', '#d0679d', '#7a7a74'];
+const FREQS = [['1/1', 'Every day'], ['6/7', '6x per week'], ['5/7', '5x per week'], ['4/7', '4x per week'], ['3/7', '3x per week'],
+               ['2/7', '2x per week'], ['1/7', 'Once a week'], ['1/2', 'Every other day'], ['1/14', 'Every 2 weeks'], ['1/30', 'Once a month']];
+
+// ------------------------------------------------------------------ state
+
+let user = null;
+let habits = [];                 // rows from `habits`
+let entries = new Map();         // habit id -> Map(day -> {value, notes})
+const statsCache = new Map();    // habit id -> engine.analyze() result
+let showArchived = false;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const today = () => E.localToday();
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+function fail(error, what) { console.error(error); toast(`${what} failed: ${error.message || error}`); }
+
+function stats(h) {
+  let st = statsCache.get(h.id);
+  if (!st) {
+    const es = [...(entries.get(h.id) || new Map())].map(([day, e]) => ({day, value: e.value, notes: e.notes}));
+    st = E.analyze(h, es, today());
+    statsCache.set(h.id, st);
+  }
+  return st;
+}
+
+function freqLabel(h) {
+  const {num: n, den: d} = E.frequency(h);
+  if (n === 1 && d === 1) return 'every day';
+  if (d === 7) return n === 1 ? 'once a week' : `${n}x per week`;
+  if (d === 30 || d === 31) return n === 1 ? 'once a month' : `${n}x per month`;
+  return n > 1 ? `${n}x every ${d} days` : `every ${d} days`;
+}
+const fmtNum = x => Math.abs(x) >= 10 ? x.toFixed(0) : String(+x.toFixed(1));
+const fmtRaw = x => String(+(x / 1000).toFixed(3));
+
+/* display state of one day: {day, text, cls, raw, notes} — raw is what was actually logged */
+function dayInfo(h, st, day) {
+  if (day > st.today) return {day, text: '', cls: 'future', raw: '', notes: ''};
+  const v = st.value(day), logged = (entries.get(h.id) || new Map()).get(day);
+  let text = '', cls = 'unknown';
+  if (E.isNumerical(h)) {
+    if (v !== V.UNKNOWN) { text = fmtNum(v / 1000); cls = E.isSuccess(h, v) ? 'yes' : 'partial'; }
+  } else {
+    [text, cls] = {[V.YES_MANUAL]: ['✓', 'yes'], [V.YES_AUTO]: ['·', 'auto'], [V.SKIP]: ['»', 'skip'], [V.NO]: ['✗', 'no']}[v] || ['', 'unknown'];
+  }
+  let raw = '';
+  if (logged && logged.value !== V.UNKNOWN)
+    raw = E.isNumerical(h) ? fmtRaw(logged.value) : ({[V.YES_MANUAL]: 'yes', [V.NO]: 'no', [V.SKIP]: 'skip'}[logged.value] || '');
+  return {day, text, cls, raw, notes: logged ? logged.notes : ''};
+}
+const dayAttrs = (h, c) => `data-habit="${h.id}" data-day="${c.day}" data-raw="${esc(c.raw)}"` + (c.cls !== 'future' ? ' tabindex="0" role="button"' : '');
+
+// ------------------------------------------------------------------ data
+
+async function loadAll() {
+  const {data: hs, error} = await sb.from('habits').select('*').order('position').order('created_at');
+  if (error) throw error;
+  const all = [];
+  for (let from = 0; ; from += 1000) {   // PostgREST returns at most 1000 rows per request
+    const {data, error: e2} = await sb.from('habit_entries').select('habit_id,date,value,notes')
+      .order('habit_id').order('date').range(from, from + 999);
+    if (e2) throw e2;
+    all.push(...data);
+    if (data.length < 1000) break;
+  }
+  habits = hs;
+  entries = new Map(hs.map(h => [h.id, new Map()]));
+  for (const r of all) (entries.get(r.habit_id) || entries.set(r.habit_id, new Map()).get(r.habit_id))
+    .set(E.toDay(r.date), {value: r.value, notes: r.notes || ''});
+  statsCache.clear();
+}
+
+/* Same rule as the Python repo: UNKNOWN with no notes deletes the row, so the table only holds facts. */
+async function setEntry(h, day, value, notes) {
+  const map = entries.get(h.id), prev = map.get(day), iso = E.toIso(day);
+  const del = value === V.UNKNOWN && !notes;
+  if (del) map.delete(day); else map.set(day, {value, notes});
+  statsCache.delete(h.id);
+  render();
+  const q = del ? sb.from('habit_entries').delete().eq('habit_id', h.id).eq('date', iso)
+                : sb.from('habit_entries').upsert({habit_id: h.id, date: iso, value, notes}, {onConflict: 'habit_id,date'});
+  const {error} = await q;
+  if (error) {   // roll back the optimistic change
+    if (prev) map.set(day, prev); else map.delete(day);
+    statsCache.delete(h.id); render(); fail(error, 'Save');
+  }
+}
+
+async function saveHabit(row) {
+  const {error} = await sb.from('habits').upsert(row);
+  if (error) { fail(error, 'Save'); return false; }
+  const i = habits.findIndex(h => h.id === row.id);
+  if (i >= 0) habits[i] = {...habits[i], ...row}; else { habits.push(row); entries.set(row.id, new Map()); }
+  statsCache.delete(row.id);
+  return true;
+}
+
+// ------------------------------------------------------------------ views
+
+function route() {
+  const [, view, id, month] = (location.hash || '#/').split('/');
+  return {view: view || 'home', id, month};
+}
+
+function render() {
+  if (!user) return;
+  const r = route();
+  const h = r.id && habits.find(x => x.id === r.id);
+  if ((r.view === 'habit' || r.view === 'edit') && !h) { location.hash = '#/'; return; }
+  $('app').innerHTML = r.view === 'habit' ? viewDetail(h, r.month) : r.view === 'new' ? viewForm(null)
+                     : r.view === 'edit' ? viewForm(h) : viewHome();
+  if (r.view === 'habit') { const heat = document.querySelector('.heat'); if (heat) heat.scrollLeft = 1e6; }
+  if (r.view === 'new' || r.view === 'edit') bindForm(h);
+}
+
+function viewHome() {
+  const t = today(), days = Array.from({length: 7}, (_, i) => t - 6 + i);
+  const active = habits.filter(h => !h.archived), archived = habits.filter(h => h.archived);
+  const shown = showArchived ? archived : active;
+  const head = `<header class="top"><h1><span class="t">${showArchived ? 'Archived' : 'Habits'}</span></h1>
+    <button class="btn icon" onclick="openMenu()" aria-label="Data and account">⋯</button>
+    <a class="btn primary" href="#/new">+ Habit</a></header>`;
+  if (!habits.length) return head + `<div class="card empty">No habits yet.<br><br>
+    <a class="btn primary" href="#/new">Create one</a> <button class="btn" onclick="$('import-file').click()">Import a backup</button></div>`;
+  const wd = d => new Date(d * 86400000).toLocaleDateString(undefined, {weekday: 'short', timeZone: 'UTC'});
+  const rows = shown.map(h => {
+    const st = stats(h), score = Math.round(st.score() * 100);
+    const cells = days.map(d => { const c = dayInfo(h, st, d);
+      return `<td><div class="cell day ${c.cls}${d === t ? ' today' : ''}" ${dayAttrs(h, c)} title="${E.toIso(d)}${c.notes ? ' · ' + esc(c.notes) : ''}">${c.text}${c.notes ? '<span class="note-dot"></span>' : ''}</div></td>`; }).join('');
+    return `<tr><td class="name"><a href="#/habit/${h.id}"><span class="dot" style="background:${esc(h.color)}"></span><span>${esc(h.name)}</span></a>
+      <div class="sub">${score}% · streak ${st.currentStreak} · ${freqLabel(h)}</div>
+      <div class="bar"><span style="width:${score}%;background:${esc(h.color)}"></span></div></td>${cells}</tr>`;
+  }).join('');
+  return head + `<table class="grid"><colgroup><col class="name">${'<col class="day">'.repeat(7)}</colgroup>
+    <thead><tr><th></th>${days.map(d => `<th class="${d === t ? 'today-col' : ''}">${wd(d)}<br>${E.parts(d).d}</th>`).join('')}</tr></thead>
+    <tbody>${rows || `<tr><td colspan="8" class="muted" style="padding:20px">Nothing here.</td></tr>`}</tbody></table>
+    <p class="muted" style="margin-top:12px">Tap a day to log it and add a note. Dim squares are days not due under the habit's frequency.</p>
+    ${archived.length || showArchived ? `<p style="margin-top:14px"><button class="btn" onclick="showArchived=!showArchived;render()">${showArchived ? '← Active habits' : `Archived (${archived.length})`}</button></p>` : ''}`;
+}
+
+function viewDetail(h, monthParam) {
+  const st = stats(h), t = st.today, numerical = E.isNumerical(h);
+  const target = numerical ? ` · ${h.target_type.replace('_', ' ')} ${+h.target_value} ${esc(h.unit)}` : '';
+
+  // score line, last 180 days
+  const W = 720, H = 150, N = 180;
+  const pts = Array.from({length: N}, (_, i) => `${(i * W / (N - 1)).toFixed(1)},${(H - st.score(t - N + 1 + i) * H).toFixed(1)}`).join(' ');
+  const grid = [0.25, 0.5, 0.75].map(y => `<line x1="0" x2="${W}" y1="${H - y * H}" y2="${H - y * H}" stroke="currentColor" stroke-opacity=".12"/>`).join('');
+
+  // heatmap: 26 weeks, Monday-first columns
+  const dow = d => (new Date(d * 86400000).getUTCDay() + 6) % 7;
+  const start = t - dow(t) - 25 * 7;
+  let heat = '';
+  for (let w = 0; w < 26; w++) {
+    heat += '<div class="col">';
+    for (let k = 0; k < 7; k++) { const c = dayInfo(h, st, start + w * 7 + k);
+      heat += `<div class="sq day ${c.cls}${c.notes ? ' noted' : ''}" ${dayAttrs(h, c)} title="${E.toIso(c.day)} ${c.text}${c.notes ? ' · ' + esc(c.notes) : ''}"></div>`; }
+    heat += '</div>';
+  }
+
+  // month calendar
+  const tp = E.parts(t);
+  let [y, m] = (monthParam || '').split('-').map(Number);
+  if (!y || !m || m < 1 || m > 12) { y = tp.y; m = tp.m; }
+  const first = Date.UTC(y, m - 1, 1) / 86400000, last = Date.UTC(y, m, 0) / 86400000;
+  let cal = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(w => `<div class="wd">${w}</div>`).join('');
+  cal += '<div></div>'.repeat(dow(first));
+  let done = 0;
+  for (let d = first; d <= last; d++) {
+    const c = dayInfo(h, st, d); if (c.cls === 'yes') done++;
+    cal += `<div class="cd day ${c.cls}${d === t ? ' today' : ''}" ${dayAttrs(h, c)} title="${esc(c.notes)}"><span>${E.parts(d).d}</span>${numerical && c.text ? `<span class="v">${c.text}</span>` : ''}${c.notes ? '<span class="note-dot"></span>' : ''}</div>`;
+  }
+  const ym = (yy, mm) => `${yy}-${String(mm).padStart(2, '0')}`;
+  const prev = m === 1 ? ym(y - 1, 12) : ym(y, m - 1), next = m === 12 ? ym(y + 1, 1) : ym(y, m + 1);
+  const monthName = new Date(first * 86400000).toLocaleDateString(undefined, {month: 'long', year: 'numeric', timeZone: 'UTC'});
+  const nextOk = Date.UTC(+next.slice(0, 4), +next.slice(5) - 1, 1) / 86400000 <= t;
+
+  const top = [...st.streaks].sort((a, b) => b.length - a.length).slice(0, 5);
+  const notes = [...(entries.get(h.id) || new Map())].filter(([, e]) => e.notes).sort((a, b) => b[0] - a[0]).slice(0, 25);
+
+  return `<header class="top"><a class="btn icon" href="#/" aria-label="Back">‹</a>
+      <h1><span class="dot" style="background:${esc(h.color)}"></span><span class="t">${esc(h.name)}</span></h1>
+      <a class="btn" href="#/edit/${h.id}">Edit</a></header>
+    <p class="muted" style="margin:-8px 0 16px">${esc(h.question)}${h.question ? ' · ' : ''}${freqLabel(h)}${target}${h.archived ? ' · archived' : ''}</p>
+    <div class="stats">
+      <div class="card"><span class="muted">Score</span><b>${Math.round(st.score() * 100)}%</b></div>
+      <div class="card"><span class="muted">Streak</span><b>${st.currentStreak}</b></div>
+      <div class="card"><span class="muted">Best</span><b>${st.bestStreak}</b></div>
+    </div>
+    <h2>Score · last 180 days</h2>
+    <div class="card"><svg class="line" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}
+      <polyline points="${pts}" fill="none" stroke="${esc(h.color)}" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg></div>
+    <h2>History · 26 weeks</h2>
+    <div class="card heat">${heat}</div>
+    <h2>Calendar</h2>
+    <div class="card">
+      <div class="cal-head"><a class="btn icon" href="#/habit/${h.id}/${prev}" aria-label="Previous month">‹</a>
+        <b>${monthName}</b><span class="muted">${done} day${done === 1 ? '' : 's'} done</span>
+        ${nextOk ? `<a class="btn icon" href="#/habit/${h.id}/${next}" aria-label="Next month">›</a>` : `<button class="btn icon" disabled>›</button>`}</div>
+      <div class="cal-grid">${cal}</div>
+    </div>
+    <h2>Best streaks</h2>
+    <div class="card list">${top.map(s => `<div>${s.length} day${s.length === 1 ? '' : 's'} <span class="muted">${E.toIso(s.start)} → ${E.toIso(s.end)}</span></div>`).join('') || '<span class="muted">None yet.</span>'}</div>
+    <h2>Notes</h2>
+    ${notes.length ? `<div class="card list">${notes.map(([d, e]) => `<div><span class="muted">${E.toIso(d)}</span>${esc(e.notes)}</div>`).join('')}</div>`
+                   : '<p class="muted">No notes yet. Tap a day to add one.</p>'}
+    <h2>Manage</h2>
+    <div class="manage"><button class="btn" onclick="toggleArchive('${h.id}')">${h.archived ? 'Unarchive' : 'Archive'}</button>
+      <button class="btn danger" onclick="deleteHabit('${h.id}')">Delete</button></div>`;
+}
+
+function viewForm(h) {
+  const cur = h ? `${h.freq_num}/${h.freq_den}` : '1/1';
+  const freqs = FREQS.some(([v]) => v === cur) ? FREQS : [...FREQS, [cur, `${h.freq_num}x every ${h.freq_den} days`]];
+  const color = h ? h.color : COLORS[habits.length % COLORS.length];
+  const colors = COLORS.includes(color) ? COLORS : [...COLORS, color];
+  const numerical = h && h.type === 'numerical';
+  return `<header class="top"><a class="btn icon" href="${h ? `#/habit/${h.id}` : '#/'}" aria-label="Back">‹</a><h1><span class="t">${h ? 'Edit habit' : 'New habit'}</span></h1></header>
+  <form class="stack card" id="habit-form">
+    <label for="f-name">Name</label><input id="f-name" name="name" required maxlength="80" value="${esc(h?.name)}" placeholder="e.g. Run">
+    <label for="f-question">Question</label><input id="f-question" name="question" maxlength="200" value="${esc(h?.question)}" placeholder="e.g. Did you run today?">
+    <div class="row">
+      <div><label for="f-type">Type</label><select id="f-type" name="type">
+        <option value="yes_no"${numerical ? '' : ' selected'}>Yes / No</option><option value="numerical"${numerical ? ' selected' : ''}>Measurable</option></select></div>
+      <div><label for="f-freq">Frequency</label><select id="f-freq" name="freq">${freqs.map(([v, l]) => `<option value="${v}"${v === cur ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+    </div>
+    <div class="row" id="f-numeric"${numerical ? '' : ' hidden'}>
+      <div><label for="f-tt">Target</label><select id="f-tt" name="target_type">
+        <option value="at_least"${h?.target_type === 'at_most' ? '' : ' selected'}>At least</option><option value="at_most"${h?.target_type === 'at_most' ? ' selected' : ''}>At most</option></select></div>
+      <div><label for="f-tv">Amount</label><input id="f-tv" name="target_value" type="number" step="any" min="0" value="${h ? +h.target_value : ''}"></div>
+      <div><label for="f-unit">Unit</label><input id="f-unit" name="unit" maxlength="20" value="${esc(h?.unit)}" placeholder="miles"></div>
+    </div>
+    <p class="muted" id="f-numhint" style="margin-top:8px"${numerical ? '' : ' hidden'}>The score compares the total over each frequency window (e.g. 7 days for once a week) with the target.</p>
+    <label>Color</label>
+    <div class="swatches">${colors.map(c => `<label><input type="radio" name="color" value="${c}"${c === color ? ' checked' : ''}><span style="background:${c}"></span></label>`).join('')}</div>
+    <label for="f-desc">Description</label><textarea id="f-desc" name="description" rows="2">${esc(h?.description)}</textarea>
+    <div class="form-actions"><a class="btn" href="${h ? `#/habit/${h.id}` : '#/'}">Cancel</a><button class="btn primary">Save</button></div>
+  </form>`;
+}
+
+function bindForm(h) {
+  const f = $('habit-form'), sync = () => { const n = f.type.value === 'numerical'; $('f-numeric').hidden = !n; $('f-numhint').hidden = !n; };
+  f.type.addEventListener('change', sync);
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const [num, den] = f.freq.value.split('/').map(Number);
+    const row = {
+      id: h ? h.id : crypto.randomUUID(), name: f.name.value.trim(), question: f.question.value.trim(),
+      description: f.description.value.trim(), type: f.type.value, freq_num: num, freq_den: den,
+      target_type: f.target_type.value, target_value: parseFloat(f.target_value.value) || 0, unit: f.unit.value.trim(),
+      color: f.color.value, position: h ? h.position : habits.reduce((m, x) => Math.max(m, x.position), 0) + 1,
+      archived: h ? h.archived : false,
+    };
+    if (!row.name) return;
+    f.querySelector('button.primary').disabled = true;
+    if (await saveHabit(row)) location.hash = `#/habit/${row.id}`;
+    else f.querySelector('button.primary').disabled = false;
+  });
+}
+
+async function toggleArchive(id) {
+  const h = habits.find(x => x.id === id);
+  if (await saveHabit({...h, archived: !h.archived})) { toast(h.archived ? 'Unarchived' : 'Archived'); location.hash = '#/'; render(); }
+}
+
+async function deleteHabit(id) {
+  const h = habits.find(x => x.id === id);
+  if (!confirm(`Delete ${h.name} and all its history? This can't be undone.`)) return;
+  const {error} = await sb.from('habits').delete().eq('id', id);
+  if (error) return fail(error, 'Delete');
+  habits = habits.filter(x => x.id !== id); entries.delete(id); statsCache.delete(id);
+  location.hash = '#/'; render();
+}
+
+// ------------------------------------------------------------------ day dialog
+
+const dlg = $('day-dialog'), choices = dlg.querySelectorAll('[data-v]');
+let dlgHabit = null, dlgDay = null, dlgStatus = '';
+const pick = v => { dlgStatus = v; choices.forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); };
+// Pressing the selected choice again clears it (back to "not logged").
+choices.forEach(b => b.addEventListener('click', () => pick(dlgStatus === b.dataset.v ? '' : b.dataset.v)));
+
+function openDay(el) {
+  dlgHabit = habits.find(h => h.id === el.dataset.habit); dlgDay = +el.dataset.day;
+  const numerical = E.isNumerical(dlgHabit), logged = entries.get(dlgHabit.id).get(dlgDay);
+  $('day-habit').textContent = dlgHabit.name;
+  $('day-dot').style.background = dlgHabit.color;
+  $('day-date').textContent = new Date(dlgDay * 86400000).toLocaleDateString(undefined, {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
+  $('day-yesno').hidden = numerical; $('day-num').hidden = !numerical;
+  $('day-value').value = numerical ? el.dataset.raw : '';
+  $('day-unit').textContent = dlgHabit.unit;
+  pick(numerical ? '' : el.dataset.raw);
+  $('day-notes').value = logged ? logged.notes : '';
+  dlg.returnValue = '';
+  dlg.showModal();
+  (numerical ? $('day-value') : $('day-notes')).focus();
+}
+$('app').addEventListener('click', e => { const el = e.target.closest('.day[role=button]'); if (el) openDay(el); });
+$('app').addEventListener('keydown', e => {
+  const el = e.target.closest('.day[role=button]');
+  if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDay(el); }
+});
+$('day-cancel').addEventListener('click', () => dlg.close());
+$('day-notes').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) dlg.querySelector('[value=save]').click(); });
+dlg.addEventListener('close', () => {
+  if (dlg.returnValue !== 'save') return;
+  const notes = $('day-notes').value.trim();
+  let value;
+  if (E.isNumerical(dlgHabit)) {
+    const raw = $('day-value').value.trim();
+    value = raw === '' ? V.UNKNOWN : Math.round(parseFloat(raw) * 1000);
+    if (Number.isNaN(value)) return toast('Not a number');
+  } else value = {yes: V.YES_MANUAL, no: V.NO, skip: V.SKIP, '': V.UNKNOWN}[dlgStatus];
+  setEntry(dlgHabit, dlgDay, value, notes);
+});
+
+// ------------------------------------------------------------------ menu: import / export
+
+function openMenu() { $('menu-who').textContent = user ? `Signed in as ${user.email}` : ''; $('menu-dialog').showModal(); }
+function download(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+const stamp = () => E.toIso(today());
+
+$('menu-export').addEventListener('click', () => {
+  const out = {format: 'habitkit-backup', version: 1, exported_at: stamp(), habits: habits.map(h => ({
+    uuid: h.id, name: h.name, question: h.question, description: h.description, type: h.type, freq_num: h.freq_num,
+    freq_den: h.freq_den, target_type: h.target_type, target_value: h.target_value, unit: h.unit, color: h.color,
+    position: h.position, archived: h.archived, reminder_time: h.reminder_time, reminder_days: h.reminder_days,
+    entries: [...entries.get(h.id)].sort((a, b) => a[0] - b[0]).map(([d, e]) => ({date: E.toIso(d), value: e.value, notes: e.notes})),
+  }))};
+  download(`habits-${stamp()}.json`, JSON.stringify(out, null, 1), 'application/json');
+});
+
+$('menu-csv').addEventListener('click', () => {
+  const q = s => /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  const lines = ['habit,date,value,notes'];
+  for (const h of habits) for (const [d, e] of [...entries.get(h.id)].sort((a, b) => a[0] - b[0])) {
+    const v = E.isNumerical(h) ? fmtRaw(e.value) : ({[-1]: 'unknown', 0: 'no', 1: 'yes_auto', 2: 'yes_manual', 3: 'skip'}[e.value]);
+    lines.push([h.name, E.toIso(d), v, e.notes].map(x => q(String(x))).join(','));
+  }
+  download(`habits-${stamp()}.csv`, lines.join('\n') + '\n', 'text/csv');
+});
+
+$('menu-import').addEventListener('click', () => $('import-file').click());
+$('menu-signout').addEventListener('click', () => { $('menu-dialog').close(); sb.auth.signOut(); });
+
+/* habitkit's uuids are 32 hex chars; Postgres wants the dashed form for a stable id across re-imports. */
+const asUuid = s => /^[0-9a-f]{32}$/i.test(s) ? s.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5').toLowerCase()
+                   : /^[0-9a-f-]{36}$/i.test(s || '') ? s.toLowerCase() : crypto.randomUUID();
+
+$('import-file').addEventListener('change', async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { return toast('Not a JSON file'); }
+  if (data.format !== 'habitkit-backup' || !Array.isArray(data.habits)) return toast('Not a habitkit backup');
+  const n = data.habits.reduce((s, h) => s + (h.entries || []).length, 0);
+  if (!confirm(`Import ${data.habits.length} habits and ${n} entries? Habits already here (same id) are updated, not duplicated.`)) return;
+  $('menu-dialog').close();
+  toast('Importing…');
+  const hrows = data.habits.map((h, i) => ({
+    id: asUuid(h.uuid), name: h.name, question: h.question || '', description: h.description || '',
+    type: h.type === 'numerical' ? 'numerical' : 'yes_no', freq_num: h.freq_num || 1, freq_den: h.freq_den || 1,
+    target_type: h.target_type === 'at_most' ? 'at_most' : 'at_least', target_value: +h.target_value || 0, unit: h.unit || '',
+    color: h.color || COLORS[i % COLORS.length], position: h.position ?? i + 1, archived: !!h.archived,
+    reminder_time: h.reminder_time || null, reminder_days: h.reminder_days ?? 127,
+  }));
+  let {error} = await sb.from('habits').upsert(hrows);
+  if (error) return fail(error, 'Import');
+  const erows = data.habits.flatMap((h, i) => (h.entries || []).map(x => ({habit_id: hrows[i].id, date: x.date, value: x.value, notes: x.notes || ''})));
+  for (let i = 0; i < erows.length; i += 500) {
+    ({error} = await sb.from('habit_entries').upsert(erows.slice(i, i + 500), {onConflict: 'habit_id,date'}));
+    if (error) return fail(error, `Import (after ${i} entries)`);
+  }
+  await loadAll(); render();
+  toast(`Imported ${hrows.length} habits, ${erows.length} entries`);
+});
+
+// ------------------------------------------------------------------ auth + boot
+
+function viewAuth() {
+  $('app').innerHTML = `<div class="auth"><div class="card">
+    <h1>Habits</h1><p class="muted">Sign in with the same email as capture and touchbase.</p>
+    <form id="auth-form"><input id="auth-email" type="email" placeholder="you@example.com" autocomplete="email" required>
+    <button class="btn primary" id="auth-send">Send magic link</button></form>
+    <div class="auth-status" id="auth-status"></div></div></div>`;
+  $('auth-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = $('auth-send'); btn.disabled = true; btn.textContent = 'Sending…';
+    const {error} = await sb.auth.signInWithOtp({email: $('auth-email').value.trim(), options: {emailRedirectTo: location.href.split('#')[0]}});
+    btn.disabled = false; btn.textContent = 'Send magic link';
+    $('auth-status').textContent = error ? 'Error: ' + error.message : 'Check your email for the sign-in link ✓';
+  });
+}
+
+async function onSignedIn(session) {
+  const first = !user;
+  user = session.user;
+  try { await loadAll(); }
+  catch (e) {
+    const missing = /habit/.test(e.message || '') && /(does not exist|schema cache)/.test(e.message || '');
+    $('app').innerHTML = `<div class="card"><b>Couldn't load habits.</b><p class="muted" style="margin-top:6px">${missing
+      ? 'The database tables are missing: run <code>habits/supabase/schema.sql</code> in the Supabase SQL editor.' : esc(e.message)}</p></div>`;
+    return console.error(e);
+  }
+  if (first || !document.querySelector('dialog[open]')) render();
+}
+
+window.addEventListener('hashchange', render);
+// Data loaded yesterday shows the wrong "today" after midnight; refresh when the tab comes back.
+document.addEventListener('visibilitychange', () => { if (!document.hidden && user) { statsCache.clear(); render(); } });
+
+(async function boot() {
+  const {data: {session}} = await sb.auth.getSession();
+  sb.auth.onAuthStateChange((event, s) => {
+    if (event === 'SIGNED_IN' && s && (!user || user.id !== s.user.id)) onSignedIn(s);
+    if (event === 'SIGNED_OUT') { user = null; habits = []; entries = new Map(); statsCache.clear(); viewAuth(); }
+  });
+  if (session) await onSignedIn(session); else viewAuth();
+})();
+</script>
+</body>
+</html>

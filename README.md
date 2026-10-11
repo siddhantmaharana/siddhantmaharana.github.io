@@ -12,11 +12,12 @@ Each app lives in its own folder and is served at `/<app>/`. See each app's READ
 | folder | what | data |
 |---|---|---|
 | [`capture/`](capture/) | quick notes with `#tags` | Supabase (shared project) |
+| [`habits/`](habits/) | habit tracker (Loop Habit Tracker's math) | Supabase (shared project) |
 | [`touchbase/`](touchbase/) | personal CRM | Supabase (shared project) |
 | [`zentype/`](zentype/) | typing practice on your own text | `localStorage` only |
 
-capture and touchbase use the same Supabase project and magic-link account. Both are on
-the same origin, so a sign-in in one browser tab carries over to the other.
+capture, touchbase and habits use the same Supabase project and magic-link account. All are on
+the same origin, so a sign-in in one browser tab carries over to the others.
 Installed home-screen PWAs (iOS in particular) each get their own storage and still sign in separately.
 
 Every page links `shared/theme.css` before its own `<style>`. Change a color there and
@@ -34,6 +35,7 @@ old standalone repos (`capture`, `touchbase`, `zentype`) are retired.
 index.html         — the whole homepage
 favicon*.png/ico   — browser icons
 capture/           — capture app (see capture/README.md)
+habits/            — habit tracker (see habits/README.md)
 touchbase/         — touchbase app (see touchbase/README.md)
 zentype/           — zentype app (see zentype/README.md)
 shared/
