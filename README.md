@@ -11,14 +11,14 @@ Each app lives in its own folder and is served at `/<app>/`. See each app's READ
 
 | folder | what | data |
 |---|---|---|
-| [`capture/`](capture/) | quick notes with `#tags` | Supabase (shared project) |
-| [`habits/`](habits/) | habit tracker (Loop Habit Tracker's math) | Supabase (shared project) |
-| [`touchbase/`](touchbase/) | personal CRM | Supabase (shared project) |
+| [`habits/`](habits/) | habit tracker (Loop Habit Tracker's math) and the journal composer | Supabase (shared project) |
 | [`zentype/`](zentype/) | typing practice on your own text | `localStorage` only |
 
-capture, touchbase and habits use the same Supabase project and magic-link account. All are on
-the same origin, so a sign-in in one browser tab carries over to the others.
-Installed home-screen PWAs (iOS in particular) each get their own storage and still sign in separately.
+habits uses a Supabase project with magic-link sign-in. Journal entries written there are pulled into
+the Obsidian vault by `_automations/pull_journal.py` (see [habits/spec_v2.md](habits/spec_v2.md)).
+
+capture and touchbase were retired in habits v2. Their folders now only redirect to `/habits/`;
+the apps are in git history (`git checkout 0561449 -- capture/ touchbase/`).
 
 Every page links `shared/theme.css` before its own `<style>`. Change a color there and
 it changes everywhere. Use the shared token names (`--surface-2`, `--border-2`, `--muted-2`, …)
@@ -34,9 +34,9 @@ old standalone repos (`capture`, `touchbase`, `zentype`) are retired.
 ```
 index.html         — the whole homepage
 favicon*.png/ico   — browser icons
-capture/           — capture app (see capture/README.md)
+capture/           — redirect to habits (retired app, see git history)
 habits/            — habit tracker (see habits/README.md)
-touchbase/         — touchbase app (see touchbase/README.md)
+touchbase/         — redirect to habits (retired app, see git history)
 zentype/           — zentype app (see zentype/README.md)
 shared/
   theme.css          — colors, fonts, and base reset used by every page
