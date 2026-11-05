@@ -34,7 +34,7 @@ create policy "journal_entries_update_own" on journal_entries
 create policy "journal_entries_delete_own" on journal_entries
   for delete using (auth.uid() = user_id);
 
--- set_updated_at() is defined in schema.sql (and by touchbase); redefined here so this file runs alone.
+-- set_updated_at() is defined in schema.sql; redefined here so this file runs alone.
 create or replace function set_updated_at()
 returns trigger as $$
 begin

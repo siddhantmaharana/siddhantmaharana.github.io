@@ -32,10 +32,10 @@ is checked against Loop's own test values) with `scripts/check_js_engine.py` in 
 
 ## backend setup (one-time)
 
-Uses the same Supabase project and Redirect URLs as capture and touchbase.
+Uses the Supabase project at `sjycdaxraklxlnrmgqrb.supabase.co`.
 
 1. SQL Editor → run [supabase/schema.sql](supabase/schema.sql). It creates the `habits` and
-   `habit_entries` tables with RLS policies. (`entries` belongs to capture, hence the prefix.)
+   `habit_entries` tables with RLS policies. (Prefixed because the retired capture app owned `entries`.)
    Then run [supabase/journal.sql](supabase/journal.sql) for the journal composer's table.
 2. `SUPABASE_URL` / `SUPABASE_KEY` near the top of `index.html`'s script hold the project URL and
    publishable key. The key is safe to commit: RLS restricts each signed-in user to their own rows.

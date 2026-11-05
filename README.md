@@ -11,14 +11,13 @@ Each app lives in its own folder and is served at `/<app>/`. See each app's READ
 
 | folder | what | data |
 |---|---|---|
-| [`habits/`](habits/) | habit tracker (Loop Habit Tracker's math) and the journal composer | Supabase (shared project) |
+| [`habits/`](habits/) | habit tracker (Loop Habit Tracker's math) and the journal composer | Supabase |
 | [`zentype/`](zentype/) | typing practice on your own text | `localStorage` only |
 
 habits uses a Supabase project with magic-link sign-in. Journal entries written there are pulled into
 the Obsidian vault by `_automations/pull_journal.py` (see [habits/spec_v2.md](habits/spec_v2.md)).
 
-capture and touchbase were retired in habits v2. Their folders now only redirect to `/habits/`;
-the apps are in git history (`git checkout 0561449 -- capture/ touchbase/`).
+capture and touchbase were retired in habits v2; they're in git history (`git checkout 0561449 -- capture/ touchbase/`).
 
 Every page links `shared/theme.css` before its own `<style>`. Change a color there and
 it changes everywhere. Use the shared token names (`--surface-2`, `--border-2`, `--muted-2`, …)
@@ -27,16 +26,14 @@ instead of hardcoding hex values. An app can override `--accent` to keep its own
 the page from a string.
 
 These folders were merged in with `git subtree`, so each app's full history is kept. The
-old standalone repos (`capture`, `touchbase`, `zentype`) are retired.
+old standalone repos are retired.
 
 ## Structure
 
 ```
 index.html         — the whole homepage
 favicon*.png/ico   — browser icons
-capture/           — redirect to habits (retired app, see git history)
 habits/            — habit tracker (see habits/README.md)
-touchbase/         — redirect to habits (retired app, see git history)
 zentype/           — zentype app (see zentype/README.md)
 shared/
   theme.css          — colors, fonts, and base reset used by every page

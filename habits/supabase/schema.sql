@@ -1,6 +1,6 @@
 -- habits schema (v1)
 -- Run this in the shared Supabase project's SQL editor (Dashboard -> SQL Editor -> New query).
--- Safe to re-run. Table names are prefixed because capture already owns `entries`.
+-- Safe to re-run. Table names are prefixed because `entries` was taken.
 --
 -- Store only what was logged; scores, auto-filled days and streaks are computed in the browser
 -- (engine.js). Entry values use Loop Habit Tracker's encoding:
@@ -75,7 +75,7 @@ create policy "habit_entries_update_own" on habit_entries
 create policy "habit_entries_delete_own" on habit_entries
   for delete using (auth.uid() = user_id);
 
--- keep updated_at current on every edit (same function touchbase uses; identical body)
+-- keep updated_at current on every edit
 create or replace function set_updated_at()
 returns trigger as $$
 begin
