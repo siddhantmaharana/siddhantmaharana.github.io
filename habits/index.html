@@ -133,6 +133,21 @@
            padding: 9px 14px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; }
   .toast.show { opacity: 1; }
   .empty { text-align: center; padding: 30px 14px; }
+
+  /* journal composer */
+  .journal { margin-bottom: 22px; }
+  .journal textarea { min-height: 88px; resize: none; overflow: hidden; line-height: 1.45; }
+  .journal .jbar { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .journal .jbar .spacer { flex: 1; }
+  .journal input[type=date] { width: auto; padding: 5px 8px; font-size: 13px; color: var(--soft); }
+  .journal .jnote { font-size: 12px; color: var(--muted-2); }
+  .recent { margin-top: 12px; }
+  .recent button { display: flex; gap: 8px; width: 100%; padding: 6px 0; border: 0; border-top: 1px solid var(--border);
+                   background: none; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+  .recent button .d { color: var(--soft); flex: none; font-variant-numeric: tabular-nums; }
+  .recent button .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .recent button .v { flex: none; color: var(--muted-2); font-size: 12px; }
+  .recent button.editing { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -286,6 +301,134 @@ async function saveHabit(row) {
   return true;
 }
 
+// ------------------------------------------------------------------ journal (supabase/journal.sql)
+/* One composer on the home screen. Entries wait in `journal_entries` until the vault's
+   _automations/pull_journal.py copies them into Journal/YYYY-MM.md and sets pulled_at;
+   from then on the vault owns them and they're read-only here. */
+
+let journal = [];                // recent rows, newest first
+let journalError = '';
+let editing = null;              // id of the entry loaded into the composer, or null
+const DRAFT_KEY = 'habits.journalDraft';
+const loadDraft = () => { try { return JSON.parse(localStorage.getItem(DRAFT_KEY)) || {}; } catch { return {}; } };
+const saveDraft = d => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch {} };
+
+/* The vault's quick_log rule: a short first line followed by more text is the title. */
+function splitEntry(text) {
+  const t = text.trim(), i = t.indexOf('\n');
+  if (i > 0) {
+    const first = t.slice(0, i).trim(), rest = t.slice(i + 1).trim();
+    if (rest && first.length <= 80) return {title: first, body: rest};
+  }
+  return {title: '', body: t};
+}
+const joinEntry = e => e.title ? `${e.title}\n${e.body}` : e.body;
+
+async function loadJournal() {
+  const {data, error} = await sb.from('journal_entries').select('id,entry_date,title,body,created_at,pulled_at')
+    .order('created_at', {ascending: false}).limit(10);
+  if (error) {
+    console.error(error);
+    journalError = /(does not exist|schema cache)/.test(error.message || '')
+      ? 'Journal table missing: run habits/supabase/journal.sql in the Supabase SQL editor.' : `Couldn't load entries: ${error.message}`;
+    journal = [];
+  } else { journalError = ''; journal = data; }
+}
+
+const composer = document.createElement('section');
+composer.className = 'journal';
+composer.innerHTML = `
+  <textarea id="j-text" placeholder="What's on your mind? (first line = title, if there's more)" aria-label="Journal entry"></textarea>
+  <div class="jbar">
+    <input type="date" id="j-date" aria-label="Entry date">
+    <span class="jnote" id="j-note"></span><span class="spacer"></span>
+    <button class="btn danger" id="j-delete" hidden>Delete</button>
+    <button class="btn" id="j-cancel" hidden>Cancel</button>
+    <button class="btn primary" id="j-save">Save</button>
+  </div>`;
+/* Recent entries sit below the habit grid, so they never push today's habits down. */
+const recent = document.createElement('section');
+recent.className = 'recent';
+recent.innerHTML = '<h2>Journal</h2><div id="j-recent"></div>';
+const jRecent = recent.querySelector('#j-recent');
+const jText = composer.querySelector('#j-text'), jDate = composer.querySelector('#j-date');
+
+function autosize() { jText.style.height = 'auto'; jText.style.height = jText.scrollHeight + 2 + 'px'; }
+/* The date is stored in the draft only when backdated, so a draft started yesterday saves as today. */
+function persistDraft() {
+  const d = jDate.value !== E.toIso(today()) ? jDate.value : null;
+  saveDraft({text: jText.value, date: d, editing});
+}
+
+function renderJournal() {
+  const isEdit = editing !== null;
+  composer.querySelector('#j-save').textContent = isEdit ? 'Update' : 'Save';
+  composer.querySelector('#j-cancel').hidden = !isEdit;
+  composer.querySelector('#j-delete').hidden = !isEdit;
+  composer.querySelector('#j-note').textContent = journalError || (isEdit ? 'editing' : '');
+  const md = iso => new Date(iso + 'T00:00:00Z').toLocaleDateString(undefined, {month: 'short', day: 'numeric', timeZone: 'UTC'});
+  recent.hidden = !journal.length;
+  jRecent.innerHTML = journal.map(e => {
+    const label = e.title || e.body.slice(0, 120);
+    return `<button data-id="${e.id}" class="${e.id === editing ? 'editing' : ''}"><span class="d">${md(e.entry_date)}</span>
+      <span class="t">${esc(label) || '<span class="muted">(empty)</span>'}</span>${e.pulled_at ? '<span class="v">in vault</span>' : ''}</button>`;
+  }).join('');
+}
+
+function resetComposer() {
+  editing = null; jText.value = ''; jDate.value = E.toIso(today());
+  saveDraft({}); autosize(); renderJournal();
+}
+
+async function saveJournal() {
+  const {title, body} = splitEntry(jText.value);
+  if (!title && !body) return jText.focus();
+  const btn = composer.querySelector('#j-save'); btn.disabled = true;
+  const row = {entry_date: jDate.value || E.toIso(today()), title, body};
+  const {data, error} = editing
+    ? await sb.from('journal_entries').update(row).eq('id', editing).select().single()
+    : await sb.from('journal_entries').insert(row).select().single();
+  btn.disabled = false;
+  if (error) return fail(error, 'Save');   // the draft stays in localStorage
+  const i = journal.findIndex(e => e.id === data.id);
+  if (i >= 0) journal[i] = data; else journal.unshift(data);
+  toast(editing ? 'Updated' : 'Saved');
+  resetComposer();
+}
+
+function startEdit(id) {
+  const e = journal.find(x => x.id === id);
+  if (!e) return;
+  if (e.pulled_at) return toast('Already in the vault: edit it in Obsidian');
+  if (!editing && jText.value.trim() && !confirm('Replace what you were writing?')) return;
+  editing = id; jText.value = joinEntry(e); jDate.value = e.entry_date;
+  persistDraft(); autosize(); renderJournal(); jText.focus();
+}
+
+async function deleteJournal() {
+  if (!editing || !confirm('Delete this entry?')) return;
+  const {error} = await sb.from('journal_entries').delete().eq('id', editing);
+  if (error) return fail(error, 'Delete');
+  journal = journal.filter(e => e.id !== editing);
+  toast('Deleted'); resetComposer();
+}
+
+jText.addEventListener('input', () => { autosize(); persistDraft(); });
+jDate.addEventListener('change', persistDraft);
+jText.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveJournal(); } });
+composer.querySelector('#j-save').addEventListener('click', saveJournal);
+composer.querySelector('#j-cancel').addEventListener('click', resetComposer);
+composer.querySelector('#j-delete').addEventListener('click', deleteJournal);
+jRecent.addEventListener('click', e => { const b = e.target.closest('button[data-id]'); if (b) startEdit(b.dataset.id); });
+
+function restoreDraft() {
+  const d = loadDraft();
+  jText.value = d.text || ''; jDate.value = d.date || E.toIso(today());
+  editing = d.editing && journal.some(e => e.id === d.editing && !e.pulled_at) ? d.editing : null;
+  if (d.editing && !editing && jText.value.trim()) toast('That entry is in the vault now: saving makes a new one');
+  autosize(); renderJournal();
+}
+
 // ------------------------------------------------------------------ views
 
 function route() {
@@ -298,8 +441,12 @@ function render() {
   const r = route();
   const h = r.id && habits.find(x => x.id === r.id);
   if ((r.view === 'habit' || r.view === 'edit') && !h) { location.hash = '#/'; return; }
+  const typing = document.activeElement === jText;
   $('app').innerHTML = r.view === 'habit' ? viewDetail(h, r.month) : r.view === 'new' ? viewForm(null)
                      : r.view === 'edit' ? viewForm(h) : viewHome();
+  const slot = $('composer-slot');
+  const rslot = $('recent-slot'); if (rslot) rslot.replaceWith(recent);
+  if (slot) { slot.replaceWith(composer); autosize(); if (typing) jText.focus(); }
   if (r.view === 'habit') { const heat = document.querySelector('.heat'); if (heat) heat.scrollLeft = 1e6; }
   if (r.view === 'new' || r.view === 'edit') bindForm(h);
 }
@@ -310,8 +457,8 @@ function viewHome() {
   const shown = showArchived ? archived : active;
   const head = `<header class="top"><h1><span class="t">${showArchived ? 'Archived' : 'Habits'}</span></h1>
     <button class="btn icon" onclick="openMenu()" aria-label="Data and account">⋯</button>
-    <a class="btn primary" href="#/new">+ Habit</a></header>`;
-  if (!habits.length) return head + `<div class="card empty">No habits yet.<br><br>
+    <a class="btn primary" href="#/new">+ Habit</a></header>` + (showArchived ? '' : '<div id="composer-slot"></div>');
+  if (!habits.length) return head + `<div id="recent-slot"></div><div class="card empty">No habits yet.<br><br>
     <a class="btn primary" href="#/new">Create one</a> <button class="btn" onclick="$('import-file').click()">Import a backup</button></div>`;
   const wd = d => new Date(d * 86400000).toLocaleDateString(undefined, {weekday: 'short', timeZone: 'UTC'});
   const rows = shown.map(h => {
@@ -326,7 +473,8 @@ function viewHome() {
     <thead><tr><th></th>${days.map(d => `<th class="${d === t ? 'today-col' : ''}">${wd(d)}<br>${E.parts(d).d}</th>`).join('')}</tr></thead>
     <tbody>${rows || `<tr><td colspan="8" class="muted" style="padding:20px">Nothing here.</td></tr>`}</tbody></table>
     <p class="muted" style="margin-top:12px">Tap a day to log it and add a note. Dim squares are days not due under the habit's frequency.</p>
-    ${archived.length || showArchived ? `<p style="margin-top:14px"><button class="btn" onclick="showArchived=!showArchived;render()">${showArchived ? '← Active habits' : `Archived (${archived.length})`}</button></p>` : ''}`;
+    ${archived.length || showArchived ? `<p style="margin-top:14px"><button class="btn" onclick="showArchived=!showArchived;render()">${showArchived ? '← Active habits' : `Archived (${archived.length})`}</button></p>` : ''}
+    ${showArchived ? '' : '<div id="recent-slot"></div>'}`;
 }
 
 function viewDetail(h, monthParam) {
@@ -590,7 +738,7 @@ function viewAuth() {
 async function onSignedIn(session) {
   const first = !user;
   user = session.user;
-  try { await loadAll(); }
+  try { await Promise.all([loadAll(), first ? loadJournal().then(restoreDraft) : loadJournal().then(renderJournal)]); }
   catch (e) {
     const missing = /habit/.test(e.message || '') && /(does not exist|schema cache)/.test(e.message || '');
     $('app').innerHTML = `<div class="card"><b>Couldn't load habits.</b><p class="muted" style="margin-top:6px">${missing
@@ -602,7 +750,12 @@ async function onSignedIn(session) {
 
 window.addEventListener('hashchange', render);
 // Data loaded yesterday shows the wrong "today" after midnight; refresh when the tab comes back.
-document.addEventListener('visibilitychange', () => { if (!document.hidden && user) { statsCache.clear(); render(); } });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !user) return;
+  if (!loadDraft().date) jDate.value = E.toIso(today());   // an un-backdated composer follows the calendar
+  statsCache.clear(); render();
+  loadJournal().then(renderJournal);   // picks up "in vault" after a pull
+});
 
 (async function boot() {
   const {data: {session}} = await sb.auth.getSession();

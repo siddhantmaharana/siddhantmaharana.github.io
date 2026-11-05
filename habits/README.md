@@ -7,6 +7,10 @@ out a streak.
 
 ## what it does
 
+- **Journal composer** on top of Home: type or dictate, save. A short first line followed by more
+  text becomes the title. Backdate with the date chip. Entries wait in `journal_entries` until the
+  vault's `_automations/pull_journal.py` copies them into `Journal/YYYY-MM.md`; after that they show
+  "in vault" and are edited in Obsidian. See [spec_v2.md](spec_v2.md).
 - **Home**: every habit with its score, streak and the last 7 days. Tap a day to open the day
   card: ✓ / ✗ (or a number for measurable habits like miles), skip, and a note.
 - **Habit page**: score over the last 180 days, a 26-week heatmap, a month calendar you can page
@@ -32,6 +36,7 @@ Uses the same Supabase project and Redirect URLs as capture and touchbase.
 
 1. SQL Editor → run [supabase/schema.sql](supabase/schema.sql). It creates the `habits` and
    `habit_entries` tables with RLS policies. (`entries` belongs to capture, hence the prefix.)
+   Then run [supabase/journal.sql](supabase/journal.sql) for the journal composer's table.
 2. `SUPABASE_URL` / `SUPABASE_KEY` near the top of `index.html`'s script hold the project URL and
    publishable key. The key is safe to commit: RLS restricts each signed-in user to their own rows.
 

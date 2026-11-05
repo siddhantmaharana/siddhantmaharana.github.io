@@ -92,3 +92,5 @@ drop trigger if exists habit_entries_set_updated_at on habit_entries;
 create trigger habit_entries_set_updated_at
   before update on habit_entries
   for each row execute function set_updated_at();
+
+-- journal_entries (v2) lives in journal.sql; run that file too.

@@ -1,7 +1,7 @@
 {
   "name": "Habits",
   "short_name": "habits",
-  "description": "Habit tracker with Loop Habit Tracker's math",
+  "description": "Habit tracker and journal composer; entries go to the Obsidian vault",
   "start_url": "/habits/",
   "scope": "/habits/",
   "display": "standalone",
