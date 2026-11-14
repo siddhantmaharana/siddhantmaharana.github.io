@@ -8,59 +8,73 @@
 <meta name="apple-mobile-web-app-title" content="Habits">
 <title>Habits</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d0d0d">
+<meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
-  :root { --accent: #4ade80; --yes: #3f8f6b; --auto: #1f3a2d; --partial: #b58a2c; }
+  /* Loop Habit Tracker's look: pure black, no boxes, color only where it means something. */
+  :root { --bg: #000; --surface: #121212; --surface-2: #1c1c1c; --subtle: #262626; --border: #1f1f1f; --border-2: #2e2e2e;
+          --text: #ececec; --soft: #9e9e9e; --muted-2: #6e6e6e; --muted: #474747; --accent: #64b5f6;
+          --yes: #64b5f6; --auto: #1d3346; --partial: #b58a2c; }
   html { height: 100%; }
-  body { min-height: 100%; font-size: 15px; line-height: 1.45; }
-  main { max-width: 760px; margin: 0 auto; padding: 18px 16px 80px; }
+  body { min-height: 100%; font-size: 15px; line-height: 1.45; background: var(--bg); }
+  main { max-width: 760px; margin: 0 auto; padding: 0 16px 80px; }
   a { color: var(--accent); }
-  header.top { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
-  header.top h1 { font-size: 20px; font-weight: 650; flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
-  header.top h1 span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   h2 { font-size: 12px; margin: 28px 0 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
   .muted { color: var(--soft); font-size: 13px; }
+  [hidden] { display: none !important; }
+
+  /* top bar (sticky, with the day labels on Home) */
+  .bar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding-top: env(safe-area-inset-top); }
+  .bar-row { display: flex; align-items: center; gap: 2px; height: 64px; }
+  .bar-row h1 { flex: 1; min-width: 0; font-size: 24px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ib { position: relative; width: 44px; height: 44px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+        border: 0; border-radius: 50%; background: none; color: var(--text); cursor: pointer; text-decoration: none; }
+  .ib:hover { background: var(--surface-2); }
+  .ib svg { width: 24px; height: 24px; }
+  .ib .badge { position: absolute; top: 9px; right: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .ib:first-child { margin-left: -12px; }
+
+  /* Home */
+  .hrow { display: grid; grid-template-columns: minmax(0, 1fr) repeat(var(--n), var(--col)); align-items: center; }
+  .days { padding: 2px 0 8px; }
+  .days > div { text-align: center; font-size: 12px; font-weight: 600; color: var(--soft); line-height: 1.4; letter-spacing: .02em; }
+  .days b { display: block; font-weight: 500; }
+  .habit { min-height: 60px; }
+  .hname { display: flex; align-items: center; gap: 14px; min-width: 0; padding-right: 8px; text-decoration: none; }
+  .hname span { font-size: 17px; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .habit.archived .hname { opacity: .45; }
+  .ring { flex: none; width: 22px; height: 22px; }
+  .mark { position: relative; height: 52px; display: flex; align-items: center; justify-content: center; color: var(--muted);
+          font: 600 16px/1 var(--sans); cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+          touch-action: manipulation; }
+  .mark svg { width: 22px; height: 22px; }
+  .mark.no { color: var(--muted-2); }
+  .mark .nd { position: absolute; top: 12px; right: 7px; width: 4px; height: 4px; border-radius: 50%; background: var(--soft); }
+  .day:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 8px; }
+  .home-foot { margin-top: 18px; display: flex; gap: 8px; }
+  .empty { text-align: center; padding: 48px 14px; color: var(--soft); }
+
+  /* buttons */
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 13px; border: 1px solid var(--border-2);
          border-radius: 9px; background: var(--surface-2); color: var(--text); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
   .btn:hover { border-color: var(--muted); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #0d0d0d; font-weight: 600; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
   .btn.danger { color: var(--red); }
   .btn.icon { width: 36px; padding: 7px 0; }
   .btn:disabled { opacity: .4; cursor: default; }
+  .tb { border: 0; background: none; color: var(--text); font: 600 14px var(--sans); letter-spacing: .05em; padding: 10px 14px; cursor: pointer; border-radius: 8px; }
+  .tb:hover { background: var(--surface-2); }
+  .tb.accent { color: var(--accent); }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
   .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
 
-  /* home grid */
-  table.grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .grid th { font-weight: 500; font-size: 11px; color: var(--muted-2); padding: 4px 0; line-height: 1.3; }
-  .grid th.today-col { color: var(--text); }
-  .grid td { padding: 8px 0; border-top: 1px solid var(--border); text-align: center; }
-  .grid col.name { width: auto; } .grid col.day { width: 42px; }
-  .grid td.name { text-align: left; padding-right: 8px; }
-  .grid td.name a { color: inherit; text-decoration: none; font-weight: 550; display: flex; align-items: center; gap: 7px; }
-  .grid td.name a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .grid .sub { margin-top: 1px; font-size: 12px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar { height: 3px; background: var(--border-2); border-radius: 2px; margin-top: 5px; max-width: 160px; }
-  .bar > span { display: block; height: 100%; border-radius: 2px; }
-  @media (max-width: 480px) { .grid col.day { width: 36px; } }
-
-  .cell { position: relative; width: 32px; height: 32px; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border-2);
-          font: 600 12px/30px var(--sans); color: var(--text); cursor: pointer; user-select: none; }
-  .cell.yes { background: var(--yes); border-color: var(--yes); color: #fff; }
-  .cell.auto { background: var(--auto); border-color: var(--auto); color: var(--soft); }
-  .cell.no { color: var(--red); }
-  .cell.skip { color: var(--muted-2); }
-  .cell.partial { background: var(--partial); border-color: var(--partial); color: #fff; }
-  .cell.today { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--soft); }
-  .note-dot { position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .75; }
-  .day[role=button] { cursor: pointer; }
-  .day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  /* detail */
+  /* habit page (restyled in phase 2) */
+  header.top { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  header.top h1 { font-size: 20px; font-weight: 650; flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  header.top h1 span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .stats b { display: block; font-size: 24px; font-weight: 650; margin-top: 2px; }
   svg.line { width: 100%; height: 150px; display: block; }
@@ -76,16 +90,16 @@
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .cal-grid .wd { text-align: center; font-size: 11px; color: var(--muted-2); padding-bottom: 2px; }
   .cd { position: relative; aspect-ratio: 1; max-height: 62px; border-radius: 8px; border: 1px solid var(--border);
-        display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; }
+        display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; }
   .cd .v { font-size: 11px; font-weight: 650; }
-  .cd.yes { background: var(--yes); border-color: var(--yes); color: #fff; }
+  .cd.yes { background: var(--yes); border-color: var(--yes); color: #000; }
   .cd.auto { background: var(--auto); border-color: var(--auto); }
   .cd.partial { background: var(--partial); border-color: var(--partial); color: #fff; }
   .cd.no { color: var(--red); border-color: var(--red-dim); }
   .cd.skip { color: var(--muted-2); background: var(--surface-2); }
   .cd.future { opacity: .3; }
   .cd.today { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--soft); }
-  .cd .note-dot { top: 5px; right: 5px; width: 6px; height: 6px; }
+  .note-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .75; }
   .list > div { padding: 3px 0; }
   .list .muted { margin-right: 6px; font-variant-numeric: tabular-nums; }
   .manage { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -96,30 +110,57 @@
          background: var(--surface-2); color: var(--text); font: inherit; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
   .row { display: flex; gap: 10px; } .row > * { flex: 1; min-width: 0; }
-  .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
   .swatches label { margin: 0 !important; }
   .swatches input { display: none; }
-  .swatches span { display: block; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-  .swatches input:checked + span { border-color: var(--text); }
+  .swatches span { display: block; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+  .swatches input:checked + span { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text); }
   .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
 
-  /* dialog */
-  dialog { margin: auto; border: 1px solid var(--border-2); border-radius: 14px; background: var(--surface); color: var(--text);
-           width: min(380px, calc(100% - 32px)); padding: 18px; }
-  dialog::backdrop { background: rgba(0,0,0,.6); }
-  .dlg-head { display: flex; align-items: center; gap: 8px; font-size: 17px; }
-  .tick { display: flex; gap: 12px; margin: 16px 0 6px; }
-  .big { flex: 1; height: 64px; border-radius: 12px; border: 2px solid var(--border-2); background: transparent; font: 600 28px var(--sans); cursor: pointer; }
-  .big.yes { color: var(--green); } .big.no { color: var(--red); }
-  .big.yes[aria-pressed=true] { background: var(--yes); border-color: var(--yes); color: #fff; }
-  .big.no[aria-pressed=true] { background: var(--red); border-color: var(--red); color: #0d0d0d; }
-  .skip { border: 0; background: none; color: var(--soft); font: inherit; font-size: 13px; padding: 4px 0; cursor: pointer; }
-  .skip[aria-pressed=true] { color: var(--text); font-weight: 600; }
-  .num { display: flex; align-items: center; gap: 10px; margin: 16px 0 6px; }
-  .num input { font-size: 26px; font-weight: 600; padding: 10px 12px; }
-  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-  .menu button { display: block; width: 100%; text-align: left; margin-top: 8px; }
-  [hidden] { display: none !important; }
+  /* dialogs */
+  dialog { margin: auto; border: 0; border-radius: 16px; background: var(--surface-2); color: var(--text);
+           width: min(360px, calc(100% - 32px)); padding: 18px 18px 10px; }
+  dialog::backdrop { background: rgba(0,0,0,.7); }
+  .dlg-head b { display: block; font-size: 18px; font-weight: 600; color: var(--hc, var(--text)); }
+  .tick { display: flex; gap: 10px; margin: 16px 0 14px; }
+  .big { flex: 1; height: 52px; border-radius: 12px; border: 1px solid var(--border-2); background: transparent; color: var(--soft);
+         display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .big svg { width: 24px; height: 24px; }
+  .big[aria-pressed=true] { background: var(--hc, var(--accent)); border-color: var(--hc, var(--accent)); color: #000; }
+  .big[data-v=no][aria-pressed=true] { background: var(--muted-2); border-color: var(--muted-2); }
+  .big[data-v=skip][aria-pressed=true] { background: var(--border-2); border-color: var(--border-2); color: var(--text); }
+  dialog textarea { background: var(--surface); }
+  .actions { display: flex; justify-content: flex-end; gap: 4px; margin-top: 8px; }
+  .menu button { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--text); font: inherit;
+                 font-size: 15px; padding: 12px 4px; border-bottom: 1px solid var(--border-2); cursor: pointer; }
+  .menu button:last-child { border-bottom: 0; }
+  .menu button.danger { color: var(--red); }
+
+  /* measurable-habit popup, Loop style: notes on top, number + SAVE below */
+  #num-pop { position: fixed; inset: auto; top: 30vh; left: 50%; transform: translateX(-50%); margin: 0; padding: 0;
+             width: min(300px, calc(100% - 32px)); border: 1px solid #555; border-radius: 6px; background: #000; overflow: hidden; }
+  #num-pop textarea { display: block; border: 0; border-radius: 0; background: none; text-align: center; min-height: 84px; resize: none; padding: 26px 12px 10px; }
+  .np-row { display: flex; border-top: 1px solid #555; }
+  .np-row input { flex: 1; min-width: 0; border: 0; border-right: 1px solid #555; border-radius: 0; background: none;
+                  text-align: center; font-size: 20px; padding: 14px 8px; }
+  .np-row input::-webkit-outer-spin-button, .np-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .np-row input { -moz-appearance: textfield; appearance: textfield; }
+  .np-row button { border: 0; background: none; color: var(--text); font: 600 15px var(--sans); letter-spacing: .05em; padding: 0 22px; cursor: pointer; }
+  .np-unit { padding: 0 0 8px; text-align: center; font-size: 12px; color: var(--soft); }
+
+  /* journal page */
+  .journal textarea { min-height: 180px; border: 0; background: none; padding: 4px 0; font-size: 17px; line-height: 1.5; resize: none; overflow: hidden; }
+  .journal textarea:focus { border: 0; }
+  .journal .jbar { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border-2); }
+  .journal .jbar .spacer { flex: 1; }
+  .journal input[type=date] { width: auto; padding: 5px 8px; font-size: 13px; color: var(--soft); background: var(--surface-2); border: 0; }
+  .journal .jnote { font-size: 12px; color: var(--muted-2); }
+  .recent button { display: flex; gap: 10px; width: 100%; padding: 11px 0; border: 0; border-top: 1px solid var(--border);
+                   background: none; color: var(--text); font: inherit; font-size: 15px; text-align: left; cursor: pointer; }
+  .recent button .d { color: var(--soft); flex: none; width: 52px; font-variant-numeric: tabular-nums; }
+  .recent button .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .recent button .v { flex: none; color: var(--muted-2); font-size: 12px; }
+  .recent button.editing { color: var(--accent); }
 
   /* auth */
   .auth { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
@@ -132,60 +173,44 @@
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border-2);
            padding: 9px 14px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; }
   .toast.show { opacity: 1; }
-  .empty { text-align: center; padding: 30px 14px; }
-
-  /* journal composer */
-  .journal { margin-bottom: 22px; }
-  .journal textarea { min-height: 88px; resize: none; overflow: hidden; line-height: 1.45; }
-  .journal .jbar { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-  .journal .jbar .spacer { flex: 1; }
-  .journal input[type=date] { width: auto; padding: 5px 8px; font-size: 13px; color: var(--soft); }
-  .journal .jnote { font-size: 12px; color: var(--muted-2); }
-  .recent { margin-top: 12px; }
-  .recent button { display: flex; gap: 8px; width: 100%; padding: 6px 0; border: 0; border-top: 1px solid var(--border);
-                   background: none; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
-  .recent button .d { color: var(--soft); flex: none; font-variant-numeric: tabular-nums; }
-  .recent button .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .recent button .v { flex: none; color: var(--muted-2); font-size: 12px; }
-  .recent button.editing { color: var(--accent); }
 </style>
 </head>
 <body>
-<main id="app"><p class="muted">loading…</p></main>
+<main id="app"><p class="muted" style="padding-top:24px">loading…</p></main>
 
+<!-- yes/no day: long-press a cell, or tap a calendar day -->
 <dialog id="day-dialog">
   <form method="dialog">
-    <div class="dlg-head"><span class="dot" id="day-dot"></span><b id="day-habit"></b></div>
-    <div class="muted" id="day-date"></div>
-    <div id="day-yesno">
-      <div class="tick">
-        <button type="button" class="big yes" data-v="yes" aria-label="Done">✓</button>
-        <button type="button" class="big no" data-v="no" aria-label="Missed">✗</button>
-      </div>
-      <button type="button" class="skip" data-v="skip">» Skip this day</button>
+    <div class="dlg-head"><b id="day-habit"></b><div class="muted" id="day-date"></div></div>
+    <div class="tick">
+      <button type="button" class="big" data-v="yes" aria-label="Done"></button>
+      <button type="button" class="big" data-v="no" aria-label="Not done"></button>
+      <button type="button" class="big" data-v="skip" aria-label="Skip this day"></button>
     </div>
-    <div id="day-num" class="num">
-      <input id="day-value" type="number" step="any" inputmode="decimal" placeholder="0" aria-label="Value">
-      <span id="day-unit" class="muted"></span>
-    </div>
-    <label class="muted" for="day-notes" style="display:block;margin:12px 0 5px">Note</label>
-    <textarea id="day-notes" rows="3" placeholder="How did it go?"></textarea>
-    <div class="actions"><button type="button" class="btn" id="day-cancel">Cancel</button>
-      <button class="btn primary" value="save">Save</button></div>
+    <textarea id="day-notes" rows="3" placeholder="Notes"></textarea>
+    <div class="actions"><button type="button" class="tb" id="day-cancel">CANCEL</button><button class="tb accent" value="save">SAVE</button></div>
+  </form>
+</dialog>
+
+<!-- measurable day: tap a cell -->
+<dialog id="num-pop">
+  <form method="dialog">
+    <textarea id="np-notes" rows="2" placeholder="Notes"></textarea>
+    <div class="np-unit" id="np-unit"></div>
+    <div class="np-row"><input id="np-value" type="number" step="any" inputmode="decimal" placeholder="0" aria-label="Value"><button value="save">SAVE</button></div>
   </form>
 </dialog>
 
 <dialog id="menu-dialog">
-  <div class="dlg-head"><b>Data</b></div>
-  <div class="muted" id="menu-who"></div>
-  <div class="menu">
-    <button class="btn" id="menu-import">Import backup (.json)…</button>
-    <button class="btn" id="menu-export">Export backup (.json)</button>
-    <button class="btn" id="menu-csv">Export CSV</button>
-    <button class="btn danger" id="menu-signout">Sign out</button>
+  <div class="dlg-head"><b>Data</b><div class="muted" id="menu-who"></div></div>
+  <div class="menu" style="margin-top:8px">
+    <button id="menu-import">Import backup (.json)…</button>
+    <button id="menu-export">Export backup (.json)</button>
+    <button id="menu-csv">Export CSV</button>
+    <button class="danger" id="menu-signout">Sign out</button>
   </div>
   <input type="file" id="import-file" accept="application/json,.json" hidden>
-  <div class="actions"><button class="btn" onclick="this.closest('dialog').close()">Close</button></div>
+  <div class="actions"><button class="tb" onclick="this.closest('dialog').close()">CLOSE</button></div>
 </dialog>
 
 <div class="toast" id="toast"></div>
@@ -201,7 +226,21 @@ const SUPABASE_KEY = 'sb_publishable_gpJ7aoxecKwhPrHRDdzddA_rdMsRlPN';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const E = window.HabitEngine, V = E.V;
 
-const COLORS = ['#3f8f6b', '#5b7fbf', '#c0703a', '#8a5a9e', '#b5793a', '#c4553f', '#4f8a8b', '#a0a03a', '#d0679d', '#7a7a74'];
+// Loop's dark-theme colors, trimmed to ten. Habits saved with the first palette are shown in its nearest match.
+const COLORS = ['#e57373', '#ff8a65', '#ffb74d', '#81c784', '#4db6ac', '#64b5f6', '#7986cb', '#ba68c8', '#f06292', '#bdbdbd'];
+const LEGACY = {'#3f8f6b': '#81c784', '#5b7fbf': '#64b5f6', '#c0703a': '#ff8a65', '#8a5a9e': '#ba68c8', '#b5793a': '#ffb74d',
+                '#c4553f': '#e57373', '#4f8a8b': '#4db6ac', '#a0a03a': '#ffb74d', '#d0679d': '#f06292', '#7a7a74': '#bdbdbd'};
+const hc = h => LEGACY[(h.color || '').toLowerCase()] || h.color || COLORS[5];
+
+const ICON = {
+  plus: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>',
+  more: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4m0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg>',
+  pen: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 0 0 0-1.41l-2.33-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>',
+  back: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+  close: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
+  skip: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M5.59 7.41 10.18 12l-4.59 4.59L7 18l6-6-6-6zM11.59 7.41 16.18 12l-4.59 4.59L13 18l6-6-6-6z"/></svg>',
+};
 const FREQS = [['1/1', 'Every day'], ['6/7', '6x per week'], ['5/7', '5x per week'], ['4/7', '4x per week'], ['3/7', '3x per week'],
                ['2/7', '2x per week'], ['1/7', 'Once a week'], ['1/2', 'Every other day'], ['1/14', 'Every 2 weeks'], ['1/30', 'Once a month']];
 
@@ -302,7 +341,7 @@ async function saveHabit(row) {
 }
 
 // ------------------------------------------------------------------ journal (supabase/journal.sql)
-/* One composer on the home screen. Entries wait in `journal_entries` until the vault's
+/* The composer lives on the Journal page (✎ on Home). Entries wait in `journal_entries` until the vault's
    _automations/pull_journal.py copies them into Journal/YYYY-MM.md and sets pulled_at;
    from then on the vault owns them and they're read-only here. */
 
@@ -326,7 +365,7 @@ const joinEntry = e => e.title ? `${e.title}\n${e.body}` : e.body;
 
 async function loadJournal() {
   const {data, error} = await sb.from('journal_entries').select('id,entry_date,title,body,created_at,pulled_at')
-    .order('created_at', {ascending: false}).limit(10);
+    .order('created_at', {ascending: false}).limit(30);
   if (error) {
     console.error(error);
     journalError = /(does not exist|schema cache)/.test(error.message || '')
@@ -338,7 +377,7 @@ async function loadJournal() {
 const composer = document.createElement('section');
 composer.className = 'journal';
 composer.innerHTML = `
-  <textarea id="j-text" placeholder="What's on your mind? (first line = title, if there's more)" aria-label="Journal entry"></textarea>
+  <textarea id="j-text" placeholder="What's on your mind?" aria-label="Journal entry"></textarea>
   <div class="jbar">
     <input type="date" id="j-date" aria-label="Entry date">
     <span class="jnote" id="j-note"></span><span class="spacer"></span>
@@ -346,10 +385,9 @@ composer.innerHTML = `
     <button class="btn" id="j-cancel" hidden>Cancel</button>
     <button class="btn primary" id="j-save">Save</button>
   </div>`;
-/* Recent entries sit below the habit grid, so they never push today's habits down. */
 const recent = document.createElement('section');
 recent.className = 'recent';
-recent.innerHTML = '<h2>Journal</h2><div id="j-recent"></div>';
+recent.innerHTML = '<h2>Recent</h2><div id="j-recent"></div>';
 const jRecent = recent.querySelector('#j-recent');
 const jText = composer.querySelector('#j-text'), jDate = composer.querySelector('#j-date');
 
@@ -436,6 +474,7 @@ function route() {
   return {view: view || 'home', id, month};
 }
 
+let lastView = '';
 function render() {
   if (!user) return;
   const r = route();
@@ -443,38 +482,76 @@ function render() {
   if ((r.view === 'habit' || r.view === 'edit') && !h) { location.hash = '#/'; return; }
   const typing = document.activeElement === jText;
   $('app').innerHTML = r.view === 'habit' ? viewDetail(h, r.month) : r.view === 'new' ? viewForm(null)
-                     : r.view === 'edit' ? viewForm(h) : viewHome();
-  const slot = $('composer-slot');
-  const rslot = $('recent-slot'); if (rslot) rslot.replaceWith(recent);
-  if (slot) { slot.replaceWith(composer); autosize(); if (typing) jText.focus(); }
+                     : r.view === 'edit' ? viewForm(h) : r.view === 'journal' ? viewJournal() : viewHome();
+  const slot = $('composer-slot'), rslot = $('recent-slot');
+  if (rslot) rslot.replaceWith(recent);
+  if (slot) { slot.replaceWith(composer); autosize(); if (typing || lastView !== 'journal') jText.focus(); }
   if (r.view === 'habit') { const heat = document.querySelector('.heat'); if (heat) heat.scrollLeft = 1e6; }
   if (r.view === 'new' || r.view === 'edit') bindForm(h);
+  lastView = r.view;
+}
+
+/* Day columns: 5 on a phone, more as the window widens (Loop does the same). */
+function columns() {
+  const w = Math.min(window.innerWidth, 760) - 32, col = w < 480 ? 42 : 48;
+  return {n: Math.max(5, Math.min(14, Math.floor((w - 150) / col))), col};
+}
+let lastCols = columns().n;
+window.addEventListener('resize', () => {
+  clearTimeout(window._rz);
+  window._rz = setTimeout(() => { const n = columns().n; if (n !== lastCols && route().view === 'home') { lastCols = n; render(); } }, 120);
+});
+
+function ring(score, color) {
+  const c = 2 * Math.PI * 8.5, len = Math.max(0, Math.min(1, score)) * c;
+  return `<svg class="ring" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#333" stroke-width="3.4"/>
+    <circle cx="11" cy="11" r="8.5" fill="none" stroke="${esc(color)}" stroke-width="3.4" stroke-dasharray="${len.toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 11 11)"/></svg>`;
+}
+
+/* One day on Home: a glyph, never a box. */
+function mark(h, st, day) {
+  const c = dayInfo(h, st, day), color = esc(hc(h));
+  let inner, style = '', cls = 'mark day';
+  if (E.isNumerical(h)) {
+    cls += ' num';
+    if (c.cls === 'yes') style = `color:${color}`;
+    else if (c.cls === 'partial') style = `color:${color};opacity:.6`;
+    inner = c.text || '0';
+  } else if (c.cls === 'yes') { style = `color:${color}`; inner = ICON.check; }
+  else if (c.cls === 'auto') { style = `color:${color};opacity:.4`; inner = ICON.check; }
+  else if (c.cls === 'skip') { inner = ICON.skip; }
+  else { cls += c.cls === 'no' ? ' no' : ''; inner = ICON.close; }
+  const label = `${h.name}, ${E.toIso(day)}: ${c.raw || 'not logged'}${c.notes ? ' · ' + c.notes : ''}`;
+  return `<div class="${cls}" ${dayAttrs(h, c)} data-act="toggle" style="${style}" title="${esc(label)}" aria-label="${esc(label)}">${inner}${c.notes ? '<span class="nd"></span>' : ''}</div>`;
 }
 
 function viewHome() {
-  const t = today(), days = Array.from({length: 7}, (_, i) => t - 6 + i);
+  const t = today(), {n, col} = columns(), days = Array.from({length: n}, (_, i) => t - i);   // newest first, like Loop
+  lastCols = n;
   const active = habits.filter(h => !h.archived), archived = habits.filter(h => h.archived);
-  const shown = showArchived ? archived : active;
-  const head = `<header class="top"><h1><span class="t">${showArchived ? 'Archived' : 'Habits'}</span></h1>
-    <button class="btn icon" onclick="openMenu()" aria-label="Data and account">⋯</button>
-    <a class="btn primary" href="#/new">+ Habit</a></header>` + (showArchived ? '' : '<div id="composer-slot"></div>');
-  if (!habits.length) return head + `<div id="recent-slot"></div><div class="card empty">No habits yet.<br><br>
-    <a class="btn primary" href="#/new">Create one</a> <button class="btn" onclick="$('import-file').click()">Import a backup</button></div>`;
-  const wd = d => new Date(d * 86400000).toLocaleDateString(undefined, {weekday: 'short', timeZone: 'UTC'});
+  const shown = showArchived ? [...active, ...archived] : active;
+  const draft = (loadDraft().text || '').trim();
+  const wd = d => new Date(d * 86400000).toLocaleDateString(undefined, {weekday: 'short', timeZone: 'UTC'}).toUpperCase();
+  const bar = `<div class="bar"><div class="bar-row"><h1>Habits</h1>
+      <a class="ib" href="#/journal" aria-label="Journal">${ICON.pen}${draft ? '<span class="badge"></span>' : ''}</a>
+      <a class="ib" href="#/new" aria-label="New habit">${ICON.plus}</a>
+      <button class="ib" onclick="openMenu()" aria-label="Data and account">${ICON.more}</button></div>
+    ${habits.length ? `<div class="hrow days"><div></div>${days.map(d => `<div>${wd(d)}<b>${E.parts(d).d}</b></div>`).join('')}</div>` : ''}</div>`;
+  if (!habits.length) return `<div style="--n:${n};--col:${col}px">${bar}<div class="empty">No habits yet.<br><br>
+    <a class="btn primary" href="#/new">Create one</a> <button class="btn" onclick="$('import-file').click()">Import a backup</button></div></div>`;
   const rows = shown.map(h => {
-    const st = stats(h), score = Math.round(st.score() * 100);
-    const cells = days.map(d => { const c = dayInfo(h, st, d);
-      return `<td><div class="cell day ${c.cls}${d === t ? ' today' : ''}" ${dayAttrs(h, c)} title="${E.toIso(d)}${c.notes ? ' · ' + esc(c.notes) : ''}">${c.text}${c.notes ? '<span class="note-dot"></span>' : ''}</div></td>`; }).join('');
-    return `<tr><td class="name"><a href="#/habit/${h.id}"><span class="dot" style="background:${esc(h.color)}"></span><span>${esc(h.name)}</span></a>
-      <div class="sub">${score}% · streak ${st.currentStreak} · ${freqLabel(h)}</div>
-      <div class="bar"><span style="width:${score}%;background:${esc(h.color)}"></span></div></td>${cells}</tr>`;
+    const st = stats(h);
+    return `<div class="hrow habit${h.archived ? ' archived' : ''}">
+      <a class="hname" href="#/habit/${h.id}">${ring(st.score(), hc(h))}<span style="color:${esc(hc(h))}">${esc(h.name)}</span></a>
+      ${days.map(d => mark(h, st, d)).join('')}</div>`;
   }).join('');
-  return head + `<table class="grid"><colgroup><col class="name">${'<col class="day">'.repeat(7)}</colgroup>
-    <thead><tr><th></th>${days.map(d => `<th class="${d === t ? 'today-col' : ''}">${wd(d)}<br>${E.parts(d).d}</th>`).join('')}</tr></thead>
-    <tbody>${rows || `<tr><td colspan="8" class="muted" style="padding:20px">Nothing here.</td></tr>`}</tbody></table>
-    <p class="muted" style="margin-top:12px">Tap a day to log it and add a note. Dim squares are days not due under the habit's frequency.</p>
-    ${archived.length || showArchived ? `<p style="margin-top:14px"><button class="btn" onclick="showArchived=!showArchived;render()">${showArchived ? '← Active habits' : `Archived (${archived.length})`}</button></p>` : ''}
-    ${showArchived ? '' : '<div id="recent-slot"></div>'}`;
+  return `<div style="--n:${n};--col:${col}px">${bar}${rows || '<div class="empty">Nothing here.</div>'}
+    ${archived.length ? `<div class="home-foot"><button class="tb" onclick="showArchived=!showArchived;render()">${showArchived ? 'HIDE ARCHIVED' : `SHOW ARCHIVED (${archived.length})`}</button></div>` : ''}</div>`;
+}
+
+function viewJournal() {
+  return `<div class="bar"><div class="bar-row"><a class="ib" href="#/" aria-label="Back">${ICON.back}</a><h1>Journal</h1></div></div>
+    <div id="composer-slot"></div><div id="recent-slot"></div>`;
 }
 
 function viewDetail(h, monthParam) {
@@ -518,7 +595,7 @@ function viewDetail(h, monthParam) {
   const notes = [...(entries.get(h.id) || new Map())].filter(([, e]) => e.notes).sort((a, b) => b[0] - a[0]).slice(0, 25);
 
   return `<header class="top"><a class="btn icon" href="#/" aria-label="Back">‹</a>
-      <h1><span class="dot" style="background:${esc(h.color)}"></span><span class="t">${esc(h.name)}</span></h1>
+      <h1><span class="dot" style="background:${esc(hc(h))}"></span><span class="t">${esc(h.name)}</span></h1>
       <a class="btn" href="#/edit/${h.id}">Edit</a></header>
     <p class="muted" style="margin:-8px 0 16px">${esc(h.question)}${h.question ? ' · ' : ''}${freqLabel(h)}${target}${h.archived ? ' · archived' : ''}</p>
     <div class="stats">
@@ -528,7 +605,7 @@ function viewDetail(h, monthParam) {
     </div>
     <h2>Score · last 180 days</h2>
     <div class="card"><svg class="line" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}
-      <polyline points="${pts}" fill="none" stroke="${esc(h.color)}" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg></div>
+      <polyline points="${pts}" fill="none" stroke="${esc(hc(h))}" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg></div>
     <h2>History · 26 weeks</h2>
     <div class="card heat">${heat}</div>
     <h2>Calendar</h2>
@@ -551,7 +628,7 @@ function viewDetail(h, monthParam) {
 function viewForm(h) {
   const cur = h ? `${h.freq_num}/${h.freq_den}` : '1/1';
   const freqs = FREQS.some(([v]) => v === cur) ? FREQS : [...FREQS, [cur, `${h.freq_num}x every ${h.freq_den} days`]];
-  const color = h ? h.color : COLORS[habits.length % COLORS.length];
+  const color = h ? hc(h) : COLORS[habits.length % COLORS.length];
   const colors = COLORS.includes(color) ? COLORS : [...COLORS, color];
   const numerical = h && h.type === 'numerical';
   return `<header class="top"><a class="btn icon" href="${h ? `#/habit/${h.id}` : '#/'}" aria-label="Back">‹</a><h1><span class="t">${h ? 'Edit habit' : 'New habit'}</span></h1></header>
@@ -611,46 +688,91 @@ async function deleteHabit(id) {
   location.hash = '#/'; render();
 }
 
-// ------------------------------------------------------------------ day dialog
+// ------------------------------------------------------------------ logging: tap, long-press, dialogs
+/* Tap a yes/no cell to toggle ✓/✗; long-press (or right-click) for notes and skip.
+   Measurable cells open the small number popup either way. Calendar days open the dialog. */
 
 const dlg = $('day-dialog'), choices = dlg.querySelectorAll('[data-v]');
+choices.forEach(b => { b.innerHTML = ICON[{yes: 'check', no: 'close', skip: 'skip'}[b.dataset.v]]; });
 let dlgHabit = null, dlgDay = null, dlgStatus = '';
 const pick = v => { dlgStatus = v; choices.forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); };
 // Pressing the selected choice again clears it (back to "not logged").
 choices.forEach(b => b.addEventListener('click', () => pick(dlgStatus === b.dataset.v ? '' : b.dataset.v)));
+const longDate = day => new Date(day * 86400000).toLocaleDateString(undefined, {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
 
-function openDay(el) {
-  dlgHabit = habits.find(h => h.id === el.dataset.habit); dlgDay = +el.dataset.day;
-  const numerical = E.isNumerical(dlgHabit), logged = entries.get(dlgHabit.id).get(dlgDay);
-  $('day-habit').textContent = dlgHabit.name;
-  $('day-dot').style.background = dlgHabit.color;
-  $('day-date').textContent = new Date(dlgDay * 86400000).toLocaleDateString(undefined, {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
-  $('day-yesno').hidden = numerical; $('day-num').hidden = !numerical;
-  $('day-value').value = numerical ? el.dataset.raw : '';
-  $('day-unit').textContent = dlgHabit.unit;
-  pick(numerical ? '' : el.dataset.raw);
+function act(el, long) {
+  const h = habits.find(x => x.id === el.dataset.habit), day = +el.dataset.day;
+  if (!h) return;
+  if (E.isNumerical(h)) return openNum(h, day, el);
+  if (long || el.dataset.act !== 'toggle') return openDay(h, day, el);
+  const logged = entries.get(h.id).get(day);
+  setEntry(h, day, logged && logged.value === V.YES_MANUAL ? V.NO : V.YES_MANUAL, logged ? logged.notes : '');
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+
+function openDay(h, day, el) {
+  dlgHabit = h; dlgDay = day;
+  const logged = entries.get(h.id).get(day);
+  dlg.style.setProperty('--hc', hc(h));
+  $('day-habit').textContent = h.name;
+  $('day-date').textContent = longDate(day);
+  pick(el.dataset.raw);
   $('day-notes').value = logged ? logged.notes : '';
   dlg.returnValue = '';
   dlg.showModal();
-  (numerical ? $('day-value') : $('day-notes')).focus();
 }
-$('app').addEventListener('click', e => { const el = e.target.closest('.day[role=button]'); if (el) openDay(el); });
-$('app').addEventListener('keydown', e => {
-  const el = e.target.closest('.day[role=button]');
-  if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDay(el); }
+
+const pop = $('num-pop');
+function openNum(h, day, el) {
+  dlgHabit = h; dlgDay = day;
+  const logged = entries.get(h.id).get(day), r = el.getBoundingClientRect();
+  $('np-notes').value = logged ? logged.notes : '';
+  $('np-value').value = el.dataset.raw || '';
+  $('np-unit').textContent = [h.unit, longDate(day)].filter(Boolean).join(' · ');
+  pop.style.top = `${Math.max(12, Math.min(r.top - 70, window.innerHeight * 0.3))}px`;
+  pop.returnValue = '';
+  pop.showModal();
+  $('np-value').focus(); $('np-value').select();
+}
+
+let pressTimer = null, pressed = false, pressAt = null;
+const app = $('app'), cellOf = e => e.target.closest('.day[role=button]');
+app.addEventListener('pointerdown', e => {
+  const el = cellOf(e); if (!el) return;
+  pressed = false; pressAt = [e.clientX, e.clientY]; clearTimeout(pressTimer);
+  pressTimer = setTimeout(() => { pressed = true; act(el, true); }, 450);
 });
+app.addEventListener('pointermove', e => { if (pressAt && Math.hypot(e.clientX - pressAt[0], e.clientY - pressAt[1]) > 10) clearTimeout(pressTimer); });
+['pointerup', 'pointercancel'].forEach(t => app.addEventListener(t, () => { clearTimeout(pressTimer); pressAt = null; }));
+app.addEventListener('contextmenu', e => {
+  const el = cellOf(e); if (!el) return;
+  e.preventDefault(); clearTimeout(pressTimer);
+  if (!pressed) { pressed = true; act(el, true); }
+});
+app.addEventListener('click', e => {
+  const el = cellOf(e); if (!el) return;
+  if (pressed) { pressed = false; return; }   // the long-press already handled it
+  act(el, false);
+});
+app.addEventListener('keydown', e => {
+  const el = cellOf(e);
+  if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); act(el, e.shiftKey); }
+});
+
+// A tap on the backdrop closes any dialog.
+document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
 $('day-cancel').addEventListener('click', () => dlg.close());
 $('day-notes').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) dlg.querySelector('[value=save]').click(); });
 dlg.addEventListener('close', () => {
   if (dlg.returnValue !== 'save') return;
-  const notes = $('day-notes').value.trim();
-  let value;
-  if (E.isNumerical(dlgHabit)) {
-    const raw = $('day-value').value.trim();
-    value = raw === '' ? V.UNKNOWN : Math.round(parseFloat(raw) * 1000);
-    if (Number.isNaN(value)) return toast('Not a number');
-  } else value = {yes: V.YES_MANUAL, no: V.NO, skip: V.SKIP, '': V.UNKNOWN}[dlgStatus];
-  setEntry(dlgHabit, dlgDay, value, notes);
+  setEntry(dlgHabit, dlgDay, {yes: V.YES_MANUAL, no: V.NO, skip: V.SKIP, '': V.UNKNOWN}[dlgStatus], $('day-notes').value.trim());
+});
+$('np-notes').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) pop.querySelector('[value=save]').click(); });
+pop.addEventListener('close', () => {
+  if (pop.returnValue !== 'save') return;
+  const raw = $('np-value').value.trim(), value = raw === '' ? V.UNKNOWN : Math.round(parseFloat(raw) * 1000);
+  if (Number.isNaN(value)) return toast('Not a number');
+  setEntry(dlgHabit, dlgDay, value, $('np-notes').value.trim());
 });
 
 // ------------------------------------------------------------------ menu: import / export
