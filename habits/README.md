@@ -12,7 +12,7 @@ Looks and works like Loop Habit Tracker on Android: black, no boxes, color only 
 - **Home**: each habit with a score ring and the last 5 days, newest on the left (more columns on wider
   screens). The header and day labels stay put while you scroll. **Tap** a yes/no day to toggle ✓ / ✗;
   **long-press** (or right-click) for skip and a note. A measurable day (e.g. miles) opens a small
-  number-and-notes popup. The filter icon sorts by manual order, name, color or score, hides habits
+  number-and-notes popup. The filter icon sorts by manual order, name or score, hides habits
   already done today, and shows archived ones; the choice is remembered on that device.
 - **Groups** (optional, from the edit form): Home shows ungrouped habits first, then one collapsible
   section per group with how many are done today. The form suggests the vault's areas (health-wellness,
@@ -27,7 +27,7 @@ Looks and works like Loop Habit Tracker on Android: black, no boxes, color only 
 - **Yes/no or measurable** habits, with frequencies from every day to once a month. Measurable habits
   have an at-least/at-most target, and the score compares the total over each window with it
   (e.g. at least 15 miles per 7 days).
-- Ten colors from Loop's dark palette; habits saved with the old palette show in the nearest match.
+- One color for every habit; groups do the organizing.
 - Export a JSON backup or CSV from the ⋮ menu on Home, and import a backup.
 - Signs in with a magic link and syncs to every device.
 

@@ -123,11 +123,6 @@
          background: var(--surface-2); color: var(--text); font: inherit; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
   .row { display: flex; gap: 10px; } .row > * { flex: 1; min-width: 0; }
-  .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
-  .swatches label { margin: 0 !important; }
-  .swatches input { display: none; }
-  .swatches span { display: block; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-  .swatches input:checked + span { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text); }
 
   /* dialogs */
   dialog { margin: auto; border: 0; border-radius: 16px; background: var(--surface-2); color: var(--text);
@@ -238,11 +233,9 @@ const SUPABASE_KEY = 'sb_publishable_gpJ7aoxecKwhPrHRDdzddA_rdMsRlPN';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const E = window.HabitEngine, V = E.V;
 
-// Loop's dark-theme colors, trimmed to ten. Habits saved with the first palette are shown in its nearest match.
-const COLORS = ['#e57373', '#ff8a65', '#ffb74d', '#81c784', '#4db6ac', '#64b5f6', '#7986cb', '#ba68c8', '#f06292', '#bdbdbd'];
-const LEGACY = {'#3f8f6b': '#81c784', '#5b7fbf': '#64b5f6', '#c0703a': '#ff8a65', '#8a5a9e': '#ba68c8', '#b5793a': '#ffb74d',
-                '#c4553f': '#e57373', '#4f8a8b': '#4db6ac', '#a0a03a': '#ffb74d', '#d0679d': '#f06292', '#7a7a74': '#bdbdbd'};
-const hc = h => LEGACY[(h.color || '').toLowerCase()] || h.color || COLORS[5];
+// One color for every habit: groups do the organizing. The `color` column is kept in the database, just unused.
+const HABIT_COLOR = '#64b5f6';
+const hc = () => HABIT_COLOR;
 
 const ICON = {
   plus: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>',
@@ -556,7 +549,6 @@ function viewHome() {
   lastCols = n;
   const doneToday = h => ['yes', 'auto', 'skip'].includes(dayInfo(h, stats(h), t).cls);
   const order = {manual: (a, b) => a.position - b.position, name: (a, b) => a.name.localeCompare(b.name),
-                 color: (a, b) => COLORS.indexOf(hc(a)) - COLORS.indexOf(hc(b)) || a.position - b.position,
                  score: (a, b) => stats(b).score() - stats(a).score()}[view.sort] || ((a, b) => a.position - b.position);
   const shown = habits.filter(h => (view.showArchived || !h.archived) && !(view.hideDone && doneToday(h))).sort(order);
   const draft = (loadDraft().text || '').trim();
@@ -595,7 +587,7 @@ $('app').addEventListener('click', e => {
 
 function filterMenu(btn) {
   const set = (k, v) => () => { view[k] = v; saveView(); render(); };
-  const sorts = [['manual', 'Manual order'], ['name', 'Name'], ['color', 'Color'], ['score', 'Score']];
+  const sorts = [['manual', 'Manual order'], ['name', 'Name'], ['score', 'Score']];
   const nArch = habits.filter(h => h.archived).length;
   openPop(btn, [{head: 'Sort'}, ...sorts.map(([k, l]) => ({label: l, on: view.sort === k, fn: set('sort', k)})), '-',
     {label: 'Hide completed', on: view.hideDone, fn: set('hideDone', !view.hideDone)},
@@ -763,8 +755,6 @@ function habitMenu(btn, id) {
 function viewForm(h) {
   const cur = h ? `${h.freq_num}/${h.freq_den}` : '1/1';
   const freqs = FREQS.some(([v]) => v === cur) ? FREQS : [...FREQS, [cur, `${h.freq_num}x every ${h.freq_den} days`]];
-  const color = h ? hc(h) : COLORS[habits.length % COLORS.length];
-  const colors = COLORS.includes(color) ? COLORS : [...COLORS, color];
   const numerical = h && h.type === 'numerical';
   return `<div class="bar"><div class="bar-row"><a class="ib" href="${h ? `#/habit/${h.id}` : '#/'}" aria-label="Back">${ICON.back}</a>
       <h1>${h ? 'Edit habit' : 'New habit'}</h1><button class="tb accent" form="habit-form">SAVE</button></div></div>
@@ -783,8 +773,6 @@ function viewForm(h) {
       <div><label for="f-unit">Unit</label><input id="f-unit" name="unit" maxlength="20" value="${esc(h?.unit)}" placeholder="miles"></div>
     </div>
     <p class="muted" id="f-numhint" style="margin-top:8px"${numerical ? '' : ' hidden'}>The score compares the total over each frequency window (e.g. 7 days for once a week) with the target.</p>
-    <label>Color</label>
-    <div class="swatches">${colors.map(c => `<label><input type="radio" name="color" value="${c}"${c === color ? ' checked' : ''}><span style="background:${c}"></span></label>`).join('')}</div>
     ${hasGroups() ? `<label for="f-group">Group</label><input id="f-group" name="group_name" list="f-groups" maxlength="40" value="${esc(h ? groupOf(h) : '')}" placeholder="none, or e.g. health-wellness" autocomplete="off">
     <datalist id="f-groups">${[...new Set([...habits.map(groupOf).filter(Boolean), ...AREAS])].sort().map(g => `<option value="${esc(g)}">`).join('')}</datalist>` : ''}
     <label for="f-desc">Description</label><textarea id="f-desc" name="description" rows="2">${esc(h?.description)}</textarea>
@@ -801,7 +789,7 @@ function bindForm(h) {
       id: h ? h.id : crypto.randomUUID(), name: f.name.value.trim(), question: f.question.value.trim(),
       description: f.description.value.trim(), type: f.type.value, freq_num: num, freq_den: den,
       target_type: f.target_type.value, target_value: parseFloat(f.target_value.value) || 0, unit: f.unit.value.trim(),
-      color: f.color.value, position: h ? h.position : habits.reduce((m, x) => Math.max(m, x.position), 0) + 1,
+      position: h ? h.position : habits.reduce((m, x) => Math.max(m, x.position), 0) + 1,
       archived: h ? h.archived : false,
     };
     if (f.group_name) row.group_name = f.group_name.value.trim().toLowerCase();
@@ -964,7 +952,7 @@ $('import-file').addEventListener('change', async e => {
     id: asUuid(h.uuid), name: h.name, question: h.question || '', description: h.description || '',
     type: h.type === 'numerical' ? 'numerical' : 'yes_no', freq_num: h.freq_num || 1, freq_den: h.freq_den || 1,
     target_type: h.target_type === 'at_most' ? 'at_most' : 'at_least', target_value: +h.target_value || 0, unit: h.unit || '',
-    color: h.color || COLORS[i % COLORS.length], position: h.position ?? i + 1, archived: !!h.archived,
+    color: h.color || HABIT_COLOR, position: h.position ?? i + 1, archived: !!h.archived,
     reminder_time: h.reminder_time || null, reminder_days: h.reminder_days ?? 127,
     ...(hasGroups() ? {group_name: (h.group_name || '').trim().toLowerCase()} : {}),
   }));
