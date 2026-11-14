@@ -5,6 +5,8 @@ A habit tracker. The math (habit score, frequency auto-fill, streaks) is a port 
 times this week counts as done, and a missed day lowers the score gradually instead of wiping
 out a streak.
 
+See [CHANGELOG.md](CHANGELOG.md) for what changed between versions.
+
 ## what it does
 
 Looks and works like Loop Habit Tracker on Android: black, no boxes, color only where it means something.
