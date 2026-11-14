@@ -71,38 +71,47 @@
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
   .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
 
-  /* habit page (restyled in phase 2) */
-  header.top { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
-  header.top h1 { font-size: 20px; font-weight: 650; flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
-  header.top h1 span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .stats b { display: block; font-size: 24px; font-weight: 650; margin-top: 2px; }
-  svg.line { width: 100%; height: 150px; display: block; }
-  .heat { display: flex; gap: 3px; overflow-x: auto; scrollbar-width: thin; }
-  .heat .col { display: flex; flex-direction: column; gap: 3px; }
-  .heat .sq { width: 13px; height: 13px; border-radius: 3px; background: var(--subtle); flex: none; }
-  .heat .sq.yes { background: var(--yes); } .heat .sq.auto { background: var(--auto); }
-  .heat .sq.no { background: var(--red-dim); } .heat .sq.skip { background: var(--border-2); }
-  .heat .sq.partial { background: var(--partial); } .heat .sq.future { background: transparent; }
-  .heat .sq.noted { box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
-  .cal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .cal-head b { flex: 1; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-grid .wd { text-align: center; font-size: 11px; color: var(--muted-2); padding-bottom: 2px; }
-  .cd { position: relative; aspect-ratio: 1; max-height: 62px; border-radius: 8px; border: 1px solid var(--border);
-        display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; }
-  .cd .v { font-size: 11px; font-weight: 650; }
-  .cd.yes { background: var(--yes); border-color: var(--yes); color: #000; }
-  .cd.auto { background: var(--auto); border-color: var(--auto); }
-  .cd.partial { background: var(--partial); border-color: var(--partial); color: #fff; }
-  .cd.no { color: var(--red); border-color: var(--red-dim); }
-  .cd.skip { color: var(--muted-2); background: var(--surface-2); }
-  .cd.future { opacity: .3; }
-  .cd.today { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--soft); }
-  .note-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .75; }
-  .list > div { padding: 3px 0; }
-  .list .muted { margin-right: 6px; font-variant-numeric: tabular-nums; }
-  .manage { display: flex; gap: 8px; flex-wrap: wrap; }
+  /* habit page */
+  .sub { color: var(--soft); font-size: 14px; margin: -6px 0 6px; }
+  .sec { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 12px; }
+  .sec h2 { margin: 0; font-size: 19px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--hc); }
+  .sel { width: auto; border: 0; background: none; color: var(--soft); font-size: 15px; padding: 4px 2px; cursor: pointer; }
+  .overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .overview b { display: block; font-size: 22px; font-weight: 600; color: var(--hc); font-variant-numeric: tabular-nums; }
+  .overview span { font-size: 12px; color: var(--soft); }
+  .chart { position: relative; }
+  .hscroll { overflow-x: auto; scrollbar-width: none; }
+  .hscroll::-webkit-scrollbar { display: none; }
+  .hscroll svg { display: block; }
+  .ylab { position: absolute; left: 0; font-size: 12px; color: var(--soft); background: var(--bg); padding-right: 6px; pointer-events: none; }
+  .calwrap { display: flex; gap: 6px; }
+  .calwrap .hscroll { flex: 1; min-width: 0; }
+  .cal { display: grid; grid-auto-flow: column; grid-template-rows: 22px repeat(7, var(--cq)); grid-auto-columns: var(--cq); gap: 4px; --cq: 38px; }
+  .cal .ml { font-size: 13px; color: var(--soft); white-space: nowrap; overflow: visible; }
+  .cq { position: relative; border-radius: 3px; background: #262626; color: #9e9e9e; font-size: 14px; display: flex; align-items: center;
+        justify-content: center; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: pointer; }
+  .cq.yes, .cq.auto, .cq.partial { color: rgba(0,0,0,.72); }
+  .cq.skip { background: #1a1a1a; color: var(--muted-2); }
+  .cq.future { visibility: hidden; }
+  .cq.today { box-shadow: inset 0 0 0 2px var(--text); }
+  .cq .nd { position: absolute; top: 3px; right: 3px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+  .wdays { display: grid; grid-template-rows: 22px repeat(7, var(--cq)); gap: 4px; --cq: 38px; font-size: 13px; color: var(--soft); }
+  .wdays div { display: flex; align-items: center; }
+  .cal-edit { display: flex; justify-content: center; margin-top: 10px; }
+  .cal-edit .tb.on { color: var(--hc); }
+  .streaks > div { display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; gap: 8px; margin: 6px 0; font-size: 12px; color: var(--soft); }
+  .streaks > div span:last-child { text-align: right; }
+  .streaks .sb { height: 22px; border-radius: 3px; background: var(--hc); color: rgba(0,0,0,.75); font-weight: 600; font-size: 12px;
+                 display: flex; align-items: center; justify-content: center; min-width: 26px; margin: 0 auto; }
+  .notes > div { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 8px 0; border-top: 1px solid var(--border); }
+  .notes .d { color: var(--soft); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .popmenu { position: fixed; z-index: 20; min-width: 180px; background: var(--surface-2); border-radius: 8px; padding: 6px 0; box-shadow: 0 8px 24px rgba(0,0,0,.6); }
+  .popmenu button { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--text); font: inherit; font-size: 15px; padding: 11px 16px; cursor: pointer; }
+  .popmenu button:hover { background: var(--subtle); }
+  .popmenu button.danger { color: var(--red); }
+  .popmenu button.on::after { content: ' ✓'; color: var(--accent); }
+  .popmenu hr { border: 0; border-top: 1px solid var(--border-2); margin: 6px 0; }
+  .popmenu .ph { padding: 8px 16px 4px; font-size: 12px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .06em; }
 
   /* forms */
   form.stack label { display: block; margin: 14px 0 5px; font-size: 13px; color: var(--soft); }
@@ -474,19 +483,23 @@ function route() {
   return {view: view || 'home', id, month};
 }
 
-let lastView = '';
+let lastView = '', lastKey = '';
 function render() {
   if (!user) return;
   const r = route();
   const h = r.id && habits.find(x => x.id === r.id);
   if ((r.view === 'habit' || r.view === 'edit') && !h) { location.hash = '#/'; return; }
-  const typing = document.activeElement === jText;
-  $('app').innerHTML = r.view === 'habit' ? viewDetail(h, r.month) : r.view === 'new' ? viewForm(null)
+  const typing = document.activeElement === jText, key = location.hash;
+  const scrolls = {};
+  if (key === lastKey) document.querySelectorAll('[data-scroll]').forEach(el => { scrolls[el.dataset.scroll] = el.scrollLeft; });
+  closePop();
+  $('app').innerHTML = r.view === 'habit' ? viewDetail(h) : r.view === 'new' ? viewForm(null)
                      : r.view === 'edit' ? viewForm(h) : r.view === 'journal' ? viewJournal() : viewHome();
   const slot = $('composer-slot'), rslot = $('recent-slot');
   if (rslot) rslot.replaceWith(recent);
   if (slot) { slot.replaceWith(composer); autosize(); if (typing || lastView !== 'journal') jText.focus(); }
-  if (r.view === 'habit') { const heat = document.querySelector('.heat'); if (heat) heat.scrollLeft = 1e6; }
+  document.querySelectorAll('[data-scroll]').forEach(el => { el.scrollLeft = el.dataset.scroll in scrolls ? scrolls[el.dataset.scroll] : 1e6; });
+  lastKey = key;
   if (r.view === 'new' || r.view === 'edit') bindForm(h);
   lastView = r.view;
 }
@@ -554,75 +567,153 @@ function viewJournal() {
     <div id="composer-slot"></div><div id="recent-slot"></div>`;
 }
 
-function viewDetail(h, monthParam) {
-  const st = stats(h), t = st.today, numerical = E.isNumerical(h);
+// ------------------------------------------------------------------ habit page
+
+/* Small popup menu under an icon button (⋮ on the habit page, filter on Home). */
+function openPop(anchor, items) {
+  closePop();
+  const r = anchor.getBoundingClientRect(), m = document.createElement('div');
+  m.className = 'popmenu'; m.id = 'popmenu';
+  m.style.top = `${r.bottom + 4}px`; m.style.right = `${Math.max(8, window.innerWidth - r.right)}px`;
+  m.innerHTML = items.map((it, i) => it === '-' ? '<hr>' : it.head ? `<div class="ph">${esc(it.head)}</div>`
+    : `<button data-i="${i}" class="${it.danger ? 'danger' : ''}${it.on ? ' on' : ''}">${esc(it.label)}</button>`).join('');
+  m.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { closePop(); items[+b.dataset.i].fn(); } e.stopPropagation(); });
+  document.body.append(m);
+  setTimeout(() => document.addEventListener('click', closePop, {once: true}));
+}
+function closePop() { const m = $('popmenu'); if (m) m.remove(); }
+
+const detailOpts = {score: 'month', hist: 'week', edit: false};
+let detailHabit = null;
+const MS = 86400000;
+const sun = d => new Date(d * MS).getUTCDay();                 // 0 = Sunday, like Loop's calendar
+const monShort = d => new Date(d * MS).toLocaleDateString(undefined, {month: 'short', timeZone: 'UTC'});
+function bStart(d, u) {
+  const p = E.parts(d);
+  if (u === 'week') return d - sun(d);
+  if (u === 'month') return Date.UTC(p.y, p.m - 1, 1) / MS;
+  if (u === 'quarter') return Date.UTC(p.y, Math.floor((p.m - 1) / 3) * 3, 1) / MS;
+  return Date.UTC(p.y, 0, 1) / MS;
+}
+function bNext(b, u) {
+  if (u === 'week') return b + 7;
+  const p = E.parts(b);
+  return Date.UTC(p.y, p.m - 1 + {month: 1, quarter: 3, year: 12}[u], 1) / MS;
+}
+/* Bucket starts from the habit's first entry to today, at least `min` of them, at most 120. */
+function buckets(from, to, u, min = 6) {
+  const out = [];
+  for (let b = bStart(from, u); b <= to; b = bNext(b, u)) out.push(b);
+  while (out.length < min) out.unshift(bStart((out[0] ?? bStart(to, u)) - 1, u));
+  return out.slice(-120);
+}
+function bLabel(b, u, prev) {
+  const p = E.parts(b), q = prev === undefined ? null : E.parts(prev);
+  const year = !q || q.y !== p.y ? String(p.y) : '';
+  if (u === 'week') return [!q || q.m !== p.m ? monShort(b) : String(p.d), year];
+  if (u === 'month') return [monShort(b), year];
+  if (u === 'quarter') return [`Q${Math.floor((p.m - 1) / 3) + 1}`, year];
+  return [String(p.y), ''];
+}
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const unitSel = (name, cur, opts) => `<select class="sel" onchange="detailOpts.${name}=this.value;render()">${opts.map(o =>
+  `<option value="${o}"${o === cur ? ' selected' : ''}>${o[0].toUpperCase() + o.slice(1)}</option>`).join('')}</select>`;
+const xLabels = (bs, u, x, y) => bs.map((b, i) => { const [a, yr] = bLabel(b, u, bs[i - 1]);
+  return `<text x="${x(i)}" y="${y}" text-anchor="middle">${a}</text>${yr ? `<text x="${x(i)}" y="${y + 16}" text-anchor="middle">${yr}</text>` : ''}`; }).join('');
+
+function scoreChart(h, st, color) {
+  const u = detailOpts.score, t = st.today, bs = buckets(st.start, t, u), slot = 48, padL = 44, top = 12, ph = 160;
+  const x = i => padL + i * slot + slot / 2, y = v => top + ph * (1 - v), W = padL + bs.length * slot + 8, H = top + ph + 44;
+  const vals = bs.map(b => st.score(Math.min(bNext(b, u) - 1, t)));
+  const grid = [0, .2, .4, .6, .8, 1].map(v => `<line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#262626"/>`).join('');
+  const pts = vals.map((v, i) => `${x(i)},${y(v).toFixed(1)}`).join(' ');
+  const labels = [1, .8, .6, .4, .2].map(v => `<span class="ylab" style="top:${y(v) - 18}px">${v * 100}%</span>`).join('');
+  return `<div class="chart">${labels}<div class="hscroll" data-scroll="score"><svg width="${W}" height="${H}" font-size="12" fill="#9e9e9e">${grid}
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5"/>
+    ${vals.map((v, i) => `<circle cx="${x(i)}" cy="${y(v).toFixed(1)}" r="4.5" fill="${color}"><title>${Math.round(v * 100)}%</title></circle>`).join('')}
+    ${xLabels(bs, u, x, top + ph + 20)}</svg></div></div>`;
+}
+
+function historyChart(h, st, color) {
+  const u = detailOpts.hist, t = st.today, bs = buckets(st.start, t, u), slot = 44, top = 20, ph = 150;
+  const logged = entries.get(h.id) || new Map(), numerical = E.isNumerical(h);
+  const vals = bs.map(b => { let sum = 0; for (let d = b, e = Math.min(bNext(b, u) - 1, t); d <= e; d++) { const v = logged.get(d);
+    if (v) sum += numerical ? Math.max(0, v.value) / 1000 : v.value === V.YES_MANUAL ? 1 : 0; } return sum; });
+  const max = Math.max(...vals, 1), x = i => i * slot + slot / 2, W = bs.length * slot, H = top + ph + 44;
+  const grid = [0, .25, .5, .75, 1].map(v => `<line x1="0" x2="${W}" y1="${top + ph * (1 - v)}" y2="${top + ph * (1 - v)}" stroke="#262626"/>`).join('');
+  const bars = vals.map((v, i) => { const bh = ph * v / max;
+    return v ? `<rect x="${x(i) - 10}" y="${top + ph - bh}" width="20" height="${bh}" fill="${color}"/><text x="${x(i)}" y="${top + ph - bh - 6}" text-anchor="middle" fill="${color}">${fmtNum(v)}</text>` : ''; }).join('');
+  return `<div class="hscroll" data-scroll="hist"><svg width="${W}" height="${H}" font-size="12" fill="#9e9e9e">${grid}${bars}${xLabels(bs, u, x, top + ph + 20)}</svg></div>`;
+}
+
+function calendar(h, st, color) {
+  const t = st.today, first = bStart(Math.max(Math.min(st.start, t - 7 * 20), t - 7 * 104), 'week'), weeks = (bStart(t, 'week') - first) / 7 + 1;
+  // Month label above the week holding the 1st (the year instead of "Jan"); the first column says month and year
+  // unless a real label follows too closely to fit it.
+  const labs = [...Array(weeks)].map((_, w) => {
+    const ws = first + w * 7, has1 = [...Array(7)].map((_, k) => ws + k).find(d => E.parts(d).d === 1);
+    return w === 0 ? `${monShort(ws)} ${E.parts(ws).y}` : has1 === undefined ? '' : E.parts(has1).m === 1 ? String(E.parts(has1).y) : monShort(has1);
+  });
+  if (labs.slice(1, 3).some(Boolean)) labs[0] = '';
+  let cells = '';
+  for (let w = 0; w < weeks; w++) {
+    const ws = first + w * 7;
+    cells += `<div class="ml">${labs[w]}</div>`;
+    for (let k = 0; k < 7; k++) {
+      const d = ws + k, c = dayInfo(h, st, d);
+      const bg = c.cls === 'yes' ? color : c.cls === 'auto' ? rgba(color, .35) : c.cls === 'partial' ? rgba(color, .6) : '';
+      const label = `${E.toIso(d)}: ${c.raw || 'not logged'}${c.notes ? ' · ' + c.notes : ''}`;
+      cells += `<div class="cq day ${c.cls}${d === t ? ' today' : ''}" ${c.cls === 'future' ? '' : dayAttrs(h, c)}${detailOpts.edit ? ' data-act="toggle"' : ''}
+        style="${bg ? `background:${bg}` : ''}" title="${esc(label)}">${c.cls === 'future' ? '' : E.parts(d).d}${c.notes ? '<span class="nd"></span>' : ''}</div>`;
+    }
+  }
+  const wd = [...Array(7)].map((_, k) => new Date((3 + k) * MS).toLocaleDateString(undefined, {weekday: 'short', timeZone: 'UTC'}));   // 1970-01-04 was a Sunday
+  return `<div class="calwrap"><div class="hscroll" data-scroll="cal"><div class="cal">${cells}</div></div>
+    <div class="wdays"><div></div>${wd.map(w => `<div>${w}</div>`).join('')}</div></div>
+    <div class="cal-edit"><button class="tb${detailOpts.edit ? ' on' : ''}" onclick="detailOpts.edit=!detailOpts.edit;render()">${detailOpts.edit ? 'DONE' : 'EDIT'}</button></div>`;
+}
+
+function viewDetail(h) {
+  if (detailHabit !== h.id) { detailHabit = h.id; detailOpts.edit = false; }
+  const st = stats(h), numerical = E.isNumerical(h), color = hc(h);
   const target = numerical ? ` · ${h.target_type.replace('_', ' ')} ${+h.target_value} ${esc(h.unit)}` : '';
-
-  // score line, last 180 days
-  const W = 720, H = 150, N = 180;
-  const pts = Array.from({length: N}, (_, i) => `${(i * W / (N - 1)).toFixed(1)},${(H - st.score(t - N + 1 + i) * H).toFixed(1)}`).join(' ');
-  const grid = [0.25, 0.5, 0.75].map(y => `<line x1="0" x2="${W}" y1="${H - y * H}" y2="${H - y * H}" stroke="currentColor" stroke-opacity=".12"/>`).join('');
-
-  // heatmap: 26 weeks, Monday-first columns
-  const dow = d => (new Date(d * 86400000).getUTCDay() + 6) % 7;
-  const start = t - dow(t) - 25 * 7;
-  let heat = '';
-  for (let w = 0; w < 26; w++) {
-    heat += '<div class="col">';
-    for (let k = 0; k < 7; k++) { const c = dayInfo(h, st, start + w * 7 + k);
-      heat += `<div class="sq day ${c.cls}${c.notes ? ' noted' : ''}" ${dayAttrs(h, c)} title="${E.toIso(c.day)} ${c.text}${c.notes ? ' · ' + esc(c.notes) : ''}"></div>`; }
-    heat += '</div>';
-  }
-
-  // month calendar
-  const tp = E.parts(t);
-  let [y, m] = (monthParam || '').split('-').map(Number);
-  if (!y || !m || m < 1 || m > 12) { y = tp.y; m = tp.m; }
-  const first = Date.UTC(y, m - 1, 1) / 86400000, last = Date.UTC(y, m, 0) / 86400000;
-  let cal = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(w => `<div class="wd">${w}</div>`).join('');
-  cal += '<div></div>'.repeat(dow(first));
-  let done = 0;
-  for (let d = first; d <= last; d++) {
-    const c = dayInfo(h, st, d); if (c.cls === 'yes') done++;
-    cal += `<div class="cd day ${c.cls}${d === t ? ' today' : ''}" ${dayAttrs(h, c)} title="${esc(c.notes)}"><span>${E.parts(d).d}</span>${numerical && c.text ? `<span class="v">${c.text}</span>` : ''}${c.notes ? '<span class="note-dot"></span>' : ''}</div>`;
-  }
-  const ym = (yy, mm) => `${yy}-${String(mm).padStart(2, '0')}`;
-  const prev = m === 1 ? ym(y - 1, 12) : ym(y, m - 1), next = m === 12 ? ym(y + 1, 1) : ym(y, m + 1);
-  const monthName = new Date(first * 86400000).toLocaleDateString(undefined, {month: 'long', year: 'numeric', timeZone: 'UTC'});
-  const nextOk = Date.UTC(+next.slice(0, 4), +next.slice(5) - 1, 1) / 86400000 <= t;
-
-  const top = [...st.streaks].sort((a, b) => b.length - a.length).slice(0, 5);
-  const notes = [...(entries.get(h.id) || new Map())].filter(([, e]) => e.notes).sort((a, b) => b[0] - a[0]).slice(0, 25);
-
-  return `<header class="top"><a class="btn icon" href="#/" aria-label="Back">‹</a>
-      <h1><span class="dot" style="background:${esc(hc(h))}"></span><span class="t">${esc(h.name)}</span></h1>
-      <a class="btn" href="#/edit/${h.id}">Edit</a></header>
-    <p class="muted" style="margin:-8px 0 16px">${esc(h.question)}${h.question ? ' · ' : ''}${freqLabel(h)}${target}${h.archived ? ' · archived' : ''}</p>
-    <div class="stats">
-      <div class="card"><span class="muted">Score</span><b>${Math.round(st.score() * 100)}%</b></div>
-      <div class="card"><span class="muted">Streak</span><b>${st.currentStreak}</b></div>
-      <div class="card"><span class="muted">Best</span><b>${st.bestStreak}</b></div>
+  const logged = [...(entries.get(h.id) || new Map()).values()];
+  const total = numerical ? fmtNum(logged.reduce((a, e) => a + Math.max(0, e.value), 0) / 1000) : logged.filter(e => e.value === V.YES_MANUAL).length;
+  const fmtShort = d => { const p = E.parts(d), y = E.parts(st.today).y;
+    return new Date(d * MS).toLocaleDateString(undefined, {month: 'short', day: 'numeric', ...(p.y !== y ? {year: '2-digit'} : {}), timeZone: 'UTC'}); };
+  const top = [...st.streaks].sort((a, b) => b.length - a.length).slice(0, 5), maxS = top.length ? top[0].length : 1;
+  const notes = [...(entries.get(h.id) || new Map())].filter(([, e]) => e.notes).sort((a, b) => b[0] - a[0]).slice(0, 50);
+  return `<div style="--hc:${esc(color)}">
+    <div class="bar"><div class="bar-row"><a class="ib" href="#/" aria-label="Back">${ICON.back}</a><h1>${esc(h.name)}</h1>
+      <a class="ib" href="#/edit/${h.id}" aria-label="Edit habit">${ICON.pen}</a>
+      <button class="ib" onclick="habitMenu(this,'${h.id}')" aria-label="More">${ICON.more}</button></div></div>
+    <p class="sub">${esc(h.question)}${h.question ? ' · ' : ''}${freqLabel(h)}${target}${h.archived ? ' · archived' : ''}</p>
+    <div class="sec"><h2>Overview</h2></div>
+    <div class="overview">
+      <div><b>${Math.round(st.score() * 100)}%</b><span>Score</span></div>
+      <div><b>${st.currentStreak}</b><span>Streak</span></div>
+      <div><b>${st.bestStreak}</b><span>Best streak</span></div>
+      <div><b>${total}</b><span>Total${numerical && h.unit ? ' ' + esc(h.unit) : ''}</span></div>
     </div>
-    <h2>Score · last 180 days</h2>
-    <div class="card"><svg class="line" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}
-      <polyline points="${pts}" fill="none" stroke="${esc(hc(h))}" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg></div>
-    <h2>History · 26 weeks</h2>
-    <div class="card heat">${heat}</div>
-    <h2>Calendar</h2>
-    <div class="card">
-      <div class="cal-head"><a class="btn icon" href="#/habit/${h.id}/${prev}" aria-label="Previous month">‹</a>
-        <b>${monthName}</b><span class="muted">${done} day${done === 1 ? '' : 's'} done</span>
-        ${nextOk ? `<a class="btn icon" href="#/habit/${h.id}/${next}" aria-label="Next month">›</a>` : `<button class="btn icon" disabled>›</button>`}</div>
-      <div class="cal-grid">${cal}</div>
-    </div>
-    <h2>Best streaks</h2>
-    <div class="card list">${top.map(s => `<div>${s.length} day${s.length === 1 ? '' : 's'} <span class="muted">${E.toIso(s.start)} → ${E.toIso(s.end)}</span></div>`).join('') || '<span class="muted">None yet.</span>'}</div>
-    <h2>Notes</h2>
-    ${notes.length ? `<div class="card list">${notes.map(([d, e]) => `<div><span class="muted">${E.toIso(d)}</span>${esc(e.notes)}</div>`).join('')}</div>`
-                   : '<p class="muted">No notes yet. Tap a day to add one.</p>'}
-    <h2>Manage</h2>
-    <div class="manage"><button class="btn" onclick="toggleArchive('${h.id}')">${h.archived ? 'Unarchive' : 'Archive'}</button>
-      <button class="btn danger" onclick="deleteHabit('${h.id}')">Delete</button></div>`;
+    <div class="sec"><h2>Score</h2>${unitSel('score', detailOpts.score, ['week', 'month', 'quarter'])}</div>
+    ${scoreChart(h, st, color)}
+    <div class="sec"><h2>History</h2>${unitSel('hist', detailOpts.hist, ['week', 'month', 'quarter', 'year'])}</div>
+    ${historyChart(h, st, color)}
+    <div class="sec"><h2>Calendar</h2></div>
+    ${calendar(h, st, color)}
+    ${top.length ? `<div class="sec"><h2>Best streaks</h2></div><div class="streaks">${top.map(s => `<div><span>${fmtShort(s.start)}</span>
+      <div class="sb" style="width:${Math.max(12, 100 * s.length / maxS)}%">${s.length}</div><span>${fmtShort(s.end)}</span></div>`).join('')}</div>` : ''}
+    <div class="sec"><h2>Notes</h2></div>
+    ${notes.length ? `<div class="notes">${notes.map(([d, e]) => `<div><span class="d">${fmtShort(d)}</span><span>${esc(e.notes)}</span></div>`).join('')}</div>`
+                   : '<p class="muted">No notes yet. Long-press a day to add one.</p>'}
+  </div>`;
+}
+
+function habitMenu(btn, id) {
+  const h = habits.find(x => x.id === id);
+  openPop(btn, [{label: 'Edit', fn: () => { location.hash = `#/edit/${id}`; }},
+                {label: h.archived ? 'Unarchive' : 'Archive', fn: () => toggleArchive(id)}, '-',
+                {label: 'Delete', danger: true, fn: () => deleteHabit(id)}]);
 }
 
 function viewForm(h) {
