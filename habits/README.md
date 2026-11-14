@@ -7,18 +7,25 @@ out a streak.
 
 ## what it does
 
-- **Journal composer** on top of Home: type or dictate, save. A short first line followed by more
-  text becomes the title. Backdate with the date chip. Entries wait in `journal_entries` until the
-  vault's `_automations/pull_journal.py` copies them into `Journal/YYYY-MM.md`; after that they show
-  "in vault" and are edited in Obsidian. See [spec_v2.md](spec_v2.md).
-- **Home**: every habit with its score, streak and the last 7 days. Tap a day to open the day
-  card: ✓ / ✗ (or a number for measurable habits like miles), skip, and a note.
-- **Habit page**: score over the last 180 days, a 26-week heatmap, a month calendar you can page
-  back through, best streaks and every note. Any day in the heatmap or calendar opens the day card.
+Looks and works like Loop Habit Tracker on Android: black, no boxes, color only where it means something.
+
+- **Home**: each habit with a score ring and the last 5 days, newest on the left (more columns on wider
+  screens). The header and day labels stay put while you scroll. **Tap** a yes/no day to toggle ✓ / ✗;
+  **long-press** (or right-click) for skip and a note. A measurable day (e.g. miles) opens a small
+  number-and-notes popup. The filter icon sorts by manual order, name, color or score, hides habits
+  already done today, and shows archived ones; the choice is remembered on that device.
+- **Journal** (✎ on Home; a dot means there's an unsaved draft): type or dictate, save. A short first
+  line followed by more text becomes the title. Backdate with the date chip. Entries wait in
+  `journal_entries` until the vault's `_automations/pull_journal.py` copies them into
+  `Journal/YYYY-MM.md`; after that they show "in vault" and are edited in Obsidian. See [spec_v2.md](spec_v2.md).
+- **Habit page**: overview (score, streak, best streak, total), score chart with a y axis, history bars
+  by week/month/quarter/year, a scrollable calendar of every week (tap a day for its card; **EDIT** makes
+  taps toggle), best streaks and every note. Edit, archive and delete from the ✎ and ⋮ icons.
 - **Yes/no or measurable** habits, with frequencies from every day to once a month. Measurable habits
   have an at-least/at-most target, and the score compares the total over each window with it
   (e.g. at least 15 miles per 7 days).
-- Archive, edit and delete habits. Export a JSON backup or CSV from the ⋯ menu, and import a backup.
+- Ten colors from Loop's dark palette; habits saved with the old palette show in the nearest match.
+- Export a JSON backup or CSV from the ⋮ menu on Home, and import a backup.
 - Signs in with a magic link and syncs to every device.
 
 ## stack

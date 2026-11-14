@@ -54,7 +54,6 @@
   .mark.no { color: var(--muted-2); }
   .mark .nd { position: absolute; top: 12px; right: 7px; width: 4px; height: 4px; border-radius: 50%; background: var(--soft); }
   .day:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 8px; }
-  .home-foot { margin-top: 18px; display: flex; gap: 8px; }
   .empty { text-align: center; padding: 48px 14px; color: var(--soft); }
 
   /* buttons */
@@ -63,13 +62,11 @@
   .btn:hover { border-color: var(--muted); }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
   .btn.danger { color: var(--red); }
-  .btn.icon { width: 36px; padding: 7px 0; }
   .btn:disabled { opacity: .4; cursor: default; }
   .tb { border: 0; background: none; color: var(--text); font: 600 14px var(--sans); letter-spacing: .05em; padding: 10px 14px; cursor: pointer; border-radius: 8px; }
   .tb:hover { background: var(--surface-2); }
   .tb.accent { color: var(--accent); }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
 
   /* habit page */
   .sub { color: var(--soft); font-size: 14px; margin: -6px 0 6px; }
@@ -119,12 +116,11 @@
          background: var(--surface-2); color: var(--text); font: inherit; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
   .row { display: flex; gap: 10px; } .row > * { flex: 1; min-width: 0; }
-  .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
   .swatches label { margin: 0 !important; }
   .swatches input { display: none; }
-  .swatches span { display: block; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+  .swatches span { display: block; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
   .swatches input:checked + span { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text); }
-  .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
 
   /* dialogs */
   dialog { margin: auto; border: 0; border-radius: 16px; background: var(--surface-2); color: var(--text);
@@ -245,6 +241,7 @@ const ICON = {
   plus: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>',
   more: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4m0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg>',
   pen: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 0 0 0-1.41l-2.33-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>',
+  filter: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"/></svg>',
   back: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/></svg>',
   check: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
   close: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
@@ -259,7 +256,11 @@ let user = null;
 let habits = [];                 // rows from `habits`
 let entries = new Map();         // habit id -> Map(day -> {value, notes})
 const statsCache = new Map();    // habit id -> engine.analyze() result
-let showArchived = false;
+/* Home's filter menu, remembered per device. */
+const VIEW_KEY = 'habits.view';
+const view = Object.assign({sort: 'manual', hideDone: false, showArchived: false},
+  (() => { try { return JSON.parse(localStorage.getItem(VIEW_KEY)) || {}; } catch { return {}; } })());
+const saveView = () => { try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch {} };
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -541,13 +542,17 @@ function mark(h, st, day) {
 function viewHome() {
   const t = today(), {n, col} = columns(), days = Array.from({length: n}, (_, i) => t - i);   // newest first, like Loop
   lastCols = n;
-  const active = habits.filter(h => !h.archived), archived = habits.filter(h => h.archived);
-  const shown = showArchived ? [...active, ...archived] : active;
+  const doneToday = h => ['yes', 'auto', 'skip'].includes(dayInfo(h, stats(h), t).cls);
+  const order = {manual: (a, b) => a.position - b.position, name: (a, b) => a.name.localeCompare(b.name),
+                 color: (a, b) => COLORS.indexOf(hc(a)) - COLORS.indexOf(hc(b)) || a.position - b.position,
+                 score: (a, b) => stats(b).score() - stats(a).score()}[view.sort] || ((a, b) => a.position - b.position);
+  const shown = habits.filter(h => (view.showArchived || !h.archived) && !(view.hideDone && doneToday(h))).sort(order);
   const draft = (loadDraft().text || '').trim();
   const wd = d => new Date(d * 86400000).toLocaleDateString(undefined, {weekday: 'short', timeZone: 'UTC'}).toUpperCase();
   const bar = `<div class="bar"><div class="bar-row"><h1>Habits</h1>
       <a class="ib" href="#/journal" aria-label="Journal">${ICON.pen}${draft ? '<span class="badge"></span>' : ''}</a>
       <a class="ib" href="#/new" aria-label="New habit">${ICON.plus}</a>
+      <button class="ib" onclick="filterMenu(this)" aria-label="Sort and filter">${ICON.filter}</button>
       <button class="ib" onclick="openMenu()" aria-label="Data and account">${ICON.more}</button></div>
     ${habits.length ? `<div class="hrow days"><div></div>${days.map(d => `<div>${wd(d)}<b>${E.parts(d).d}</b></div>`).join('')}</div>` : ''}</div>`;
   if (!habits.length) return `<div style="--n:${n};--col:${col}px">${bar}<div class="empty">No habits yet.<br><br>
@@ -558,8 +563,17 @@ function viewHome() {
       <a class="hname" href="#/habit/${h.id}">${ring(st.score(), hc(h))}<span style="color:${esc(hc(h))}">${esc(h.name)}</span></a>
       ${days.map(d => mark(h, st, d)).join('')}</div>`;
   }).join('');
-  return `<div style="--n:${n};--col:${col}px">${bar}${rows || '<div class="empty">Nothing here.</div>'}
-    ${archived.length ? `<div class="home-foot"><button class="tb" onclick="showArchived=!showArchived;render()">${showArchived ? 'HIDE ARCHIVED' : `SHOW ARCHIVED (${archived.length})`}</button></div>` : ''}</div>`;
+  const none = view.hideDone && habits.some(h => !h.archived) ? 'All done for today.' : 'Nothing here.';
+  return `<div style="--n:${n};--col:${col}px">${bar}${rows || `<div class="empty">${none}</div>`}</div>`;
+}
+
+function filterMenu(btn) {
+  const set = (k, v) => () => { view[k] = v; saveView(); render(); };
+  const sorts = [['manual', 'Manual order'], ['name', 'Name'], ['color', 'Color'], ['score', 'Score']];
+  const nArch = habits.filter(h => h.archived).length;
+  openPop(btn, [{head: 'Sort'}, ...sorts.map(([k, l]) => ({label: l, on: view.sort === k, fn: set('sort', k)})), '-',
+    {label: 'Hide completed', on: view.hideDone, fn: set('hideDone', !view.hideDone)},
+    {label: `Show archived${nArch ? ` (${nArch})` : ''}`, on: view.showArchived, fn: set('showArchived', !view.showArchived)}]);
 }
 
 function viewJournal() {
@@ -577,11 +591,15 @@ function openPop(anchor, items) {
   m.style.top = `${r.bottom + 4}px`; m.style.right = `${Math.max(8, window.innerWidth - r.right)}px`;
   m.innerHTML = items.map((it, i) => it === '-' ? '<hr>' : it.head ? `<div class="ph">${esc(it.head)}</div>`
     : `<button data-i="${i}" class="${it.danger ? 'danger' : ''}${it.on ? ' on' : ''}">${esc(it.label)}</button>`).join('');
-  m.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { closePop(); items[+b.dataset.i].fn(); } e.stopPropagation(); });
+  m.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { closePop(); items[+b.dataset.i].fn(); } });
   document.body.append(m);
-  setTimeout(() => document.addEventListener('click', closePop, {once: true}));
+  setTimeout(() => { popOff = e => { if (!e.target.closest('#popmenu')) closePop(); }; document.addEventListener('click', popOff); });
 }
-function closePop() { const m = $('popmenu'); if (m) m.remove(); }
+let popOff = null;   // the outside-click listener of the open menu
+function closePop() {
+  const m = $('popmenu'); if (m) m.remove();
+  if (popOff) { document.removeEventListener('click', popOff); popOff = null; }
+}
 
 const detailOpts = {score: 'month', hist: 'week', edit: false};
 let detailHabit = null;
@@ -722,8 +740,9 @@ function viewForm(h) {
   const color = h ? hc(h) : COLORS[habits.length % COLORS.length];
   const colors = COLORS.includes(color) ? COLORS : [...COLORS, color];
   const numerical = h && h.type === 'numerical';
-  return `<header class="top"><a class="btn icon" href="${h ? `#/habit/${h.id}` : '#/'}" aria-label="Back">‹</a><h1><span class="t">${h ? 'Edit habit' : 'New habit'}</span></h1></header>
-  <form class="stack card" id="habit-form">
+  return `<div class="bar"><div class="bar-row"><a class="ib" href="${h ? `#/habit/${h.id}` : '#/'}" aria-label="Back">${ICON.back}</a>
+      <h1>${h ? 'Edit habit' : 'New habit'}</h1><button class="tb accent" form="habit-form">SAVE</button></div></div>
+  <form class="stack" id="habit-form">
     <label for="f-name">Name</label><input id="f-name" name="name" required maxlength="80" value="${esc(h?.name)}" placeholder="e.g. Run">
     <label for="f-question">Question</label><input id="f-question" name="question" maxlength="200" value="${esc(h?.question)}" placeholder="e.g. Did you run today?">
     <div class="row">
@@ -741,7 +760,6 @@ function viewForm(h) {
     <label>Color</label>
     <div class="swatches">${colors.map(c => `<label><input type="radio" name="color" value="${c}"${c === color ? ' checked' : ''}><span style="background:${c}"></span></label>`).join('')}</div>
     <label for="f-desc">Description</label><textarea id="f-desc" name="description" rows="2">${esc(h?.description)}</textarea>
-    <div class="form-actions"><a class="btn" href="${h ? `#/habit/${h.id}` : '#/'}">Cancel</a><button class="btn primary">Save</button></div>
   </form>`;
 }
 
@@ -759,9 +777,9 @@ function bindForm(h) {
       archived: h ? h.archived : false,
     };
     if (!row.name) return;
-    f.querySelector('button.primary').disabled = true;
+    const btn = document.querySelector('button[form=habit-form]'); btn.disabled = true;
     if (await saveHabit(row)) location.hash = `#/habit/${row.id}`;
-    else f.querySelector('button.primary').disabled = false;
+    else btn.disabled = false;
   });
 }
 
