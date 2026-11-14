@@ -14,6 +14,9 @@ Looks and works like Loop Habit Tracker on Android: black, no boxes, color only 
   **long-press** (or right-click) for skip and a note. A measurable day (e.g. miles) opens a small
   number-and-notes popup. The filter icon sorts by manual order, name, color or score, hides habits
   already done today, and shows archived ones; the choice is remembered on that device.
+- **Groups** (optional, from the edit form): Home shows ungrouped habits first, then one collapsible
+  section per group with how many are done today. The form suggests the vault's areas (health-wellness,
+  career, admin, social, hobbies). Needs [supabase/groups.sql](supabase/groups.sql) run once.
 - **Journal** (✎ on Home; a dot means there's an unsaved draft): type or dictate, save. A short first
   line followed by more text becomes the title. Backdate with the date chip. Entries wait in
   `journal_entries` until the vault's `_automations/pull_journal.py` copies them into
@@ -44,6 +47,7 @@ Uses the Supabase project at `sjycdaxraklxlnrmgqrb.supabase.co`.
 1. SQL Editor → run [supabase/schema.sql](supabase/schema.sql). It creates the `habits` and
    `habit_entries` tables with RLS policies. (Prefixed because the retired capture app owned `entries`.)
    Then run [supabase/journal.sql](supabase/journal.sql) for the journal composer's table.
+   And [supabase/groups.sql](supabase/groups.sql) for habit groups.
 2. `SUPABASE_URL` / `SUPABASE_KEY` near the top of `index.html`'s script hold the project URL and
    publishable key. The key is safe to commit: RLS restricts each signed-in user to their own rows.
 

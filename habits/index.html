@@ -43,6 +43,13 @@
   .days > div { text-align: center; font-size: 12px; font-weight: 600; color: var(--soft); line-height: 1.4; letter-spacing: .02em; }
   .days b { display: block; font-weight: 500; }
   .habit { min-height: 60px; }
+  .ghead { display: flex; align-items: center; gap: 8px; width: 100%; margin: 14px 0 2px; padding: 8px 0; border: 0;
+           border-top: 1px solid var(--border-2); background: none; color: var(--soft); font: 600 12px var(--sans);
+           letter-spacing: .08em; text-transform: uppercase; text-align: left; cursor: pointer; }
+  .ghead .gn { flex: 1; }
+  .ghead .gc { font-weight: 500; letter-spacing: 0; color: var(--muted-2); }
+  .ghead svg { width: 18px; height: 18px; transition: transform .15s; }
+  .ghead.closed svg { transform: rotate(-90deg); }
   .hname { display: flex; align-items: center; gap: 14px; min-width: 0; padding-right: 8px; text-decoration: none; }
   .hname span { font-size: 17px; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .habit.archived .hname { opacity: .45; }
@@ -242,6 +249,7 @@ const ICON = {
   more: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4m0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg>',
   pen: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 0 0 0-1.41l-2.33-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>',
   filter: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"/></svg>',
+  chev: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>',
   back: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/></svg>',
   check: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
   close: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
@@ -258,8 +266,12 @@ let entries = new Map();         // habit id -> Map(day -> {value, notes})
 const statsCache = new Map();    // habit id -> engine.analyze() result
 /* Home's filter menu, remembered per device. */
 const VIEW_KEY = 'habits.view';
-const view = Object.assign({sort: 'manual', hideDone: false, showArchived: false},
+const view = Object.assign({sort: 'manual', hideDone: false, showArchived: false, collapsed: []},
   (() => { try { return JSON.parse(localStorage.getItem(VIEW_KEY)) || {}; } catch { return {}; } })());
+/* Groups need supabase/groups.sql. Until it has run, rows have no group_name and the app behaves as before. */
+const hasGroups = () => habits.some(h => 'group_name' in h);
+const groupOf = h => (h.group_name || '').trim();
+const AREAS = ['health-wellness', 'career', 'admin', 'social', 'hobbies'];   // the vault's areas, offered as suggestions
 const saveView = () => { try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch {} };
 
 const $ = id => document.getElementById(id);
@@ -557,15 +569,29 @@ function viewHome() {
     ${habits.length ? `<div class="hrow days"><div></div>${days.map(d => `<div>${wd(d)}<b>${E.parts(d).d}</b></div>`).join('')}</div>` : ''}</div>`;
   if (!habits.length) return `<div style="--n:${n};--col:${col}px">${bar}<div class="empty">No habits yet.<br><br>
     <a class="btn primary" href="#/new">Create one</a> <button class="btn" onclick="$('import-file').click()">Import a backup</button></div></div>`;
-  const rows = shown.map(h => {
-    const st = stats(h);
+  const row = h => { const st = stats(h);
     return `<div class="hrow habit${h.archived ? ' archived' : ''}">
       <a class="hname" href="#/habit/${h.id}">${ring(st.score(), hc(h))}<span style="color:${esc(hc(h))}">${esc(h.name)}</span></a>
-      ${days.map(d => mark(h, st, d)).join('')}</div>`;
+      ${days.map(d => mark(h, st, d)).join('')}</div>`; };
+  // Ungrouped habits first, then one collapsible section per group (A→Z). Sorting applies inside each group.
+  const groups = new Map([['', []]]);
+  for (const h of shown) { const g = groupOf(h); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(h); }
+  const names = [...groups.keys()].filter(Boolean).sort((a, b) => a.localeCompare(b));
+  const rows = groups.get('').map(row).join('') + names.map(g => {
+    const hs = groups.get(g), closed = view.collapsed.includes(g), done = hs.filter(doneToday).length;
+    return `<button class="ghead${closed ? ' closed' : ''}" data-group="${esc(g)}" aria-expanded="${!closed}">${ICON.chev}
+      <span class="gn">${esc(g)}</span><span class="gc">${done}/${hs.length} today</span></button>${closed ? '' : hs.map(row).join('')}`;
   }).join('');
   const none = view.hideDone && habits.some(h => !h.archived) ? 'All done for today.' : 'Nothing here.';
   return `<div style="--n:${n};--col:${col}px">${bar}${rows || `<div class="empty">${none}</div>`}</div>`;
 }
+
+$('app').addEventListener('click', e => {
+  const b = e.target.closest('.ghead'); if (!b) return;
+  const g = b.dataset.group;
+  view.collapsed = view.collapsed.includes(g) ? view.collapsed.filter(x => x !== g) : [...view.collapsed, g];
+  saveView(); render();
+});
 
 function filterMenu(btn) {
   const set = (k, v) => () => { view[k] = v; saveView(); render(); };
@@ -705,7 +731,7 @@ function viewDetail(h) {
     <div class="bar"><div class="bar-row"><a class="ib" href="#/" aria-label="Back">${ICON.back}</a><h1>${esc(h.name)}</h1>
       <a class="ib" href="#/edit/${h.id}" aria-label="Edit habit">${ICON.pen}</a>
       <button class="ib" onclick="habitMenu(this,'${h.id}')" aria-label="More">${ICON.more}</button></div></div>
-    <p class="sub">${esc(h.question)}${h.question ? ' · ' : ''}${freqLabel(h)}${target}${h.archived ? ' · archived' : ''}</p>
+    <p class="sub">${esc(h.question)}${h.question ? ' · ' : ''}${freqLabel(h)}${target}${groupOf(h) ? ' · ' + esc(groupOf(h)) : ''}${h.archived ? ' · archived' : ''}</p>
     <div class="sec"><h2>Overview</h2></div>
     <div class="overview">
       <div><b>${Math.round(st.score() * 100)}%</b><span>Score</span></div>
@@ -759,6 +785,8 @@ function viewForm(h) {
     <p class="muted" id="f-numhint" style="margin-top:8px"${numerical ? '' : ' hidden'}>The score compares the total over each frequency window (e.g. 7 days for once a week) with the target.</p>
     <label>Color</label>
     <div class="swatches">${colors.map(c => `<label><input type="radio" name="color" value="${c}"${c === color ? ' checked' : ''}><span style="background:${c}"></span></label>`).join('')}</div>
+    ${hasGroups() ? `<label for="f-group">Group</label><input id="f-group" name="group_name" list="f-groups" maxlength="40" value="${esc(h ? groupOf(h) : '')}" placeholder="none, or e.g. health-wellness" autocomplete="off">
+    <datalist id="f-groups">${[...new Set([...habits.map(groupOf).filter(Boolean), ...AREAS])].sort().map(g => `<option value="${esc(g)}">`).join('')}</datalist>` : ''}
     <label for="f-desc">Description</label><textarea id="f-desc" name="description" rows="2">${esc(h?.description)}</textarea>
   </form>`;
 }
@@ -776,6 +804,7 @@ function bindForm(h) {
       color: f.color.value, position: h ? h.position : habits.reduce((m, x) => Math.max(m, x.position), 0) + 1,
       archived: h ? h.archived : false,
     };
+    if (f.group_name) row.group_name = f.group_name.value.trim().toLowerCase();
     if (!row.name) return;
     const btn = document.querySelector('button[form=habit-form]'); btn.disabled = true;
     if (await saveHabit(row)) location.hash = `#/habit/${row.id}`;
@@ -898,7 +927,7 @@ $('menu-export').addEventListener('click', () => {
   const out = {format: 'habitkit-backup', version: 1, exported_at: stamp(), habits: habits.map(h => ({
     uuid: h.id, name: h.name, question: h.question, description: h.description, type: h.type, freq_num: h.freq_num,
     freq_den: h.freq_den, target_type: h.target_type, target_value: h.target_value, unit: h.unit, color: h.color,
-    position: h.position, archived: h.archived, reminder_time: h.reminder_time, reminder_days: h.reminder_days,
+    position: h.position, archived: h.archived, reminder_time: h.reminder_time, reminder_days: h.reminder_days, group_name: groupOf(h),
     entries: [...entries.get(h.id)].sort((a, b) => a[0] - b[0]).map(([d, e]) => ({date: E.toIso(d), value: e.value, notes: e.notes})),
   }))};
   download(`habits-${stamp()}.json`, JSON.stringify(out, null, 1), 'application/json');
@@ -937,6 +966,7 @@ $('import-file').addEventListener('change', async e => {
     target_type: h.target_type === 'at_most' ? 'at_most' : 'at_least', target_value: +h.target_value || 0, unit: h.unit || '',
     color: h.color || COLORS[i % COLORS.length], position: h.position ?? i + 1, archived: !!h.archived,
     reminder_time: h.reminder_time || null, reminder_days: h.reminder_days ?? 127,
+    ...(hasGroups() ? {group_name: (h.group_name || '').trim().toLowerCase()} : {}),
   }));
   let {error} = await sb.from('habits').upsert(hrows);
   if (error) return fail(error, 'Import');
